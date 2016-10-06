@@ -1,2 +1,2 @@
 # FCDR_MW
-FCDR MW development code
+Development code for FCDR MW uncertainties
