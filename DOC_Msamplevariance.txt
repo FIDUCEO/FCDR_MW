@@ -1,0 +1,6 @@
+Comments on Msamplevariance.m
+Imke Hans, 29.09.2016
+
+The function is called when processing each orbit. It is called for each scan 
+line and calculates the Allan variance (M=2) for each scan line. Afterwards the
+results are averaged over every 300 scanlines.

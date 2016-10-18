@@ -1,0 +1,33 @@
+Relations between scripts and functions for calculating the
+uncertainty
+
+Imke Hans, 28.09.2016
+
+The overall script to run is “process_uncertainty.m”. Below, it is shown which
+functions (F) or scripts (S) are called or executed respectively.
+The script was designed for producing the results to be presented at the
+Hamburg Meeting in July 2016. It is therefore in no publishable state. Further, it
+only deals with the three chosen effects that have an influence on the final
+measured Tb. It uses uncertainty estimates that we had at that time. It is far from
+being complete as it only considers these three effects and applies no filtering of
+any bad data. It evaluates the measurement equation from that stage in July 2016
+and calculates the uncertainty using the partial derivatives for each effect,
+specified in the traceability chain document.
+process_uncertainty.m (S)
+matrixshapeMHS.m (S)
+atmlab_init.m(S)
+read_MHS_for_uncert.m (F)
+instrumentalvaluesMHSnoaa18.m (S)
+uncertainties.m (S)
+planck.m (F)
+DplanckDT.m (F)
+scanlineavCounts.m (F)
+scanlineavPRTTemp.m (F)
+uncertainty_singleeffect.m (F)
+PartialDerivativesOfEffect.m (F)
+invplanck.m (F)
+DinvplanckDrad.m (F)
+NOTE: the script atmlab_init initializes atmlab, a matlab package available from
+http://www.radiativetransfer.org/tools/ (atmlab_init is contained in the
+package). In the above scripts and functions a few functions from this package
+are used.
