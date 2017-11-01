@@ -1,0 +1,393 @@
+% READ_MHS_HEADER   Read ALL header entries of MHS data file.
+%
+% The function extracts header information of an MHS 
+% data file.
+%
+% FORMAT   hdr = read_MHS_header( header );
+%
+% IN   header   Name of an MHS data file.
+
+
+function hdr = read_MHS_header( header )
+% Extracting header fields.
+% Index numbers correspond to start/end octet from the KLM User Guide.
+% http://www1.ncdc.noaa.gov/pub/data/satellite/publications/podguides/N-15%20thru%20N-19/pdf/0.0%20NOAA%20KLM%20Users%20Guide.pdf
+
+hdr.dataset_creation_site_ID                                                = char(header(1:3)');
+hdr.level1b_format_version_number                                           = char(header(5:6)');
+hdr.level1b_format_version_year                                             = extract_uint16(header, 7, 8);
+hdr.level1b_format_version_day_of_year                                      = extract_uint16(header, 9, 10);
+hdr.dataset_header_records_count                                            = extract_uint16(header, 15, 16);
+hdr.dataset_name                                                            = char(header(23:64)');
+hdr.processing_block_identification                                         = char(header(65:72)');
+hdr.spacecraft_identification_code                                          = extract_uint16(header, 73, 74);
+hdr.instrument_ID                                                           = extract_uint16(header, 75, 76);
+hdr.data_type_code                                                          = extract_uint16(header, 77, 78);
+hdr.TIP_source_code                                                         = extract_uint16(header, 79, 80);
+hdr.dataset_start_day_count                                                 = extract_uint32(header, 81, 84);
+hdr.dataset_start_year                                                      = extract_uint16(header, 85, 86);
+hdr.dataset_start_day_of_year                                               = extract_uint16(header, 87, 88);
+hdr.dataset_start_time_UTC                                                  = extract_uint32(header, 89, 92);
+hdr.dataset_end_day_count                                                   = extract_uint32(header, 93, 96);
+hdr.dataset_end_year                                                        = extract_uint16(header, 97, 98);
+hdr.dataset_end_day_of_year                                                 = extract_uint16(header, 99, 100);
+hdr.dataset_end_time_UTC                                                    = extract_uint32(header, 101, 104);
+hdr.last_CPIDS_update_year                                                  = extract_uint16(header, 105, 106);
+hdr.last_CPIDS_update_day_of_year                                           = extract_uint16(header, 107, 108);
+hdr.scan_start_firstFOVcenter_time_offset                                   = extract_int16(header, 109, 110);
+
+instrument_status                                                           = dec2bin(extract_uint32(header, 121, 124),32);
+hdr.instrument_status_mode_code                                             = bin2dec(instrument_status(1:4));
+hdr.instrument_status_PIE_ID                                                = str2double(instrument_status(5));
+hdr.instrument_status_sub_commutation_code                                  = bin2dec(instrument_status(6:8));
+hdr.instrument_status_receiver_channel_H4_backend                           = str2double(instrument_status(9));
+hdr.instrument_status_receiver_channel_H3_backend                           = str2double(instrument_status(10));
+hdr.instrument_status_receiver_channel_H3_H4_local_oscillator               = str2double(instrument_status(11));
+hdr.instrument_status_receiver_channel_H3_H4_frontend                       = str2double(instrument_status(12));
+hdr.instrument_status_receiver_channel_H2_local_oscillator                  = str2double(instrument_status(13));
+hdr.instrument_status_receiver_channel_H2                                   = str2double(instrument_status(14));
+hdr.instrument_status_receiver_channel_H1_local_oscillator                  = str2double(instrument_status(15));
+hdr.instrument_status_receiver_channel_H1                                   = str2double(instrument_status(16));
+hdr.instrument_status_PROM                                                  = str2double(instrument_status(17));
+hdr.instrument_status_signal_processing_electronics                         = str2double(instrument_status(18));
+hdr.instrument_status_auxiliary_operational_heaters                         = str2double(instrument_status(19));
+hdr.instrument_status_scan_mechanism_operational_heaters                    = str2double(instrument_status(20));
+hdr.instrument_status_receiver_operational_heaters                          = str2double(instrument_status(21));
+hdr.instrument_status_Rx_CV                                                 = str2double(instrument_status(22));
+hdr.instrument_status_receiver_channel_H5_local_oscillator                  = str2double(instrument_status(23));
+hdr.instrument_status_receiver_channel_H5                                   = str2double(instrument_status(24));
+hdr.instrument_status_FDM_motor_current_trip_status                         = str2double(instrument_status(25));
+hdr.instrument_status_RDM_motor_current_trip_status                         = str2double(instrument_status(26));
+hdr.instrument_status_FDM_motor_supply                                      = str2double(instrument_status(27));
+hdr.instrument_status_RDM_motor_supply                                      = str2double(instrument_status(28));
+hdr.instrument_status_FDM_motor_sensors                                     = str2double(instrument_status(29));
+hdr.instrument_status_RDM_motor_sensors                                     = str2double(instrument_status(30));
+hdr.instrument_status_FDM_zero_position_sensors                             = str2double(instrument_status(31));
+hdr.instrument_status_RDM_zero_position_sensors                             = str2double(instrument_status(32));
+
+hdr.status_change_record_number                                             = extract_uint16(header, 127, 128);
+hdr.second_instrument_status                                                = extract_uint32(header, 129, 132);
+hdr.data_records_count                                                      = extract_uint16(header, 133, 134);
+hdr.calibrated_earth_located_scan_lines_count                               = extract_uint16(header, 135, 136);
+hdr.nlines                                                                  = hdr.calibrated_earth_located_scan_lines_count;
+hdr.missing_scan_lines_count                                                = extract_uint16(header, 137, 138);
+hdr.data_gaps_count                                                         = extract_uint16(header, 139, 140);
+hdr.scans_containing_lunar_contaminated_space_views_count                   = extract_int16(header, 141, 142);
+hdr.data_frames_without_frame_synch_word_errors_count                       = extract_uint16(header, 143, 144);
+hdr.PACS_detected_TIP_parity_errors_count                                   = extract_uint16(header, 145, 146);
+hdr.input_data_auxiliary_sync_errors_sum                                    = extract_uint16(header, 147, 148);
+hdr.time_sequence_error                                                     = extract_uint16(header, 149, 150);
+
+time_sequence_error_code                                                    = dec2bin(extract_uint16(header, 151, 152),16);
+hdr.time_sequence_error_code_bad_time_field_but_inferable                   = str2double(time_sequence_error_code(9));
+hdr.time_sequence_error_code_bad_time_field                                 = str2double(time_sequence_error_code(10));
+hdr.time_sequence_error_code_inconsistent_with_previous_times               = str2double(time_sequence_error_code(11));
+hdr.time_sequence_error_code_repeated_scan_times                            = str2double(time_sequence_error_code(12));
+
+hdr.SOCC_clock_update_indicator                                             = extract_uint16(header, 153, 154);
+hdr.earth_location_error_indicator                                          = extract_uint16(header, 155, 156);
+
+earth_location_error_code                                                   = dec2bin(extract_uint16(header, 157, 158),16);
+hdr.earth_location_error_code_not_earth_located_bad_time                    = str2double(earth_location_error_code(9));
+hdr.earth_location_error_code_questionable_time_code                        = str2double(earth_location_error_code(10));
+hdr.earth_location_error_code_reasonableness_check_margin_agreement         = str2double(earth_location_error_code(11));
+hdr.earth_location_error_code_reasonableness_check_fail                     = str2double(earth_location_error_code(12));
+hdr.earth_location_error_code_antenna_position_check                        = str2double(earth_location_error_code(13));
+
+PACS_status                                                                 = dec2bin(extract_uint16(header, 159, 160),16);
+hdr.PACS_status_pseudonoise                                                 = str2double(PACS_status(14));
+hdr.PACS_status_tape_direction                                              = str2double(PACS_status(15));
+hdr.PACS_status_data_mode                                                   = str2double(PACS_status(16));
+
+hdr.data_source                                                             = extract_uint16(header, 161, 162);
+hdr.instrument_temperature_sensor_ID                                        = extract_int16(header, 195, 196);
+hdr.primary_reference_temperature_QBS5_min                                  = double(extract_int16(header, 199, 200))*1e-2;
+hdr.primary_reference_temperature_QBS5_nominal                              = double(extract_int16(header, 201, 202))*1e-2;
+hdr.primary_reference_temperature_QBS5_max                                  = double(extract_int16(header, 203, 204))*1e-2;
+hdr.primary_reference_temperature_QBS1_min                                  = double(extract_int16(header, 205, 206))*1e-2;
+hdr.primary_reference_temperature_QBS1_nominal                              = double(extract_int16(header, 207, 208))*1e-2;
+hdr.primary_reference_temperature_QBS1_max                                  = double(extract_int16(header, 209, 210))*1e-2;
+
+hdr.Ch_H1_warm_load_correction_factor_min_temperature                       = double(extract_int16(header, 211, 212))*1e-3;
+hdr.Ch_H1_warm_load_correction_factor_nominal_temperature                   = double(extract_int16(header, 213, 214))*1e-3;
+hdr.Ch_H1_warm_load_correction_factor_max_temperature                       = double(extract_int16(header, 215, 216))*1e-3;
+hdr.Ch_H1_cold_space_temperature_correction_profile0                        = double(extract_int16(header, 217, 218))*1e-3;
+hdr.Ch_H1_cold_space_temperature_correction_profile1                        = double(extract_int16(header, 219, 220))*1e-3;
+hdr.Ch_H1_cold_space_temperature_correction_profile2                        = double(extract_int16(header, 221, 222))*1e-3;
+hdr.Ch_H2_warm_load_correction_factor_min_temperature                       = double(extract_int16(header, 225, 226))*1e-3;
+hdr.Ch_H2_warm_load_correction_factor_nominal_temperature                   = double(extract_int16(header, 227, 228))*1e-3;
+hdr.Ch_H2_warm_load_correction_factor_max_temperature                       = double(extract_int16(header, 229, 230))*1e-3;
+hdr.Ch_H2_cold_space_temperature_correction_profile0                        = double(extract_int16(header, 231, 232))*1e-3;
+hdr.Ch_H2_cold_space_temperature_correction_profile1                        = double(extract_int16(header, 233, 234))*1e-3;
+hdr.Ch_H2_cold_space_temperature_correction_profile2                        = double(extract_int16(header, 235, 236))*1e-3;
+hdr.Ch_H3_warm_load_correction_factor_min_temperature                       = double(extract_int16(header, 239, 240))*1e-3;
+hdr.Ch_H3_warm_load_correction_factor_nominal_temperature                   = double(extract_int16(header, 241, 242))*1e-3;
+hdr.Ch_H3_warm_load_correction_factor_max_temperature                       = double(extract_int16(header, 243, 244))*1e-3;
+hdr.Ch_H3_cold_space_temperature_correction_profile0                        = double(extract_int16(header, 245, 246))*1e-3;
+hdr.Ch_H3_cold_space_temperature_correction_profile1                        = double(extract_int16(header, 247, 248))*1e-3;
+hdr.Ch_H3_cold_space_temperature_correction_profile2                        = double(extract_int16(header, 249, 250))*1e-3;
+hdr.Ch_H4_warm_load_correction_factor_min_temperature                       = double(extract_int16(header, 253, 254))*1e-3;
+hdr.Ch_H4_warm_load_correction_factor_nominal_temperature                   = double(extract_int16(header, 255, 256))*1e-3;
+hdr.Ch_H4_warm_load_correction_factor_max_temperature                       = double(extract_int16(header, 257, 258))*1e-3;
+hdr.Ch_H4_cold_space_temperature_correction_profile0                        = double(extract_int16(header, 259, 260))*1e-3;
+hdr.Ch_H4_cold_space_temperature_correction_profile1                        = double(extract_int16(header, 261, 262))*1e-3;
+hdr.Ch_H4_cold_space_temperature_correction_profile2                        = double(extract_int16(header, 263, 264))*1e-3;
+hdr.Ch_H5_warm_load_correction_factor_min_temperature                       = double(extract_int16(header, 267, 268))*1e-3;
+hdr.Ch_H5_warm_load_correction_factor_nominal_temperature                   = double(extract_int16(header, 269, 270))*1e-3;
+hdr.Ch_H5_warm_load_correction_factor_max_temperature                       = double(extract_int16(header, 271, 272))*1e-3;
+hdr.Ch_H5_cold_space_temperature_correction_profile0                        = double(extract_int16(header, 273, 274))*1e-3;
+hdr.Ch_H5_cold_space_temperature_correction_profile1                        = double(extract_int16(header, 275, 276))*1e-3;
+hdr.Ch_H5_cold_space_temperature_correction_profile2                        = double(extract_int16(header, 277, 278))*1e-3;
+hdr.LO_A_CH_H1_nonlinearity_coeff_min_temperature                           = double(extract_int32(header, 281, 284))*1e-8;
+hdr.LO_A_CH_H1_nonlinearity_coeff_nominal_temperature                       = double(extract_int32(header, 285, 288))*1e-8;
+hdr.LO_A_CH_H1_nonlinearity_coeff_max_temperature                           = double(extract_int32(header, 289, 292))*1e-8;
+hdr.LO_A_CH_H2_nonlinearity_coeff_min_temperature                           = double(extract_int32(header, 293, 296))*1e-8;
+hdr.LO_A_CH_H2_nonlinearity_coeff_nominal_temperature                       = double(extract_int32(header, 297, 300))*1e-8;
+hdr.LO_A_CH_H2_nonlinearity_coeff_max_temperature                           = double(extract_int32(header, 301, 304))*1e-8;
+hdr.LO_A_CH_H3_nonlinearity_coeff_min_temperature                           = double(extract_int32(header, 305, 308))*1e-8;
+hdr.LO_A_CH_H3_nonlinearity_coeff_nominal_temperature                       = double(extract_int32(header, 309, 312))*1e-8;
+hdr.LO_A_CH_H3_nonlinearity_coeff_max_temperature                           = double(extract_int32(header, 313, 316))*1e-8;
+hdr.LO_A_CH_H4_nonlinearity_coeff_min_temperature                           = double(extract_int32(header, 317, 320))*1e-8;
+hdr.LO_A_CH_H4_nonlinearity_coeff_nominal_temperature                       = double(extract_int32(header, 321, 324))*1e-8;
+hdr.LO_A_CH_H4_nonlinearity_coeff_max_temperature                           = double(extract_int32(header, 325, 328))*1e-8;
+hdr.LO_A_CH_H5_nonlinearity_coeff_min_temperature                           = double(extract_int32(header, 329, 332))*1e-8;
+hdr.LO_A_CH_H5_nonlinearity_coeff_nominal_temperature                       = double(extract_int32(header, 333, 336))*1e-8;
+hdr.LO_A_CH_H5_nonlinearity_coeff_max_temperature                           = double(extract_int32(header, 337, 340))*1e-8;
+hdr.LO_B_CH_H1_nonlinearity_coeff_min_temperature                           = double(extract_int32(header, 341, 344))*1e-8;
+hdr.LO_B_CH_H1_nonlinearity_coeff_nominal_temperature                       = double(extract_int32(header, 345, 348))*1e-8;
+hdr.LO_B_CH_H1_nonlinearity_coeff_max_temperature                           = double(extract_int32(header, 349, 352))*1e-8;
+hdr.LO_B_CH_H2_nonlinearity_coeff_min_temperature                           = double(extract_int32(header, 353, 356))*1e-8;
+hdr.LO_B_CH_H2_nonlinearity_coeff_nominal_temperature                       = double(extract_int32(header, 357, 360))*1e-8;
+hdr.LO_B_CH_H2_nonlinearity_coeff_max_temperature                           = double(extract_int32(header, 361, 364))*1e-8;
+hdr.LO_B_CH_H3_nonlinearity_coeff_min_temperature                           = double(extract_int32(header, 365, 368))*1e-8;
+hdr.LO_B_CH_H3_nonlinearity_coeff_nominal_temperature                       = double(extract_int32(header, 369, 372))*1e-8;
+hdr.LO_B_CH_H3_nonlinearity_coeff_max_temperature                           = double(extract_int32(header, 373, 376))*1e-8;
+hdr.LO_B_CH_H4_nonlinearity_coeff_min_temperature                           = double(extract_int32(header, 377, 380))*1e-8;
+hdr.LO_B_CH_H4_nonlinearity_coeff_nominal_temperature                       = double(extract_int32(header, 381, 384))*1e-8;
+hdr.LO_B_CH_H4_nonlinearity_coeff_max_temperature                           = double(extract_int32(header, 385, 388))*1e-8;
+hdr.LO_B_CH_H5_nonlinearity_coeff_min_temperature                           = double(extract_int32(header, 389, 392))*1e-8;
+hdr.LO_B_CH_H5_nonlinearity_coeff_nominal_temperature                       = double(extract_int32(header, 393, 396))*1e-8;
+hdr.LO_B_CH_H5_nonlinearity_coeff_max_temperature                           = double(extract_int32(header, 397, 400))*1e-8;
+hdr.temperature_radiance_Ch_H1_central_wavenumber                           = double(extract_int32(header, 417, 420))*1e-6;
+hdr.temperature_radiance_Ch_H1_constant1                                    = double(extract_int32(header, 421, 424))*1e-6;
+hdr.temperature_radiance_Ch_H1_constant2                                    = double(extract_int32(header, 425, 428))*1e-6;
+hdr.temperature_radiance_Ch_H2_central_wavenumber                           = double(extract_int32(header, 429, 432))*1e-6;
+hdr.temperature_radiance_Ch_H2_constant1                                    = double(extract_int32(header, 433, 436))*1e-6;
+hdr.temperature_radiance_Ch_H2_constant2                                    = double(extract_int32(header, 437, 440))*1e-6;
+hdr.temperature_radiance_Ch_H3_central_wavenumber                           = double(extract_int32(header, 441, 444))*1e-6;
+hdr.temperature_radiance_Ch_H3_constant1                                    = double(extract_int32(header, 445, 448))*1e-6;
+hdr.temperature_radiance_Ch_H3_constant2                                    = double(extract_int32(header, 449, 452))*1e-6;
+hdr.temperature_radiance_Ch_H4_central_wavenumber                           = double(extract_int32(header, 453, 456))*1e-6;
+hdr.temperature_radiance_Ch_H4_constant1                                    = double(extract_int32(header, 457, 460))*1e-6;
+hdr.temperature_radiance_Ch_H4_constant2                                    = double(extract_int32(header, 461, 464))*1e-6;
+hdr.temperature_radiance_Ch_H5_central_wavenumber                           = double(extract_int32(header, 465, 468))*1e-6;
+hdr.temperature_radiance_Ch_H5_constant1                                    = double(extract_int32(header, 469, 472))*1e-6;
+hdr.temperature_radiance_Ch_H5_constant2                                    = double(extract_int32(header, 473, 476))*1e-6;
+hdr.reference_ellipsoid_model_ID                                            = char(header(493:500)');
+hdr.nadir_earth_location_tolerance                                          = extract_uint16(header, 501, 502)*1e-1;
+
+earth_location                                                              = dec2bin(extract_uint16(header, 503, 504),16);
+hdr.earth_location_dynamic_attitude_error_correction                        = str2double(earth_location(14));
+hdr.earth_location_reasonableness_test                                      = str2double(earth_location(15));
+hdr.earth_location_constant_attitude_error_correction                       = str2double(earth_location(16));
+
+hdr.constant_roll_attitude_error                                            = double(extract_int16(header, 507, 508))*1e-3;
+hdr.constant_pitch_attitude_error                                           = double(extract_int16(header, 509, 510))*1e-3;
+hdr.constant_yaw_attitude_error                                             = double(extract_int16(header, 511, 512))*1e-3;
+hdr.orbit_vector_epoch_year                                                 = extract_int16(header, 513, 514);
+hdr.orbit_vector_day_of_epoch_year                                          = extract_int16(header, 515, 516);
+hdr.orbit_vector_epoch_UTC_time                                             = extract_int32(header, 517, 520);
+hdr.semi_major_axis_at_epoch_time                                           = double(extract_int32(header, 521, 524))*1e-5;
+hdr.eccentricity_at_orbit_vector_epoch_time                                 = double(extract_int32(header, 525, 528))*1e-8;
+hdr.inclination_at_orbit_vector_epoch_time                                  = double(extract_int32(header, 529, 532))*1e-5;
+hdr.argument_of_perigee_at_orbit_vector_epoch_time                          = double(extract_int32(header, 533, 536))*1e-5;
+hdr.right_ascension_of_ascending_node_at_orbit_vector_epoch_time            = double(extract_int32(header, 537, 540))*1e-5;
+hdr.mean_anomaly_at_orbit_vector_epoch_time                                 = double(extract_int32(header, 541, 544))*1e-5;
+hdr.position_vector_X_at_orbit_vector_epoch_time                            = double(extract_int32(header, 545, 548))*1e-5;
+hdr.position_vector_Y_at_orbit_vector_epoch_time                            = double(extract_int32(header, 549, 552))*1e-5;
+hdr.position_vector_Z_at_orbit_vector_epoch_time                            = double(extract_int32(header, 553, 556))*1e-5;
+hdr.velocity_vector_Xdot_at_orbit_vector_epoch_time                         = double(extract_int32(header, 557, 560))*1e-8;
+hdr.velocity_vector_Ydot_at_orbit_vector_epoch_time                         = double(extract_int32(header, 561, 564))*1e-8;
+hdr.velocity_vector_Zdot_at_orbit_vector_epoch_time                         = double(extract_int32(header, 565, 568))*1e-8;
+hdr.earth_sun_distance_ratio_at_orbit_vector_epoch_time                     = double(extract_int32(header, 569, 572))*1e-6;
+hdr.counts_to_temperature_conversion_thermistor_temperature_coeff0          = double(extract_int32(header, 589, 592))*1e-4;
+hdr.counts_to_temperature_conversion_thermistor_temperature_coeff1          = double(extract_int32(header, 593, 596))*1e-7;
+hdr.counts_to_temperature_conversion_thermistor_temperature_coeff2          = double(extract_int32(header, 597, 600))*1e-10;
+hdr.counts_to_temperature_conversion_thermistor_temperature_coeff3          = double(extract_int32(header, 601, 604))*1e-12;
+hdr.counts_to_temperature_conversion_thermistor_temperature_coeff4          = double(extract_int32(header, 605, 608))*1e-15;
+hdr.EE_and_SM_plus5V_current_coeff0                                         = double(extract_int32(header, 625, 628))*1e-6;
+hdr.EE_and_SM_plus5V_current_coeff1                                         = double(extract_int32(header, 629, 632))*1e-6;
+hdr.Receiver_plus8V_current_coeff0                                          = double(extract_int32(header, 633, 636))*1e-6;
+hdr.Receiver_plus8V_current_coeff1                                          = double(extract_int32(header, 637, 640))*1e-6;
+hdr.Receiver_plus15V_current_coeff0                                         = double(extract_int32(header, 641, 644))*1e-6;
+hdr.Receiver_plus15V_current_coeff1                                         = double(extract_int32(header, 645, 648))*1e-6;
+hdr.Receiver_minus15V_current_coeff0                                        = double(extract_int32(header, 649, 652))*1e-6;
+hdr.Receiver_minus15V_current_coeff1                                        = double(extract_int32(header, 653, 656))*1e-6;
+hdr.RDM_motor_current_coeff0                                                = double(extract_int32(header, 657, 660))*1e-6;
+hdr.RDM_motor_current_coeff1                                                = double(extract_int32(header, 661, 664))*1e-6;
+hdr.FDM_motor_current_coeff0                                                = double(extract_int32(header, 665, 668))*1e-6;
+hdr.FDM_motor_current_coeff1                                                = double(extract_int32(header, 669, 672))*1e-6;
+hdr.PIE_A_PRT_1_coeff0                                                      = double(extract_int32(header, 673, 676))*1e-6;
+hdr.PIE_A_PRT_1_coeff1                                                      = double(extract_int32(header, 677, 680))*1e-6;
+hdr.PIE_A_PRT_1_coeff2                                                      = double(extract_int32(header, 681, 684))*1e-10;
+hdr.PIE_A_PRT_1_coeff3                                                      = double(extract_int32(header, 685, 688))*1e-13;
+hdr.PIE_A_PRT_2_coeff0                                                      = double(extract_int32(header, 689, 692))*1e-6;
+hdr.PIE_A_PRT_2_coeff1                                                      = double(extract_int32(header, 693, 696))*1e-6;
+hdr.PIE_A_PRT_2_coeff2                                                      = double(extract_int32(header, 697, 700))*1e-10;
+hdr.PIE_A_PRT_2_coeff3                                                      = double(extract_int32(header, 701, 704))*1e-13;
+hdr.PIE_A_PRT_3_coeff0                                                      = double(extract_int32(header, 705, 708))*1e-6;
+hdr.PIE_A_PRT_3_coeff1                                                      = double(extract_int32(header, 709, 712))*1e-6;
+hdr.PIE_A_PRT_3_coeff2                                                      = double(extract_int32(header, 713, 716))*1e-10;
+hdr.PIE_A_PRT_3_coeff3                                                      = double(extract_int32(header, 717, 720))*1e-13;
+hdr.PIE_A_PRT_4_coeff0                                                      = double(extract_int32(header, 721, 724))*1e-6;
+hdr.PIE_A_PRT_4_coeff1                                                      = double(extract_int32(header, 725, 728))*1e-6;
+hdr.PIE_A_PRT_4_coeff2                                                      = double(extract_int32(header, 729, 732))*1e-10;
+hdr.PIE_A_PRT_4_coeff3                                                      = double(extract_int32(header, 733, 736))*1e-13;
+hdr.PIE_A_PRT_5_coeff0                                                      = double(extract_int32(header, 737, 740))*1e-6;
+hdr.PIE_A_PRT_5_coeff1                                                      = double(extract_int32(header, 741, 744))*1e-6;
+hdr.PIE_A_PRT_5_coeff2                                                      = double(extract_int32(header, 745, 748))*1e-10;
+hdr.PIE_A_PRT_5_coeff3                                                      = double(extract_int32(header, 749, 752))*1e-13;
+hdr.PIE_B_PRT_1_coeff0                                                      = double(extract_int32(header, 753, 756))*1e-6;
+hdr.PIE_B_PRT_1_coeff1                                                      = double(extract_int32(header, 757, 760))*1e-6;
+hdr.PIE_B_PRT_1_coeff2                                                      = double(extract_int32(header, 761, 764))*1e-10;
+hdr.PIE_B_PRT_1_coeff3                                                      = double(extract_int32(header, 765, 768))*1e-13;
+hdr.PIE_B_PRT_2_coeff0                                                      = double(extract_int32(header, 769, 772))*1e-6;
+hdr.PIE_B_PRT_2_coeff1                                                      = double(extract_int32(header, 773, 776))*1e-6;
+hdr.PIE_B_PRT_2_coeff2                                                      = double(extract_int32(header, 777, 780))*1e-10;
+hdr.PIE_B_PRT_2_coeff3                                                      = double(extract_int32(header, 781, 784))*1e-13;
+hdr.PIE_B_PRT_3_coeff0                                                      = double(extract_int32(header, 785, 788))*1e-6;
+hdr.PIE_B_PRT_3_coeff1                                                      = double(extract_int32(header, 789, 792))*1e-6;
+hdr.PIE_B_PRT_3_coeff2                                                      = double(extract_int32(header, 793, 796))*1e-10;
+hdr.PIE_B_PRT_3_coeff3                                                      = double(extract_int32(header, 797, 800))*1e-13;
+hdr.PIE_B_PRT_4_coeff0                                                      = double(extract_int32(header, 801, 804))*1e-6;
+hdr.PIE_B_PRT_4_coeff1                                                      = double(extract_int32(header, 805, 808))*1e-6;
+hdr.PIE_B_PRT_4_coeff2                                                      = double(extract_int32(header, 809, 812))*1e-10;
+hdr.PIE_B_PRT_4_coeff3                                                      = double(extract_int32(header, 813, 816))*1e-13;
+hdr.PIE_B_PRT_5_coeff0                                                      = double(extract_int32(header, 817, 820))*1e-6;
+hdr.PIE_B_PRT_5_coeff1                                                      = double(extract_int32(header, 821, 824))*1e-6;
+hdr.PIE_B_PRT_5_coeff2                                                      = double(extract_int32(header, 825, 828))*1e-10;
+hdr.PIE_B_PRT_5_coeff3                                                      = double(extract_int32(header, 829, 832))*1e-13;
+hdr.survival_temperature_coeff0                                             = double(extract_int32(header, 833, 836))*1e-6;
+hdr.survival_temperature_coeff1                                             = double(extract_int32(header, 837, 840))*1e-6;
+hdr.survival_temperature_coeff2                                             = double(extract_int32(header, 841, 844))*1e-6;
+hdr.survival_temperature_coeff3                                             = double(extract_int32(header, 845, 848))*1e-6;
+hdr.survival_temperature_coeff4                                             = double(extract_int32(header, 849, 852))*1e-6;
+hdr.survival_temperature_coeff5                                             = double(extract_int32(header, 853, 856))*1e-6;
+hdr.antenna_position_conversion_factor                                      = double(extract_uint32(header, 857, 860))*1e-8;
+hdr.PIE_A_calibration_channel_1_resistance                                  = double(extract_int32(header, 861, 864))*1e-4;
+hdr.PIE_A_calibration_channel_2_resistance                                  = double(extract_int32(header, 865, 868))*1e-4;
+hdr.PIE_A_calibration_channel_3_resistance                                  = double(extract_int32(header, 869, 872))*1e-4;
+hdr.PIE_B_calibration_channel_1_resistance                                  = double(extract_int32(header, 873, 876))*1e-4;
+hdr.PIE_B_calibration_channel_2_resistance                                  = double(extract_int32(header, 877, 880))*1e-4;
+hdr.PIE_B_calibration_channel_3_resistance                                  = double(extract_int32(header, 881, 884))*1e-4;
+hdr.lunar_angle_threshold                                                   = double(extract_uint16(header, 885, 886))*1e-2;
+
+% bias correction values are only available for every fifth field of view,
+% the values for the remaining field of views are set to NaN. 
+hdr.bias_correction_values_Ch_H1_STX1                                       = NaN(1,90);
+hdr.bias_coorection_values_Ch_H2_STX1                                       = NaN(1,90);
+hdr.bias_correction_values_Ch_H3_STX1                                       = NaN(1,90);
+hdr.bias_coorection_values_Ch_H4_STX1                                       = NaN(1,90);
+hdr.bias_coorection_values_Ch_H5_STX1                                       = NaN(1,90);
+hdr.bias_correction_values_Ch_H1_STX2                                       = NaN(1,90);
+hdr.bias_coorection_values_Ch_H2_STX2                                       = NaN(1,90);
+hdr.bias_correction_values_Ch_H3_STX2                                       = NaN(1,90);
+hdr.bias_coorection_values_Ch_H4_STX2                                       = NaN(1,90);
+hdr.bias_coorection_values_Ch_H5_STX2                                       = NaN(1,90);
+hdr.bias_correction_values_Ch_H1_STX3                                       = NaN(1,90);
+hdr.bias_coorection_values_Ch_H2_STX3                                       = NaN(1,90);
+hdr.bias_correction_values_Ch_H3_STX3                                       = NaN(1,90);
+hdr.bias_coorection_values_Ch_H4_STX3                                       = NaN(1,90);
+hdr.bias_coorection_values_Ch_H5_STX3                                       = NaN(1,90);
+hdr.bias_correction_values_Ch_H1_SARR                                       = NaN(1,90);
+hdr.bias_coorection_values_Ch_H2_SARR                                       = NaN(1,90);
+hdr.bias_correction_values_Ch_H3_SARR                                       = NaN(1,90);
+hdr.bias_coorection_values_Ch_H4_SARR                                       = NaN(1,90);
+hdr.bias_coorection_values_Ch_H5_SARR                                       = NaN(1,90);
+
+c = 1;
+for fov=[1,5:5:90]
+    hdr.bias_correction_values_Ch_H1_STX1(fov)                              = extract_int16(header, 887+(c-1)*10, 888+(c-1)*10);
+    hdr.bias_coorection_values_Ch_H2_STX1(fov)                              = extract_int16(header, 889+(c-1)*10, 890+(c-1)*10);
+    hdr.bias_correction_values_Ch_H3_STX1(fov)                              = extract_int16(header, 891+(c-1)*10, 892+(c-1)*10);
+    hdr.bias_coorection_values_Ch_H4_STX1(fov)                              = extract_int16(header, 893+(c-1)*10, 894+(c-1)*10);
+    hdr.bias_coorection_values_Ch_H5_STX1(fov)                              = extract_int16(header, 895+(c-1)*10, 896+(c-1)*10);
+    hdr.bias_correction_values_Ch_H1_STX2(fov)                              = extract_int16(header, 1097+(c-1)*10, 1098+(c-1)*10);
+    hdr.bias_coorection_values_Ch_H2_STX2(fov)                              = extract_int16(header, 1099+(c-1)*10, 1100+(c-1)*10);
+    hdr.bias_correction_values_Ch_H3_STX2(fov)                              = extract_int16(header, 1101+(c-1)*10, 1102+(c-1)*10);
+    hdr.bias_coorection_values_Ch_H4_STX2(fov)                              = extract_int16(header, 1103+(c-1)*10, 1104+(c-1)*10);
+    hdr.bias_coorection_values_Ch_H5_STX2(fov)                              = extract_int16(header, 1105+(c-1)*10, 1106+(c-1)*10);
+    hdr.bias_correction_values_Ch_H1_STX3(fov)                              = extract_int16(header, 1307+(c-1)*10, 1308+(c-1)*10);
+    hdr.bias_coorection_values_Ch_H2_STX3(fov)                              = extract_int16(header, 1309+(c-1)*10, 1310+(c-1)*10);
+    hdr.bias_correction_values_Ch_H3_STX3(fov)                              = extract_int16(header, 1311+(c-1)*10, 1312+(c-1)*10);
+    hdr.bias_coorection_values_Ch_H4_STX3(fov)                              = extract_int16(header, 1313+(c-1)*10, 1314+(c-1)*10);
+    hdr.bias_coorection_values_Ch_H5_STX3(fov)                              = extract_int16(header, 1315+(c-1)*10, 1316+(c-1)*10);
+    hdr.bias_correction_values_Ch_H1_SARR(fov)                              = extract_int16(header, 1517+(c-1)*10, 1518+(c-1)*10);
+    hdr.bias_coorection_values_Ch_H2_SARR(fov)                              = extract_int16(header, 1519+(c-1)*10, 1520+(c-1)*10);
+    hdr.bias_correction_values_Ch_H3_SARR(fov)                              = extract_int16(header, 1521+(c-1)*10, 1522+(c-1)*10);
+    hdr.bias_coorection_values_Ch_H4_SARR(fov)                              = extract_int16(header, 1523+(c-1)*10, 1524+(c-1)*10);
+    hdr.bias_coorection_values_Ch_H5_SARR(fov)                              = extract_int16(header, 1525+(c-1)*10, 1526+(c-1)*10);
+    c = c+1;
+end
+
+hdr.bias_correction_values_Ch_H1_space_view_STX1                            = extract_int16(header, 1077, 1078);
+hdr.bias_correction_values_Ch_H2_space_view_STX1                            = extract_int16(header, 1079, 1080);
+hdr.bias_correction_values_Ch_H3_space_view_STX1                            = extract_int16(header, 1081, 1082);
+hdr.bias_correction_values_Ch_H4_space_view_STX1                            = extract_int16(header, 1083, 1084);
+hdr.bias_correction_values_Ch_H5_space_view_STX1                            = extract_int16(header, 1085, 1086);
+hdr.bias_correction_values_Ch_H1_OBCT_view_STX1                             = extract_int16(header, 1087, 1088);
+hdr.bias_correction_values_Ch_H2_OBCT_view_STX1                             = extract_int16(header, 1089, 1090);
+hdr.bias_correction_values_Ch_H3_OBCT_view_STX1                             = extract_int16(header, 1091, 1092);
+hdr.bias_correction_values_Ch_H4_OBCT_view_STX1                             = extract_int16(header, 1093, 1094);
+hdr.bias_correction_values_Ch_H5_OBCT_view_STX1                             = extract_int16(header, 1095, 1096);
+hdr.bias_correction_values_Ch_H1_space_view_STX2                            = extract_int16(header, 1287, 1288);
+hdr.bias_correction_values_Ch_H2_space_view_STX2                            = extract_int16(header, 1289, 1290);
+hdr.bias_correction_values_Ch_H3_space_view_STX2                            = extract_int16(header, 1291, 1292);
+hdr.bias_correction_values_Ch_H4_space_view_STX2                            = extract_int16(header, 1293, 1294);
+hdr.bias_correction_values_Ch_H5_space_view_STX2                            = extract_int16(header, 1295, 1296);
+hdr.bias_correction_values_Ch_H1_OBCT_view_STX2                             = extract_int16(header, 1297, 1298);
+hdr.bias_correction_values_Ch_H2_OBCT_view_STX2                             = extract_int16(header, 1299, 1300);
+hdr.bias_correction_values_Ch_H3_OBCT_view_STX2                             = extract_int16(header, 1301, 1302);
+hdr.bias_correction_values_Ch_H4_OBCT_view_STX2                             = extract_int16(header, 1303, 1304);
+hdr.bias_correction_values_Ch_H5_OBCT_view_STX2                             = extract_int16(header, 1305, 1306);
+hdr.bias_correction_values_Ch_H1_space_view_STX3                            = extract_int16(header, 1497, 1498);
+hdr.bias_correction_values_Ch_H2_space_view_STX3                            = extract_int16(header, 1499, 1500);
+hdr.bias_correction_values_Ch_H3_space_view_STX3                            = extract_int16(header, 1501, 1502);
+hdr.bias_correction_values_Ch_H4_space_view_STX3                            = extract_int16(header, 1503, 1504);
+hdr.bias_correction_values_Ch_H5_space_view_STX3                            = extract_int16(header, 1505, 1506);
+hdr.bias_correction_values_Ch_H1_OBCT_view_STX3                             = extract_int16(header, 1507, 1508);
+hdr.bias_correction_values_Ch_H2_OBCT_view_STX3                             = extract_int16(header, 1509, 1510);
+hdr.bias_correction_values_Ch_H3_OBCT_view_STX3                             = extract_int16(header, 1511, 1512);
+hdr.bias_correction_values_Ch_H4_OBCT_view_STX3                             = extract_int16(header, 1513, 1514);
+hdr.bias_correction_values_Ch_H5_OBCT_view_STX3                             = extract_int16(header, 1515, 1516);
+hdr.bias_correction_values_Ch_H1_space_view_SARR                            = extract_int16(header, 1707, 1708);
+hdr.bias_correction_values_Ch_H2_space_view_SARR                            = extract_int16(header, 1709, 1710);
+hdr.bias_correction_values_Ch_H3_space_view_SARR                            = extract_int16(header, 1711, 1712);
+hdr.bias_correction_values_Ch_H4_space_view_SARR                            = extract_int16(header, 1713, 1714);
+hdr.bias_correction_values_Ch_H5_space_view_SARR                            = extract_int16(header, 1715, 1716);
+hdr.bias_correction_values_Ch_H1_OBCT_view_SARR                             = extract_int16(header, 1717, 1718);
+hdr.bias_correction_values_Ch_H2_OBCT_view_SARR                             = extract_int16(header, 1719, 1720);
+hdr.bias_correction_values_Ch_H3_OBCT_view_SARR                             = extract_int16(header, 1721, 1722);
+hdr.bias_correction_values_Ch_H4_OBCT_view_SARR                             = extract_int16(header, 1723, 1724);
+hdr.bias_correction_values_Ch_H5_OBCT_view_SARR                             = extract_int16(header, 1725, 1726);
+hdr.transmitter_reference_power_STX1                                        = extract_int16(header, 1735, 1736);
+hdr.transmitter_reference_power_STX2                                        = extract_int16(header, 1737, 1738);
+hdr.transmitter_reference_power_STX3                                        = extract_int16(header, 1739, 1740);
+hdr.transmitter_reference_power_SARR                                        = extract_int16(header, 1741, 1742);
+end
+
+function value = extract_uint16(bytearr, startbyte, endbyte)
+value = typecast(uint8(bytearr(endbyte:-1:startbyte)), 'uint16');
+end
+
+function value = extract_int16(bytearr, startbyte, endbyte)
+value = typecast(uint8(bytearr(endbyte:-1:startbyte)), 'int16');
+end
+
+function value = extract_int32(bytearr, startbyte, endbyte)
+value = typecast(uint8(bytearr(endbyte:-1:startbyte)), 'int32');
+end
+
+function value = extract_uint32(bytearr, startbyte, endbyte)
+value = typecast(uint8(bytearr(endbyte:-1:startbyte)), 'uint32'); 
+end
