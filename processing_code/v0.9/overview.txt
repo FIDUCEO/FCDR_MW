@@ -1,1 +1,37 @@
-Here I will give an overview.
+v0.9 FCDR processing 15.01.2018
+Overview over relations of functions and scripts
+
+generate_Eq2Eq_FCDR_monthly(F) CALLS
+  atmlab_init (S)
+  read_MHS_allvar_noh5write (F) /…AMSUB… CALLS
+    read_MHS_header(F) /…AMSUB…
+		read_MHS_record(F) /…AMSUB…
+  check_which_files_to_use(F)
+  check_for_datagap(S)
+  get_equator_crossing_l1b(F)
+  setup_Eq2Eq_fullFCDR_uncertproc_MHS_v2(S) /…AMSUB… CALLS
+    fill_missing_scanlines(F)
+    calculate_solarAndsatellite_azimuth_angle(S)
+    calculate_AllanDeviation_DSV_IWCT_withoutQualflags(S)
+    mooncheck (S)
+		qualitychecksDSV_allchn (S)
+    qualitychecksIWCT_allchn(S)
+    qualitychecksPRT_allsensors (S)
+    qualitychecksEarthview (S)
+    calculate_AllanDeviation_DSV_IWCT_PRT (S)
+    setup_roll_average (S)
+    calculate_roll_average (S)
+    qualitychecksEarthLocation (S)
+    qualitychecksSpaceViewLocation (S)
+    qualitychecksIWCTViewLocation (S)
+  measurement_equation (S) CALLS
+	  planck (F)
+    invplanck (F)
+  uncertainty_propagation_optimized (S) CALLS
+	  DplanckDT (F)
+    DplanckDf (F)
+    DinvplanckDrad (F)
+  quality_flags_setting_new (S) CALLS
+  write_easyFCDR_orbitfile_MHS/…AMSUB (S) CALLS
+    change_type_zero_nan (F)
+
