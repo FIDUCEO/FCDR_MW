@@ -14,7 +14,7 @@ generate_Eq2Eq_FCDR_monthly(F) CALLS
     calculate_solarAndsatellite_azimuth_angle(S)
     calculate_AllanDeviation_DSV_IWCT_withoutQualflags(S)
     mooncheck (S)
-		qualitychecksDSV_allchn (S)
+    qualitychecksDSV_allchn (S)
     qualitychecksIWCT_allchn(S)
     qualitychecksPRT_allsensors (S)
     qualitychecksEarthview (S)
