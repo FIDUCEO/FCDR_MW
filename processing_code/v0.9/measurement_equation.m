@@ -94,7 +94,7 @@ alpha_pix=alpha(channel);
 Antenna_position_earthview_pix=Antenna_position_earthview(fov,:);
 Antenna_position_spaceview_pix=Antenna_position_spaceview;
 R_Eprime_pix=squeeze(R_Eprime(channel,fov,:)).';
-R_E(channel,fov,:)=R_Eprime_pix+1./Antenna_corrcoeff_earthcontribution_pix .*(alpha_pix.*(R_IWCT_pix-R_Eprime_pix)).*0.5.*(-cos(deg2rad(2*Antenna_position_earthview_pix))+cos(deg2rad(2*Antenna_position_spaceview_pix))); % Watch out! I swapped the signs of the cosines to "minus earthview" and "plus space view". This accounts for tha fact that the MHS angles are 180 at nadir, but the formula asks for theta=0 at nadir (acc. to AAPP_Documentation_NWPSAF-MF-UD-001_Science). AMSUB angles are rescaled to MHS ones.
+R_E(channel,fov,:)=R_Eprime_pix+1./Antenna_corrcoeff_earthcontribution_pix .*(alpha_pix.*(R_IWCT_pix-R_Eprime_pix)).*0.5.*(cos(deg2rad(2*Antenna_position_earthview_pix))-cos(deg2rad(2*Antenna_position_spaceview_pix))); 
 % apply bandcorrection factors for inversion as well
 Tb(channel,fov,:)=1/bandcorr_b(channel)*(invplanck(invcm2hz(wavenumber_central(channel)),R_E(channel,fov,:))-bandcorr_a(channel));
 end
