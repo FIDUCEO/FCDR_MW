@@ -1,0 +1,79 @@
+In FIDUCEO/FCDR_MW/FCDR_processing/ the set of functions and scripts is collected that are needed to process MW l1b data to FIDUCEO l1c FCDR.
+Note that atmlab is required.
+
+The only scripts that needs to be called by the FCDR producing user is 1. set_coeffs.m and 2.a) FCDR_generator if a certain month shall be processed 
+OR 2.b) run_batch_mission that creates a batch of monthly jobs for FCDR production.
+
+Overview of code
+_________________
+Here I present an overview of the used MATLAB scripts (S) and functions (F) for the FCDR production. Note that also some atmlab functions are used that might not be explicitly listed here (like invcm2hz, or time conversions). This document is rather meant as overview of the dependences and interactions of the newly coded FCDR production.
+
+If any constants that are set in the script “set_coeffs” are changed by the user, he has to re-run the script:
+
+set_coeffs (S)
+
+Then, all .mat files containing the constants are updated and usable for the processing to l1c.
+
+run_batch_mission(S) (used to run whole missions on thunder7)
+	calls:
+
+FCDR_generator (S)
+  MW_l1b_read_monthly (F) (uses atmlab dataset methods, marked in italic)
+	  find_granules_for_period (F)
+    satreaders.poes_radiometer_level1b (F)
+      read_MW_level1b (F)
+      read_MHS_allvar(F)
+	      read_MHS_header(F)
+        read_MHS_record(F)
+      read_AMSUB_allvar(F)
+        read_AMSUB_header(F)
+        read_AMSUB_record(F)
+      read_SSMT2_allvar(F)
+	      ssmt2_read(F)	
+	  doy2date(F) (by A. Booth)
+	  mills2hmsmill(F)
+ remove_duplicated_l1bdata (S)
+	RunLength_M(F)
+determine_EQcrossings (F)
+determine_data_gaps (F)
+process_FCDR (S)
+	chop_data_EQ2EQ (F)
+  setup_MHS_processing2l1c (S)/ setup_AMSUB_processing2l1c (S)/ setup_SSMT2_processing2l1c (S)
+	  fill_missing_scanlines (F)/ fill_missing_scanlines_SSMT2 (F)
+    doy2date(F) (by A. Booth)
+	  calculate_solarAndsatellite_azimuth_angle (S)
+	  calculate_AllanDeviation_DSV_IWCT_withoutQualflags (S)
+    mooncheck_processing (S)
+    qualitychecksDSV_allchn (S)
+      filter_plateausANDpeaks(F)
+    qualitychecksIWCT_allchn (S)
+      filter_plateausANDpeaks(F)
+    qualitychecksPRT_allsensors (S)
+      filter_plateausANDpeaks(F)
+    qualitychecksEarthview (S)
+      filter_plateausANDpeaks_earth(F)
+    calculate_AllanDeviation_DSV_IWCT_PRT (S)
+    setup_roll_average (S)
+	      unify_qualflags(F)
+    calculate_roll_average (S)
+    qualitychecksEarthLocation (S)
+    qualitychecksSpaceViewLocation (S)
+    qualitychecksIWCTViewLocation (S)
+prepare_empty_file (S)
+write_easyFCDR_orbitfile_MHS (S)/ write_easyFCDR_orbitfile_AMSUB(S)/ write_easyFCDR_orbitfile_SSMT2 (S)
+	change_type (F)
+	change_type_zero_nan(F)
+measurement_equation (S)
+	planck(F)
+  invplanck(F)
+uncertainty_propagation_optimized (S)
+	DplanckDf(F)
+  DplanckDT(F)
+  DinvplanckDrad(F)
+quality_flags_fromlevel1b (S)
+	fill_missing_scanlines(F)/ fill_missing_scanlines_SSMT2(F)
+quality_flags_setting_easyFCDR (S)
+add_RFI_uncertainty (S)
+write_easyFCDR_orbitfile_MHS (S) /write_easyFCDR_orbitfile_AMSUB (S) / write_easyFCDR_orbitfile_SSMT2 (S)
+  change_type (F) 
+	  change_type_zero_nan(F)
