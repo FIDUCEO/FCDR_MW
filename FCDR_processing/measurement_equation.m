@@ -41,11 +41,11 @@ R_IWCT=nan*ones(5,scanlinenumbers(end));
 R_CMB0=nan*ones(5,scanlinenumbers(end));
 R_CMB=nan*ones(5,scanlinenumbers(end));
 R_Sat=nan*ones(5,scanlinenumbers(end));
-R_MEprime=nan*ones(5,number_of_fovs,scanlinenumbers(end));
+%R_MEprime=nan*ones(5,number_of_fovs,scanlinenumbers(end));
 R_ME=nan*ones(5,number_of_fovs,scanlinenumbers(end));
 delta_R_pol=nan*ones(5,number_of_fovs,scanlinenumbers(end));
-% R_Eprime=nan*ones(5,number_of_fovs,scanlinenumbers(end));
- Tb_MEprime=nan*ones(5,number_of_fovs,scanlinenumbers(end));
+R_Eprime=nan*ones(5,number_of_fovs,scanlinenumbers(end));
+Tb_Eprime=nan*ones(5,number_of_fovs,scanlinenumbers(end));
 R_E=nan*ones(5,number_of_fovs,scanlinenumbers(end));
 Tb=nan*ones(5,number_of_fovs,scanlinenumbers(end));
 
@@ -90,38 +90,28 @@ for fov=1:number_of_fovs
     Antenna_position_earthview_pix=Antenna_position_earthview(fov,:);
     Antenna_position_spaceview_pix=Antenna_position_spaceview;
     
-R_MEprime(channel,fov,:)=R_IWCT_pix+(R_IWCT_pix-R_CMB_pix*ones(1,length(R_IWCT_pix)))./(countIWCT_av_pix-countDSV_av_pix).*(earthcounts_pix-countIWCT_av_pix)+nonlincoeff_pix.*(earthcounts_pix-countDSV_av_pix).*(earthcounts_pix-countIWCT_av_pix).*(R_IWCT_pix-R_CMB_pix*ones(1,length(R_IWCT_pix))).^2./(countIWCT_av_pix-countDSV_av_pix).^2;    
-R_MEprime_pix=squeeze(R_MEprime(channel,fov,:)).';
-delta_R_pol(channel,fov,:)=(alpha_pix.*(R_IWCT_pix-R_MEprime_pix)).*0.5.*(cos(deg2rad(2*Antenna_position_earthview_pix))-cos(deg2rad(2*Antenna_position_spaceview_pix)));
-delta_R_pol_pix=squeeze(delta_R_pol(channel,fov,:)).';
-
-R_ME(channel,fov,:)=R_MEprime_pix+delta_R_pol_pix;
+R_ME(channel,fov,:)=R_IWCT_pix+(R_IWCT_pix-R_CMB_pix*ones(1,length(R_IWCT_pix)))./(countIWCT_av_pix-countDSV_av_pix).*(earthcounts_pix-countIWCT_av_pix)+nonlincoeff_pix.*(earthcounts_pix-countDSV_av_pix).*(earthcounts_pix-countIWCT_av_pix).*(R_IWCT_pix-R_CMB_pix*ones(1,length(R_IWCT_pix))).^2./(countIWCT_av_pix-countDSV_av_pix).^2;    
 R_ME_pix=squeeze(R_ME(channel,fov,:)).';
 
-R_E(channel,fov,:)=1/Antenna_corrcoeff_earthcontribution_pix*(R_ME_pix-(1-Antenna_corrcoeff_earthcontribution_pix-(1-assumption)*g_Sat_pix)*R_CMB0_pix-(1-assumption)*g_Sat_pix*R_Sat_pix);%%%(1-Antenna_corrcoeff_earthview_pix) the variable assumption allows for switching between "using AAPP assumption R_pl=R_e" and "not using it, assume different R_pl".)
+% apply antenna pattern correction
+% compute REprime as radiance WITHOUT polaris. corr.
+R_Eprime(channel,fov,:)=1/Antenna_corrcoeff_earthcontribution_pix*(R_ME_pix-(1-Antenna_corrcoeff_earthcontribution_pix-(1-assumption)*g_Sat_pix)*R_CMB0_pix-(1-assumption)*g_Sat_pix*R_Sat_pix);%%%(1-Antenna_corrcoeff_earthview_pix) the variable assumption allows for switching between "using AAPP assumption R_pl=R_e" and "not using it, assume different R_pl".)
+R_Eprime_pix=squeeze(R_Eprime(channel,fov,:)).';
+
+%polarisation correction
+delta_R_pol(channel,fov,:)=(alpha_pix.*(R_IWCT_pix-R_Eprime_pix)).*0.5.*(cos(deg2rad(2*Antenna_position_earthview_pix))-cos(deg2rad(2*Antenna_position_spaceview_pix)));
+delta_R_pol_pix=squeeze(delta_R_pol(channel,fov,:)).';
+
+R_E(channel,fov,:)=R_Eprime_pix+delta_R_pol_pix;
 
 % apply bandcorrection factors for inversion as well
 % (AAPP seems to do this in AAPP7AAPP/src/preproc/libatovin/inbprc.F) 
 Tb(channel,fov,:)=1/bandcorr_b(channel)*(invplanck(invcm2hz(wavenumber_central(channel)),R_E(channel,fov,:))-bandcorr_a(channel));
-Tb_MEprime(channel,fov,:)=1/bandcorr_b(channel)*(invplanck(invcm2hz(wavenumber_central(channel)),R_MEprime(channel,fov,:))-bandcorr_a(channel));
+Tb_Eprime(channel,fov,:)=1/bandcorr_b(channel)*(invplanck(invcm2hz(wavenumber_central(channel)),R_Eprime(channel,fov,:))-bandcorr_a(channel));
 
 
 
 
-% R_Eprime(channel,fov,:)=1/Antenna_corrcoeff_earthcontribution_pix*(R_IWCT_pix+(R_IWCT_pix-R_CMB_pix*ones(1,length(R_IWCT_pix)))./(countIWCT_av_pix-countDSV_av_pix).*(earthcounts_pix-countIWCT_av_pix)+nonlincoeff_pix.*(earthcounts_pix-countDSV_av_pix).*(earthcounts_pix-countIWCT_av_pix).*(R_IWCT_pix-R_CMB_pix*ones(1,length(R_IWCT_pix))).^2./(countIWCT_av_pix-countDSV_av_pix).^2 -(1-Antenna_corrcoeff_earthcontribution_pix-(1-assumption)*g_Sat_pix)*R_CMB0_pix-(1-assumption)*g_Sat_pix*R_Sat_pix);%%%(1-Antenna_corrcoeff_earthview_pix) the variable assumption allows for switching between "using AAPP assumption R_pl=R_e" and "not using it, assume different R_pl".
-% % apply bandcorrection factors for inversion as well
-% Tb_Eprime(channel,fov,:)=1/bandcorr_b(channel)*(invplanck(invcm2hz(wavenumber_central(channel)),R_Eprime(channel,fov,:))-bandcorr_a(channel));
-% 
-% 
-% %measurement equation with polarization correction
-% 
-% alpha_pix=alpha(channel);
-% Antenna_position_earthview_pix=Antenna_position_earthview(fov,:);
-% Antenna_position_spaceview_pix=Antenna_position_spaceview;
-% R_Eprime_pix=squeeze(R_Eprime(channel,fov,:)).';
-% R_E(channel,fov,:)=R_Eprime_pix+1./Antenna_corrcoeff_earthcontribution_pix .*(alpha_pix.*(R_IWCT_pix-R_Eprime_pix)).*0.5.*(cos(deg2rad(2*Antenna_position_earthview_pix))-cos(deg2rad(2*Antenna_position_spaceview_pix))); 
-% % apply bandcorrection factors for inversion as well
-% Tb(channel,fov,:)=1/bandcorr_b(channel)*(invplanck(invcm2hz(wavenumber_central(channel)),R_E(channel,fov,:))-bandcorr_a(channel));
 end
 end
 

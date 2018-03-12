@@ -45,8 +45,8 @@ nanmatrix_sizechsclin=nan*ones(5,endofscanlines);
 
 % FIXME: need to set uncertainty for R_Eprime and Tb_Eprime here. Lets
 % assume 0.002 at first
-u_R_MEprime=0.002*R_MEprime;
-u_Tb_MEprime=0.002*Tb_MEprime;
+u_R_Eprime=0.002*R_Eprime;
+u_Tb_Eprime=0.002*Tb_Eprime;
 u_radiance_platform=0.1*mean(mean(R_E,3,'omitnan'),2,'omitnan'); % assume 10% of mean-Earth-Rad. (per channel) as uncertainty, i.e. about 10-20 K
 
 % calculate u_C_E here, as explained in FIXME NoisePerf. Manuscript (need the scene Tb for this, therefore calculate it
@@ -114,14 +114,14 @@ R_Sat_mat=bsxfun(@times,permute(R_Sat,[1 3 2]),dummy_matrix);
 alpha_mat=bsxfun(@times,permute(alpha,[2 1 3]),dummy_matrix);
 Antenna_position_earthview_mat=bsxfun(@times,permute(Antenna_position_earthview,[3 1 2]),dummy_matrix);
 Antenna_position_spaceview_mat=bsxfun(@times,permute(Antenna_position_spaceview,[1 3 2]),dummy_matrix);
-R_MEprime_mat=R_MEprime;
+R_Eprime_mat=R_Eprime;
 IWCTtemp_av_mat=bsxfun(@times,permute(IWCTtemp_av,[1 3 2]),dummy_matrix);
 dT_w_mat=bsxfun(@times,permute(dT_w,[1 3 2]),dummy_matrix);
 dT_c_mat=bsxfun(@times,permute(dT_c,[1 3 2]),dummy_matrix);
 bandcorr_a_mat=bsxfun(@times,permute(bandcorr_a,[1 3 2]),dummy_matrix);
 bandcorr_b_mat=bsxfun(@times,permute(bandcorr_b,[1 3 2]),dummy_matrix);
 wavenumber_central_mat=bsxfun(@times,permute(wavenumber_central,[1 3 2]),dummy_matrix);
-Tb_MEprime_mat=Tb_MEprime;
+Tb_Eprime_mat=Tb_Eprime;
 
 %expand uncertainties of effects
   u_chnfreq_mat=bsxfun(@times,permute(u_chnfreq,[1 3 2]),dummy_matrix);
@@ -137,7 +137,7 @@ Tb_MEprime_mat=Tb_MEprime;
   u_C_S_mat=bsxfun(@times,permute(u_C_S,[1 3 2]),dummy_matrix);
   u_nonlincoeff_mat=bsxfun(@times,permute(u_nonlincoeff,[1 3 2]),dummy_matrix);
   u_alpha_mat=bsxfun(@times,permute(u_alpha,[2 3 1]),dummy_matrix);
-  u_Tb_MEprime_mat=u_Tb_MEprime;
+  u_Tb_Eprime_mat=u_Tb_Eprime;
   u_Antenna_position_earthview_mat=bsxfun(@times,permute(u_Antenna_position_earthview,[3 1 2]),dummy_matrix);
   u_Antenna_position_spaceview_mat=bsxfun(@times,permute(u_Antenna_position_spaceview,[1 3 2]),dummy_matrix);
   u_Antenna_corrcoeff_earthcontribution_mat=bsxfun(@times,permute(u_Antenna_corrcoeff_earthcontribution,[1 2 3]),dummy_matrix);
@@ -216,30 +216,30 @@ u_rad_nonlincoeff=1/(Antenna_corrcoeff_earthcontribution_mat).*(earthcounts_mat-
 u_rad_T_CMB0=((-1/(Antenna_corrcoeff_earthcontribution_mat).* (earthcounts_mat-countIWCT_av_mat)./(countIWCT_av_mat-countDSV_av_mat).*bandcorr_b_mat.*DplanckDT(invcm2hz(wavenumber_central_mat), bandcorr_a_mat+bandcorr_b_mat.*(T_CMB0_mat+dT_c_mat)) .*(1+2*nonlincoeff_mat.*(earthcounts_mat-countDSV_av_mat).*(R_IWCT_mat-R_CMB_mat)./(countIWCT_av_mat-countDSV_av_mat)).*(1- alpha_mat./2 .*(cos(deg2rad(2*Antenna_position_earthview_mat))-cos(deg2rad(2*Antenna_position_spaceview_mat)))) -(1-Antenna_corrcoeff_earthcontribution_mat)./Antenna_corrcoeff_earthcontribution_mat).*bandcorr_b_mat.*DplanckDT(invcm2hz(wavenumber_central_mat), bandcorr_a_mat+bandcorr_b_mat.*(T_CMB0_mat)));
 
 % alpha Quotient of reflectivities 
-u_rad_alpha=1/(2*Antenna_corrcoeff_earthcontribution_mat).*(R_IWCT_mat-R_MEprime_mat).*(cos(deg2rad(2*Antenna_position_earthview_mat))-cos(deg2rad(2*Antenna_position_spaceview_mat)));
+u_rad_alpha=1/(2*Antenna_corrcoeff_earthcontribution_mat).*(R_IWCT_mat-R_Eprime_mat).*(cos(deg2rad(2*Antenna_position_earthview_mat))-cos(deg2rad(2*Antenna_position_spaceview_mat)));
 
 % Radiance of Earth scene in main beam, calculated without polarisation correction
-u_rad_R_MEprime=-alpha_mat./(2*Antenna_corrcoeff_earthcontribution_mat).*(cos(deg2rad(2*Antenna_position_earthview_mat))-cos(deg2rad(2*Antenna_position_spaceview_mat))) + 1/Antenna_corrcoeff_earthcontribution_mat;
+u_rad_R_Eprime=1-alpha_mat./2.*(cos(deg2rad(2*Antenna_position_earthview_mat))-cos(deg2rad(2*Antenna_position_spaceview_mat)));
 
 % Antenna position Space views
-u_rad_Antenna_position_spaceview=alpha_mat./Antenna_corrcoeff_earthcontribution_mat .* (R_IWCT_mat-R_MEprime_mat).* sin(deg2rad(2*Antenna_position_spaceview_mat));
+u_rad_Antenna_position_spaceview=alpha_mat./Antenna_corrcoeff_earthcontribution_mat .* (R_IWCT_mat-R_Eprime_mat).* sin(deg2rad(2*Antenna_position_spaceview_mat));
 
 % Antenna position Earth views
-u_rad_Antenna_position_earthview=-alpha_mat./Antenna_corrcoeff_earthcontribution_mat .* (R_IWCT_mat-R_MEprime_mat).* sin(deg2rad(2*Antenna_position_earthview_mat));
+u_rad_Antenna_position_earthview=-alpha_mat./Antenna_corrcoeff_earthcontribution_mat .* (R_IWCT_mat-R_Eprime_mat).* sin(deg2rad(2*Antenna_position_earthview_mat));
 
 % Antenna correction coefficients for Earth conntribution
-u_rad_Antenna_corrcoeff_earthcontribution=-1/Antenna_corrcoeff_earthcontribution_mat.^2.*(R_ME_mat-(1-Antenna_corrcoeff_earthcontribution_mat-(1-assumption).*g_Sat_mat).*R_CMB0_mat-(1-assumption).*g_Sat_mat.*R_Sat_mat);%-1/Antenna_corrcoeff_earthview_mat .*(R_E_mat-R_CMB0_mat);
+u_rad_Antenna_corrcoeff_earthcontribution=-1/Antenna_corrcoeff_earthcontribution_mat.^2.*(R_ME_mat-(1-Antenna_corrcoeff_earthcontribution_mat-(1-assumption).*g_Sat_mat).*R_CMB0_mat-(1-assumption).*g_Sat_mat.*R_Sat_mat).*(1- alpha_mat./2 .*(cos(deg2rad(2*Antenna_position_earthview_mat))-cos(deg2rad(2*Antenna_position_spaceview_mat))));%-1/Antenna_corrcoeff_earthview_mat .*(R_E_mat-R_CMB0_mat);
 
 
 % Antenna correction coefficients for Space contribution
-u_rad_Antenna_corrcoeff_spacecontribution=-1/Antenna_corrcoeff_earthcontribution_mat.*R_CMB0_mat;
+u_rad_Antenna_corrcoeff_spacecontribution=-1/Antenna_corrcoeff_earthcontribution_mat.*R_CMB0_mat.*(1- alpha_mat./2 .*(cos(deg2rad(2*Antenna_position_earthview_mat))-cos(deg2rad(2*Antenna_position_spaceview_mat))));
 
 % Antenna correction coefficients for Platform contribution
-u_rad_Antenna_corrcoeff_platformcontribution=-1/Antenna_corrcoeff_earthcontribution_mat.*((1-assumption).*R_Sat_mat);
+u_rad_Antenna_corrcoeff_platformcontribution=-1/Antenna_corrcoeff_earthcontribution_mat.*((1-assumption).*R_Sat_mat).*(1- alpha_mat./2 .*(cos(deg2rad(2*Antenna_position_earthview_mat))-cos(deg2rad(2*Antenna_position_spaceview_mat))));
 
 
 % Radiance of platform
-u_rad_radiance_platform=-g_Sat_mat./Antenna_corrcoeff_earthcontribution_mat;
+u_rad_radiance_platform=-g_Sat_mat./Antenna_corrcoeff_earthcontribution_mat.*(1- alpha_mat./2 .*(cos(deg2rad(2*Antenna_position_earthview_mat))-cos(deg2rad(2*Antenna_position_spaceview_mat))));
 
 
 
@@ -265,7 +265,7 @@ dTb_dRE=DinvplanckDrad(invcm2hz(wavenumber_central_mat),R_E_mat);
   u_btemps_C_S=dTb_dRE.*u_rad_C_S.*u_C_S_mat;
   u_btemps_nonlincoeff=dTb_dRE.*u_rad_nonlincoeff.*u_nonlincoeff_mat;
   u_btemps_alpha=dTb_dRE.*u_rad_alpha.*u_alpha_mat;
-  u_btemps_Tb_MEprime=abs(dTb_dRE.*u_rad_R_MEprime.*DplanckDT(invcm2hz(wavenumber_central_mat), Tb_MEprime_mat).*u_Tb_MEprime_mat);
+  u_btemps_Tb_Eprime=abs(dTb_dRE.*u_rad_R_Eprime.*DplanckDT(invcm2hz(wavenumber_central_mat), Tb_Eprime_mat).*u_Tb_Eprime_mat);
   u_btemps_Antenna_position_earthview=dTb_dRE.*u_rad_Antenna_position_earthview.*u_Antenna_position_earthview_mat;
   u_btemps_Antenna_position_spaceview=dTb_dRE.*u_rad_Antenna_position_spaceview.*u_Antenna_position_spaceview_mat;
   u_btemps_Antenna_corrcoeff_earthcontribution=abs(dTb_dRE.*u_rad_Antenna_corrcoeff_earthcontribution.*u_Antenna_corrcoeff_earthcontribution_mat);
@@ -318,7 +318,7 @@ u_common_btemps=sqrt(u_btemps_chnfreq.^2+u_btemps_bandcorr_a.^2+u_btemps_bandcor
 u_RFI_btemps=sqrt(u_btemps_C_S_RFI.^2+u_btemps_C_E_RFI.^2+u_btemps_C_IWCT_RFI.^2);
 
 
-u_total_btemps=sqrt(u_btemps_C_S.^2+u_btemps_C_IWCT.^2+u_btemps_C_E.^2+u_btemps_chnfreq.^2+u_btemps_bandcorr_a.^2+u_btemps_bandcorr_b.^2+u_btemps_T_IWCT.^2+u_btemps_T_IWCT_noise.^2+u_btemps_dT_w.^2+u_btemps_T_CMB0.^2+u_btemps_dT_c.^2+u_btemps_nonlincoeff.^2+u_btemps_alpha.^2+u_btemps_Tb_MEprime.^2+u_btemps_Antenna_position_earthview.^2+u_btemps_Antenna_position_spaceview.^2+u_btemps_Antenna_corrcoeff_earthcontribution.^2+u_btemps_Antenna_corrcoeff_spacecontribution.^2+u_btemps_Antenna_corrcoeff_platformcontribution.^2+u_btemps_radiance_of_platform.^2);
+u_total_btemps=sqrt(u_btemps_C_S.^2+u_btemps_C_IWCT.^2+u_btemps_C_E.^2+u_btemps_chnfreq.^2+u_btemps_bandcorr_a.^2+u_btemps_bandcorr_b.^2+u_btemps_T_IWCT.^2+u_btemps_T_IWCT_noise.^2+u_btemps_dT_w.^2+u_btemps_T_CMB0.^2+u_btemps_dT_c.^2+u_btemps_nonlincoeff.^2+u_btemps_alpha.^2+u_btemps_Tb_Eprime.^2+u_btemps_Antenna_position_earthview.^2+u_btemps_Antenna_position_spaceview.^2+u_btemps_Antenna_corrcoeff_earthcontribution.^2+u_btemps_Antenna_corrcoeff_spacecontribution.^2+u_btemps_Antenna_corrcoeff_platformcontribution.^2+u_btemps_radiance_of_platform.^2);
 
 %FIXME: introduce flag that is set if any of the (during processing evaluated) uncertainties is exactly
 %zero. Then, "the uncertainty information is not complete since the uncertainty information for at least
