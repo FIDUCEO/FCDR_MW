@@ -3,13 +3,13 @@
 
 % FCDR generator
 
-
+function FCDR_generator(sat,sen,year,chosen_month)
 
 % Choose satellite, sensor, year and month
-sat='noaa19';
-sen='mhs';
-year=2011;
-chosen_month=11;
+% sat='noaa18';
+% sen='mhs';
+% year=2014;
+% chosen_month=11;
 
 
 

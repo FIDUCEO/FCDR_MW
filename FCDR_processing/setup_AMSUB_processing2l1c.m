@@ -781,6 +781,7 @@ calculate_solarAndsatellite_azimuth_angle
                            
                            % UNCERTAINTY
                            u_Antenna_position_earthview=0.04*ones(size(Antenna_position_earthview)); %degree. stdev is about 0.0353 for one view in an orbit of METOPB
+                           u_Antenna_position_earthview_syst=0.1*ones(size(Antenna_position_earthview)); %degree; systematic uncertainty estimated from pointing errors along A axis acc. to pre-launch test MatraMarconi
                            
                            
                            %Antenna_position_spaceview
@@ -807,6 +808,7 @@ calculate_solarAndsatellite_azimuth_angle
                            
                            % UNCERTAINTY
                            u_Antenna_position_spaceview=0.02*ones(size(Antenna_position_spaceview)); %degree. 0.2 deg as uncertainty is quite large! stdev is about 0.0225 for one view in an orbit of METOPB
+                           u_Antenna_position_spaceview_syst=0.1*ones(size(Antenna_position_spaceview));%degree; systematic uncertainty estimated from pointing errors along A axis acc. to pre-launch test MatraMarconi
                            
                            
                            

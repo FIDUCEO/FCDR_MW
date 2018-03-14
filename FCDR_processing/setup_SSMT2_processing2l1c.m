@@ -743,6 +743,7 @@ time_EpochSecond=round((InputDate-UnixOrigin)*86400);
                            
                            % UNCERTAINTY
                            u_Antenna_position_earthview=0.5*ones(size(Antenna_position_earthview)); %degree. No uncertainty estimate available. Use precision 0.5deg as estimate.
+                           u_Antenna_position_earthview_syst=0.1*ones(size(Antenna_position_earthview)); %degree; systematic uncertainty estimated from pointing errors along A axis acc. to pre-launch test MatraMarconi from MHS
                            
                            
 %                            %Antenna_position_spaceview
@@ -772,6 +773,7 @@ time_EpochSecond=round((InputDate-UnixOrigin)*86400);
                            
                            % UNCERTAINTY
                            u_Antenna_position_spaceview=0.5*ones(size(Antenna_position_spaceview)); %degree.No uncertainty estimate available. Use precision 0.5deg as estimate.
+                           u_Antenna_position_spaceview_syst=0.1*ones(size(Antenna_position_spaceview));%degree; systematic uncertainty estimated from pointing errors along A axis acc. to pre-launch test MatraMarconi from MHS
                            
                            
                                                      

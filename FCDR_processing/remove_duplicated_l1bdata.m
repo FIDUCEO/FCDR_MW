@@ -4,8 +4,9 @@
 
 
 % look for reappearances of the endtime of each file:
-nfiles=10;%length(file_list);
+nfiles=length(file_list);
 files_to_remove=[];
+scanlines_to_remove=[];
 
 for k=1:nfiles
 disp(['File ',num2str(k),' of ',num2str(nfiles)])
@@ -91,12 +92,23 @@ disp(['File ',num2str(k),' of ',num2str(nfiles)])
                 end
 
                 % remove all lines between the endline of the file k and next_file_start_line
-                f = fieldnames(monthly_data_record);
-                for ifield=1:numel(f)
-                    tmp=monthly_data_record.(f{ifield});
-                    tmp(:,index_last_line_of_file+1:next_file_start_line-1)=[];
-                    monthly_data_record.(f{ifield})=tmp;
-                end
+%                 f = fieldnames(monthly_data_record);
+%                 for ifield=1:numel(f)
+% %                     tmp=monthly_data_record.(f{ifield});
+% %                     tmp(:,index_last_line_of_file+1:next_file_start_line-1)=[];
+% %                     monthly_data_record.(f{ifield})=tmp;
+% %                     clear tmp
+%                     monthly_data_record.(f{ifield})=[monthly_data_record.(f{ifield})(:,1:index_last_line_of_file) monthly_data_record.(f{ifield})(:,next_file_start_line:end)];
+%                 end
+                
+                % different approach to delete scanlines:
+                % collect scanlines that should be removed, and always
+                % append the ones to be removed from this itertaion to the
+                % last. Idea: remove the whole set of collected scan lines
+                % outside the loop over the files.
+                scanlinestoremove_thisfile=[index_last_line_of_file+1 : next_file_start_line-1];
+                scanlines_to_remove=[scanlines_to_remove scanlinestoremove_thisfile];
+                
             end
             
     else     
@@ -105,6 +117,16 @@ disp(['File ',num2str(k),' of ',num2str(nfiles)])
         % go to next file.
             
     end
+end
+
+% remove all scanlines that have been identified for deletion
+% This needs to be done BEFORE the removing of complete files (see below)
+f = fieldnames(monthly_data_record);
+for ifield=1:numel(f)
+    tmp=monthly_data_record.(f{ifield});
+    tmp(:,scanlines_to_remove)=[];
+    monthly_data_record.(f{ifield})=tmp;
+
 end
 
 % remove all files that had duplicate times but were not the longest ones

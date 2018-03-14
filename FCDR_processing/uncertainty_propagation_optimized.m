@@ -140,6 +140,8 @@ Tb_Eprime_mat=Tb_Eprime;
   u_Tb_Eprime_mat=u_Tb_Eprime;
   u_Antenna_position_earthview_mat=bsxfun(@times,permute(u_Antenna_position_earthview,[3 1 2]),dummy_matrix);
   u_Antenna_position_spaceview_mat=bsxfun(@times,permute(u_Antenna_position_spaceview,[1 3 2]),dummy_matrix);
+  u_Antenna_position_earthview_syst_mat=bsxfun(@times,permute(u_Antenna_position_earthview_syst,[3 1 2]),dummy_matrix);
+  u_Antenna_position_spaceview_syst_mat=bsxfun(@times,permute(u_Antenna_position_spaceview_syst,[1 3 2]),dummy_matrix);
   u_Antenna_corrcoeff_earthcontribution_mat=bsxfun(@times,permute(u_Antenna_corrcoeff_earthcontribution,[1 2 3]),dummy_matrix);
   u_Antenna_corrcoeff_spacecontribution_mat=bsxfun(@times,permute(u_Antenna_corrcoeff_spacecontribution,[1 2 3]),dummy_matrix);
   u_Antenna_corrcoeff_platformcontribution_mat=bsxfun(@times,permute(u_Antenna_corrcoeff_platformcontribution,[1 2 3]),dummy_matrix);
@@ -268,6 +270,8 @@ dTb_dRE=DinvplanckDrad(invcm2hz(wavenumber_central_mat),R_E_mat);
   u_btemps_Tb_Eprime=abs(dTb_dRE.*u_rad_R_Eprime.*DplanckDT(invcm2hz(wavenumber_central_mat), Tb_Eprime_mat).*u_Tb_Eprime_mat);
   u_btemps_Antenna_position_earthview=dTb_dRE.*u_rad_Antenna_position_earthview.*u_Antenna_position_earthview_mat;
   u_btemps_Antenna_position_spaceview=dTb_dRE.*u_rad_Antenna_position_spaceview.*u_Antenna_position_spaceview_mat;
+  u_btemps_Antenna_position_earthview_syst=dTb_dRE.*u_rad_Antenna_position_earthview.*u_Antenna_position_earthview_syst_mat;
+  u_btemps_Antenna_position_spaceview_syst=dTb_dRE.*u_rad_Antenna_position_spaceview.*u_Antenna_position_spaceview_syst_mat;
   u_btemps_Antenna_corrcoeff_earthcontribution=abs(dTb_dRE.*u_rad_Antenna_corrcoeff_earthcontribution.*u_Antenna_corrcoeff_earthcontribution_mat);
   u_btemps_Antenna_corrcoeff_spacecontribution=abs(dTb_dRE.*u_rad_Antenna_corrcoeff_spacecontribution.*u_Antenna_corrcoeff_spacecontribution_mat);
   u_btemps_Antenna_corrcoeff_platformcontribution=abs(dTb_dRE.*u_rad_Antenna_corrcoeff_platformcontribution.*u_Antenna_corrcoeff_platformcontribution_mat);
@@ -313,12 +317,12 @@ u_nonrandom_btemps=sqrt(u_btemps_C_S.^2+u_btemps_C_IWCT.^2+u_btemps_Antenna_posi
 % u_btemps_Antenna_corrcoeff_spacecontribution
 % u_btemps_Antenna_corrcoeff_platformcontribution
 % u_btemps_radiance_of_platform
-u_common_btemps=sqrt(u_btemps_chnfreq.^2+u_btemps_bandcorr_a.^2+u_btemps_bandcorr_b.^2+u_btemps_T_IWCT.^2+u_btemps_dT_w.^2+u_btemps_T_CMB0.^2+u_btemps_dT_c.^2+u_btemps_nonlincoeff.^2+u_btemps_alpha.^2+u_btemps_Antenna_corrcoeff_earthcontribution.^2+u_btemps_Antenna_corrcoeff_spacecontribution.^2+u_btemps_Antenna_corrcoeff_platformcontribution.^2+u_btemps_radiance_of_platform.^2);
+u_common_btemps=sqrt(u_btemps_chnfreq.^2+u_btemps_bandcorr_a.^2+u_btemps_bandcorr_b.^2+u_btemps_T_IWCT.^2+u_btemps_dT_w.^2+u_btemps_T_CMB0.^2+u_btemps_dT_c.^2+u_btemps_nonlincoeff.^2+u_btemps_alpha.^2+u_btemps_Antenna_corrcoeff_earthcontribution.^2+u_btemps_Antenna_corrcoeff_spacecontribution.^2+u_btemps_Antenna_corrcoeff_platformcontribution.^2+u_btemps_radiance_of_platform.^2+u_btemps_Antenna_position_earthview_syst.^2+u_btemps_Antenna_position_spaceview_syst.^2);
 
 u_RFI_btemps=sqrt(u_btemps_C_S_RFI.^2+u_btemps_C_E_RFI.^2+u_btemps_C_IWCT_RFI.^2);
 
 
-u_total_btemps=sqrt(u_btemps_C_S.^2+u_btemps_C_IWCT.^2+u_btemps_C_E.^2+u_btemps_chnfreq.^2+u_btemps_bandcorr_a.^2+u_btemps_bandcorr_b.^2+u_btemps_T_IWCT.^2+u_btemps_T_IWCT_noise.^2+u_btemps_dT_w.^2+u_btemps_T_CMB0.^2+u_btemps_dT_c.^2+u_btemps_nonlincoeff.^2+u_btemps_alpha.^2+u_btemps_Tb_Eprime.^2+u_btemps_Antenna_position_earthview.^2+u_btemps_Antenna_position_spaceview.^2+u_btemps_Antenna_corrcoeff_earthcontribution.^2+u_btemps_Antenna_corrcoeff_spacecontribution.^2+u_btemps_Antenna_corrcoeff_platformcontribution.^2+u_btemps_radiance_of_platform.^2);
+%u_total_btemps=sqrt(u_btemps_C_S.^2+u_btemps_C_IWCT.^2+u_btemps_C_E.^2+u_btemps_chnfreq.^2+u_btemps_bandcorr_a.^2+u_btemps_bandcorr_b.^2+u_btemps_T_IWCT.^2+u_btemps_T_IWCT_noise.^2+u_btemps_dT_w.^2+u_btemps_T_CMB0.^2+u_btemps_dT_c.^2+u_btemps_nonlincoeff.^2+u_btemps_alpha.^2+u_btemps_Tb_Eprime.^2+u_btemps_Antenna_position_earthview.^2+u_btemps_Antenna_position_spaceview.^2+u_btemps_Antenna_corrcoeff_earthcontribution.^2+u_btemps_Antenna_corrcoeff_spacecontribution.^2+u_btemps_Antenna_corrcoeff_platformcontribution.^2+u_btemps_radiance_of_platform.^2);
 
 %FIXME: introduce flag that is set if any of the (during processing evaluated) uncertainties is exactly
 %zero. Then, "the uncertainty information is not complete since the uncertainty information for at least

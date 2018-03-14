@@ -87,10 +87,16 @@ moon_global_donotuse=zeros(length(scanlinenumbers),1);
 flag_moonintrusionfound=0;
 indices=[];
 
+% put nameoffile into cell array, especially if only single file used.
+if length(hdrinfo.dataset_name)==1
+    nameoffile_moon{1}=nameoffile;
+else
+    nameoffile_moon=nameoffile;
+end
     
     for numfil=1:length(hdrinfo.dataset_name)
 
-    logfilename = char(strcat('/scratch/uni/u237/user_data/mprange/cl_archive_files/',sat,'/',num2str(year),'/',sen,'cl_',nameoffile{numfil},'.log'));
+    logfilename = char(strcat('/scratch/uni/u237/user_data/mprange/cl_archive_files/',sat,'/',num2str(year),'/',sen,'cl_',nameoffile_moon{numfil},'.log'));
 
 
     moonfile=fileread(logfilename);
