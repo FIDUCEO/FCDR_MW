@@ -30,23 +30,21 @@ if strcmp(sen,'mhs')
         %% set up and processing
         disp('...setup and processing...')
         
-        %try
+        try
         setup_MHS_processing2l1c
         disp(hdrinfo.dataset_name)
         %setup_Eq2Eq_fullFCDR_uncertproc_MHS_v2_sensitivitystudy
-%         catch ME
-%             disp('%%%%% ERROR MESSAGE FROM SETUP SCRIPT %%%%%')
-%             ME.message
-%             disp('Error in ')
-%             ME.stack.name
-%             disp('in lines')
-%             ME.stack.line
-%             disp('generate_FCDR: Error in setup-script. No processing possible. Continue with next orbit.')
-%             disp('%%%%% END: error message from setup script %%%%%')
-% 
-%             nEQfile=nEQfile+1; %normal increase of nEQfile by one
-%             continue
-%         end
+        catch ME
+            switch ME.identifier
+                case {'fill_missing_scanlines:timejump_bw','fill_missing_scanlines:timejump_toolarge'}
+                    disp(['Warning: file ', num2str(nEQfile), ' Error.' ])
+
+                    nEQfile=nEQfile+1; %normal increase of nEQfile by one
+                    continue
+                otherwise
+                    ME.rethrow();
+            end
+         end
 
 
 
@@ -131,23 +129,21 @@ elseif strcmp(sen,'amsub')
         %% set up and processing
         disp('...setup and processing...')
         
-        %try
+        try
         setup_AMSUB_processing2l1c
         disp(hdrinfo.dataset_name)
         
-%         catch ME
-%             disp('%%%%% ERROR MESSAGE FROM SETUP SCRIPT %%%%%')
-%             ME.message
-%             disp('Error in ')
-%             ME.stack.name
-%             disp('in lines')
-%             ME.stack.line
-%             disp('generate_FCDR: Error in setup-script. No processing possible. Continue with next orbit.')
-%             disp('%%%%% END: error message from setup script %%%%%')
-% 
-%             nEQfile=nEQfile+1; %normal increase of nEQfile by one
-%             continue
-%         end
+        catch ME
+            switch ME.identifier
+                case {'fill_missing_scanlines:timejump_bw','fill_missing_scanlines:timejump_toolarge'}
+                    disp(['Warning: file ', num2str(nEQfile), ' Error.' ])
+
+                    nEQfile=nEQfile+1; %normal increase of nEQfile by one
+                    continue
+                otherwise
+                    ME.rethrow();
+            end
+         end
 
 
 
@@ -232,23 +228,22 @@ elseif strcmp(sen,'ssmt2')
         %% set up and processing
         disp('...setup and processing...')
         
-        %try
+        try
         setup_SSMT2_processing2l1c
         disp(hdrinfo.dataset_name)
         
-%         catch ME
-%             disp('%%%%% ERROR MESSAGE FROM SETUP SCRIPT %%%%%')
-%             ME.message
-%             disp('Error in ')
-%             ME.stack.name
-%             disp('in lines')
-%             ME.stack.line
-%             disp('generate_FCDR: Error in setup-script. No processing possible. Continue with next orbit.')
-%             disp('%%%%% END: error message from setup script %%%%%')
-% 
-%             nEQfile=nEQfile+1; %normal increase of nEQfile by one
-%             continue
-%         end
+        catch ME
+            switch ME.identifier
+                case {'fill_missing_scanlines_SSMT2:timejump_bw','fill_missing_scanlines_SSMT2:timejump_toolarge'}
+                    disp(['Warning: file ', num2str(nEQfile), ' Error.' ])
+
+                    nEQfile=nEQfile+1; %normal increase of nEQfile by one
+                    continue
+                otherwise
+                    disp('here')
+                    ME.rethrow();
+            end
+         end
 
 
 

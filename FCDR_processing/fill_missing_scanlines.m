@@ -42,6 +42,11 @@ diffscnlintime=diff(timevec);
 sum_jumpbw=0;%initialize sum of jumped scnlin with zero
 
 number_of_scnlinwithjumptime_bw=find(diffscnlintime<-2680 & abs(diffscnlintime)<86300000); %abs(diffscnlintime)<86300000 to exclude the case of jump back in time at change of day (change of day is about 86400000)
+
+assert(isempty(number_of_scnlinwithjumptime_bw),...
+	'fill_missing_scanlines:timejump_bw',...
+    'Time jump backward detected.')
+
 for i=length(number_of_scnlinwithjumptime_bw):-1:1
 
 numtime_bw=number_of_scnlinwithjumptime_bw(i);
@@ -109,6 +114,10 @@ numtime=number_of_scnlinwithjumptime(i);
 %jumplines=diffscnlin(num); %how many lines are skipped
 scanline_jumptime=numtime+1;
 jumptime=diffscnlintime(numtime); %by how much does the time jump?
+
+assert(jumptime<6128*1000,...
+	'fill_missing_scanlines:timejump_toolarge',...
+    'Time jump forward larger than one orbit detected.')
 
 number_skipped_scnlin=round(jumptime*0.001*3/8); %how many scancycles. i.e. scanlines are skipped according to time-jump?
 jump=number_skipped_scnlin;
