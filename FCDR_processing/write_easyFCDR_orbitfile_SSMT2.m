@@ -59,9 +59,9 @@ ymdhms_end=[num2str( vectorenddate(1), '%02i'),num2str( vectorenddate(2), '%02i'
 %%filenamenew=['/scratch/uni/u237/user_data/ihans/FCDR/v0.3/easy/',sat,'/',num2str( vectorstartdate(1), '%02i'),'/',num2str( vectorstartdate(2), '%02i'),'/',num2str( vectorstartdate(3), '%02i'),'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v00.3_fv00.3','.nc'];
 %%filenamenew=['/scratch/uni/u237/user_data/ihans/FCDR/metopb_mhs_forGaiaClim/easy/',sat,'/',num2str( vectorstartdate(1), '%02i'),'/',num2str( vectorstartdate(2), '%02i'),'/',num2str( vectorstartdate(3), '%02i'),'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v00.3_fv00.3','.nc'];
 %filename for FCDR generation
-filenamenew=['/scratch/uni/u237/users/ihans/FIDUCEO_testdata/',selectsatellite,'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v2.0_fv1.1.3','.nc'];
-%filenamenew=['/scratch/uni/u237/user_data/ihans/FCDR/easy/v1_Xfv1_1_3/',selectsatellite,'/',num2str( vectorstartdate(1), '%02i'),'/',num2str( vectorstartdate(2), '%02i'),'/',num2str( vectorstartdate(3), '%02i'),'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v1.X_fv1.1.3','.nc'];
-%filenamenew=['/scratch/uni/u237/user_data/ihans/FCDR/easy/harmonisation_test/',selectsatellite,'/',num2str( vectorstartdate(1), '%02i'),'/',num2str( vectorstartdate(2), '%02i'),'/',num2str( vectorstartdate(3), '%02i'),'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v1.X_fv1.1.3','.nc'];
+%filenamenew=['/scratch/uni/u237/users/ihans/FIDUCEO_testdata/',selectsatellite,'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v2.X_fv1.1.3','.nc'];
+%filenamenew=['/scratch/uni/u237/user_data/ihans/FCDR/easy/v2fv1_1_3/',selectsatellite,'/',num2str( vectorstartdate(1), '%02i'),'/',num2str( vectorstartdate(2), '%02i'),'/',num2str( vectorstartdate(3), '%02i'),'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v2.X_fv1.1.3','.nc'];
+filenamenew=['/scratch/uni/u237/user_data/ihans/FCDR/easy/harmonisation_test_FCDRv2/',selectsatellite,'/',num2str( vectorstartdate(1), '%02i'),'/',num2str( vectorstartdate(2), '%02i'),'/',num2str( vectorstartdate(3), '%02i'),'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v2.X_fv1.1.3','.nc'];
 %filenamenew=['/scratch/uni/u237/users/ihans/FIDUCEO_testdata/sensitivity_study/',effect,'/',selectsatellite,'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v1.0_fv1.0_',effect,'_',value,'.nc'];
 
  % 
@@ -139,8 +139,8 @@ u_common_btemps(:,:,end-3:end)=nan;
           'Datatype','uint16','Format','netcdf4','FillValue',fillvaluint8,'DeflateLevel',defl_level,'ChunkSize',[chunkpix chunkline]) % I used fillvalue -1 since this means fillvaluint8 in uint8 and therefore all 8 bit to "on" which is not very likely to happen in reality
 
 % not yet available for SSMT2
-%   nccreate(filenamenew,'/quality_scanline_bitmask','Dimensions',{'y',scanlinedimension},...
-%           'Datatype','uint8','Format','netcdf4','FillValue',fillvaluint8,'DeflateLevel',defl_level,'ChunkSize',[chunkline])    
+  nccreate(filenamenew,'/quality_scanline_bitmask','Dimensions',{'y',scanlinedimension},...
+          'Datatype','uint8','Format','netcdf4','FillValue',fillvaluint8,'DeflateLevel',defl_level,'ChunkSize',[chunkline])    
 
 
   nccreate(filenamenew,'/quality_issue_pixel_Ch1_bitmask','Dimensions',{'x',28,'y',scanlinedimension},...
@@ -330,8 +330,8 @@ u_common_btemps(:,:,end-3:end)=nan;
   ncwrite(filenamenew,'/quality_pixel_bitmask',uint16(quality_pixel_bitmask))
  
 
-%not yet available for SSMT2
- %  ncwrite(filenamenew,'/quality_scanline_bitmask',uint8(quality_scanline_bitmask))
+%not yet available for SSMT2: therefore set the zeros to nan
+   ncwrite(filenamenew,'/quality_scanline_bitmask',change_type_zero_nan('uint8',quality_scanline_bitmask))
 
   ncwrite(filenamenew,'/quality_issue_pixel_Ch1_bitmask',uint8(quality_issue_pixel_Ch1_bitmask))
   ncwrite(filenamenew,'/quality_issue_pixel_Ch2_bitmask',uint8(quality_issue_pixel_Ch2_bitmask))
@@ -438,7 +438,7 @@ u_common_btemps(:,:,end-3:end)=nan;
   
   
   %% write attributes
- ncwriteatt(filenamenew,'/','Conventions',['tbd']); %setting these conventions to CF-1.6 makes geolocation for Panoply impossible. Probably since CF conventions require a certain array for Lat and Lon: lat(lat), lon(lon), not 2dimensional!
+ ncwriteatt(filenamenew,'/','Conventions',['CF-1.6']); %'tbd' %setting these conventions to CF-1.6 makes geolocation for Panoply impossible (MUST include _CoordinateAxisType Lat in attributes, then it works). Probably since CF conventions require a certain array for Lat and Lon: lat(lat), lon(lon), not 2dimensional!
  ncwriteatt(filenamenew,'/','institution',['Universitaet Hamburg']);
  stringname='';
 for kfile=1:length(hdrinfo.dataset_name)
@@ -521,12 +521,12 @@ ncwriteatt(filenamenew,'/','instrument',[sen]);
     'susp_calib_prt susp_calib_moon_intrusion ']);
 
 % Sensor Specific flags
-% % scanline specific
-%  ncwriteatt(filenamenew,'/quality_scanline_bitmask','standard_name',['status_flag']); %read out as dec2bin(typecast(int8(qual_scnlin_bitmask),'uint8'),8)
-%  ncwriteatt(filenamenew,'/quality_scanline_bitmask','long_name',['Bitmask for quality per scanline']); %read out as dec2bin(typecast(int8(qual_scnlin_bitmask),'uint8'),8)
-%  ncwriteatt(filenamenew,'/quality_scanline_bitmask','flag_masks',['1, 2, 4, 8, 16, 32']); 
-%  ncwriteatt(filenamenew,'/quality_scanline_bitmask','flag_meanings',['STX1_transmitter_on STX2_transmitter_on STX3_transmitter_on '...
-%      'STX4_transmitter_on SARR_A_transmitter_on SARR_B_transmitter_on']);
+% scanline specific
+ ncwriteatt(filenamenew,'/quality_scanline_bitmask','standard_name',['status_flag']); %read out as dec2bin(typecast(int8(qual_scnlin_bitmask),'uint8'),8)
+ ncwriteatt(filenamenew,'/quality_scanline_bitmask','long_name',['Bitmask for quality per scanline']); %read out as dec2bin(typecast(int8(qual_scnlin_bitmask),'uint8'),8)
+ ncwriteatt(filenamenew,'/quality_scanline_bitmask','flag_masks',['1, 2, 4, 8, 16, 32']); 
+ ncwriteatt(filenamenew,'/quality_scanline_bitmask','flag_meanings',['STX1_transmitter_on STX2_transmitter_on STX3_transmitter_on '...
+     'STX4_transmitter_on SARR_A_transmitter_on SARR_B_transmitter_on']);
 
 
  
@@ -566,15 +566,20 @@ ncwriteatt(filenamenew,'/','instrument',[sen]);
  ncwriteatt(filenamenew,'/latitude','standard_name',['latitude']);
  ncwriteatt(filenamenew,'/latitude','long_name',['latitude']);
  ncwriteatt(filenamenew,'/latitude','units',['degree north']);
- ncwriteatt(filenamenew,'/latitude','scale_factor',scfac_latlon); %FIXME: need to adapt to smallest uncertainty!
+ ncwriteatt(filenamenew,'/latitude','_CoordinateAxisType',['Lat']);
+ ncwriteatt(filenamenew,'/latitude','scale_factor',scfac_latlon); 
  ncwriteatt(filenamenew,'/latitude','description',['Latitude for each pixel in every scanline.']);
  
 
  ncwriteatt(filenamenew,'/longitude','standard_name',['longitude']);
  ncwriteatt(filenamenew,'/longitude','long_name',['longitude']);
- ncwriteatt(filenamenew,'/longitude','units',['degree east']);
- ncwriteatt(filenamenew,'/longitude','scale_factor',scfac_latlon); %FIXME: need to adapt to smallest uncertainty!
+ ncwriteatt(filenamenew,'/longitude','units',['degree east']); 
+ ncwriteatt(filenamenew,'/longitude','_CoordinateAxisType',['Lon']);
+ ncwriteatt(filenamenew,'/longitude','scale_factor',scfac_latlon); 
  ncwriteatt(filenamenew,'/longitude','description',['Longitude for each pixel in every scanline.']);
+ 
+
+ 
  
 % No angles given for SSMT2
 %  ncwriteatt(filenamenew,'/Satellite_azimuth_angle','long_name',['Satellite_azimuth_angle']);
@@ -611,35 +616,35 @@ ncwriteatt(filenamenew,'/','instrument',[sen]);
  ncwriteatt(filenamenew,'/Ch1_BT','long_name',['channel1-183.31pm3GHz_toa_brightness_temperature']);
  ncwriteatt(filenamenew,'/Ch1_BT','units',['K']);
  ncwriteatt(filenamenew,'/Ch1_BT','scale_factor',scfac_bt); %FIXME: need to adapt to smallest uncertainty!
- ncwriteatt(filenamenew,'/Ch1_BT','description',['channel 1 brightness temperature per view (x) and scanline (y)']);
+ ncwriteatt(filenamenew,'/Ch1_BT','description',['channel 1 brightness temperature per view (x) and scanline (y). This channel corresponds to AMSU-B Ch19.']);
  
  
  ncwriteatt(filenamenew,'/Ch2_BT','standard_name',['toa_brightness_temperature']);
  ncwriteatt(filenamenew,'/Ch2_BT','long_name',['channel2-183.31pm1GHz_toa_brightness_temperature']);
  ncwriteatt(filenamenew,'/Ch2_BT','units',['K']);
  ncwriteatt(filenamenew,'/Ch2_BT','scale_factor',scfac_bt); %FIXME: need to adapt to smallest uncertainty!
- ncwriteatt(filenamenew,'/Ch2_BT','description',['channel 2 brightness temperature per view (x) and scanline (y)']);
+ ncwriteatt(filenamenew,'/Ch2_BT','description',['channel 2 brightness temperature per view (x) and scanline (y). This channel corresponds to AMSU-B Ch18.']);
  
  
  ncwriteatt(filenamenew,'/Ch3_BT','standard_name',['toa_brightness_temperature']);
  ncwriteatt(filenamenew,'/Ch3_BT','long_name',['channel3-183.31pm7GHz_toa_brightness_temperature']);
  ncwriteatt(filenamenew,'/Ch3_BT','units',['K']);
  ncwriteatt(filenamenew,'/Ch3_BT','scale_factor',scfac_bt); %FIXME: need to adapt to smallest uncertainty!
- ncwriteatt(filenamenew,'/Ch3_BT','description',['channel 3 brightness temperature per view (x) and scanline (y)']);
+ ncwriteatt(filenamenew,'/Ch3_BT','description',['channel 3 brightness temperature per view (x) and scanline (y). This channel corresponds to AMSU-B Ch20.']);
  
 
  ncwriteatt(filenamenew,'/Ch4_BT','standard_name',['toa_brightness_temperature']);
  ncwriteatt(filenamenew,'/Ch4_BT','long_name',['channel4-91.665pm1.25GHz_toa_brightness_temperature']);
  ncwriteatt(filenamenew,'/Ch4_BT','units',['K']);
  ncwriteatt(filenamenew,'/Ch4_BT','scale_factor',scfac_bt); %FIXME: need to adapt to smallest uncertainty!
- ncwriteatt(filenamenew,'/Ch4_BT','description',['channel 4 brightness temperature per view (x) and scanline (y)']);
+ ncwriteatt(filenamenew,'/Ch4_BT','description',['channel 4 brightness temperature per view (x) and scanline (y).This channels frequency is close to AMSU-B Ch16s frequency..']);
  
  
  ncwriteatt(filenamenew,'/Ch5_BT','standard_name',['toa_brightness_temperature']);
  ncwriteatt(filenamenew,'/Ch5_BT','long_name',['channel5-150.0pm1.25GHz_toa_brightness_temperature']);
  ncwriteatt(filenamenew,'/Ch5_BT','units',['K']);
  ncwriteatt(filenamenew,'/Ch5_BT','scale_factor',scfac_bt); %FIXME: need to adapt to smallest uncertainty!
- ncwriteatt(filenamenew,'/Ch5_BT','description',['channel 5 brightness temperature per view (x) and scanline (y)']);
+ ncwriteatt(filenamenew,'/Ch5_BT','description',['channel 5 brightness temperature per view (x) and scanline (y). This channel corresponds to AMSU-B Ch17.']);
  
  % UNCERTAINTIES
  

@@ -59,9 +59,9 @@ ymdhms_end=[num2str( vectorenddate(1), '%02i'),num2str( vectorenddate(2), '%02i'
 %%filenamenew=['/scratch/uni/u237/user_data/ihans/FCDR/v0.3/easy/',sat,'/',num2str( vectorstartdate(1), '%02i'),'/',num2str( vectorstartdate(2), '%02i'),'/',num2str( vectorstartdate(3), '%02i'),'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v00.3_fv00.3','.nc'];
 %%filenamenew=['/scratch/uni/u237/user_data/ihans/FCDR/metopb_mhs_forGaiaClim/easy/',sat,'/',num2str( vectorstartdate(1), '%02i'),'/',num2str( vectorstartdate(2), '%02i'),'/',num2str( vectorstartdate(3), '%02i'),'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v00.3_fv00.3','.nc'];
 %filename for FCDR generation
-%filenamenew=['/scratch/uni/u237/users/ihans/FIDUCEO_testdata/',selectsatellite,'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v2.0_fv1.1.3','.nc'];
-filenamenew=['/scratch/uni/u237/user_data/ihans/FCDR/easy/v2fv1_1_3/',selectsatellite,'/',num2str( vectorstartdate(1), '%02i'),'/',num2str( vectorstartdate(2), '%02i'),'/',num2str( vectorstartdate(3), '%02i'),'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v2.0_fv1.1.3','.nc'];
-%filenamenew=['/scratch/uni/u237/user_data/ihans/FCDR/easy/harmonisation_test/',selectsatellite,'/',num2str( vectorstartdate(1), '%02i'),'/',num2str( vectorstartdate(2), '%02i'),'/',num2str( vectorstartdate(3), '%02i'),'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v1.X_fv1.1.3','.nc'];
+%filenamenew=['/scratch/uni/u237/users/ihans/FIDUCEO_testdata/',selectsatellite,'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v2.X_fv1.1.3','.nc'];
+%filenamenew=['/scratch/uni/u237/user_data/ihans/FCDR/easy/v2fv1_1_3/',selectsatellite,'/',num2str( vectorstartdate(1), '%02i'),'/',num2str( vectorstartdate(2), '%02i'),'/',num2str( vectorstartdate(3), '%02i'),'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v2.X_fv1.1.3','.nc'];
+filenamenew=['/scratch/uni/u237/user_data/ihans/FCDR/easy/harmonisation_test_FCDRv2/',selectsatellite,'/',num2str( vectorstartdate(1), '%02i'),'/',num2str( vectorstartdate(2), '%02i'),'/',num2str( vectorstartdate(3), '%02i'),'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v2.X_fv1.1.3_oldantcorralpha','.nc'];
 %filenamenew=['/scratch/uni/u237/users/ihans/FIDUCEO_testdata/sensitivity_study/',effect,'/',selectsatellite,'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v1.0_fv1.0_',effect,'_',value,'.nc'];
 
  % 
@@ -521,7 +521,7 @@ u_common_btemps(:,:,end-3:end)=nan;
   
   
   %% write attributes
- ncwriteatt(filenamenew,'/','Conventions',['tbd']); %setting these conventions to CF-1.6 makes geolocation for Panoply impossible. Probably since CF conventions require a certain array for Lat and Lon: lat(lat), lon(lon), not 2dimensional!
+ ncwriteatt(filenamenew,'/','Conventions',['CF-1.6']); %'tbd' %setting these conventions to CF-1.6 makes geolocation for Panoply impossible (MUST include _CoordinateAxisType Lat in attributes, then it works). Probably since CF conventions require a certain array for Lat and Lon: lat(lat), lon(lon), not 2dimensional!
  ncwriteatt(filenamenew,'/','institution',['Universitaet Hamburg']);
  stringname='';
 for kfile=1:length(hdrinfo.dataset_name)
@@ -649,14 +649,16 @@ ncwriteatt(filenamenew,'/','instrument',[sen]);
  ncwriteatt(filenamenew,'/latitude','standard_name',['latitude']);
  ncwriteatt(filenamenew,'/latitude','long_name',['latitude']);
  ncwriteatt(filenamenew,'/latitude','units',['degree north']);
- ncwriteatt(filenamenew,'/latitude','scale_factor',scfac_latlon); %FIXME: need to adapt to smallest uncertainty!
+ ncwriteatt(filenamenew,'/latitude','_CoordinateAxisType',['Lat']);
+ ncwriteatt(filenamenew,'/latitude','scale_factor',scfac_latlon); 
  ncwriteatt(filenamenew,'/latitude','description',['Latitude for each pixel in every scanline.']);
  
 
  ncwriteatt(filenamenew,'/longitude','standard_name',['longitude']);
  ncwriteatt(filenamenew,'/longitude','long_name',['longitude']);
- ncwriteatt(filenamenew,'/longitude','units',['degree east']);
- ncwriteatt(filenamenew,'/longitude','scale_factor',scfac_latlon); %FIXME: need to adapt to smallest uncertainty!
+ ncwriteatt(filenamenew,'/longitude','units',['degree east']); 
+ ncwriteatt(filenamenew,'/longitude','_CoordinateAxisType',['Lon']);
+ ncwriteatt(filenamenew,'/longitude','scale_factor',scfac_latlon); 
  ncwriteatt(filenamenew,'/longitude','description',['Longitude for each pixel in every scanline.']);
  
 
