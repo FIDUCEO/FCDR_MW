@@ -59,8 +59,8 @@ Tb=nan*ones(5,number_of_fovs,scanlinenumbers(end));
 for index=1:length(channelset)
     channel=channelset(index);
 R_IWCT(channel,:)=planck(invcm2hz(wavenumber_central(channel)),bandcorr_a(channel)+bandcorr_b(channel)*(IWCTtemp_av(channel,:)+dT_w(channel,:)));
-R_CMB0(channel,:)=planck(invcm2hz(wavenumber_central(channel)),2.72548);
-R_CMB(channel,:)=planck(invcm2hz(wavenumber_central(channel)),2.72548+dT_c(channel));
+R_CMB0(channel,:)=planck(invcm2hz(wavenumber_central(channel)),bandcorr_a_s(channel)+bandcorr_b_s(channel)*(2.72548));
+R_CMB(channel,:)=planck(invcm2hz(wavenumber_central(channel)),bandcorr_a_s(channel)+bandcorr_b_s(channel)*(2.72548+dT_c(channel)));
 %assume R_sat (i.e. R_pl)
 R_Sat(channel,:)=planck(invcm2hz(wavenumber_central(channel)),bandcorr_a(channel)+bandcorr_b(channel)*0*250);%*2.72548 *instrtemp
 end

@@ -545,9 +545,16 @@ calculate_solarAndsatellite_azimuth_angle
                          % Temperature to radiance conversion
                          wavenumber_central=double([hdrinfo.temperature_radiance_Ch_16_central_wavenumber; hdrinfo.temperature_radiance_Ch_17_central_wavenumber; hdrinfo.temperature_radiance_Ch_18_central_wavenumber; hdrinfo.temperature_radiance_Ch_19_central_wavenumber; hdrinfo.temperature_radiance_Ch_20_central_wavenumber]);
                          chnfreq=invcm2hz(wavenumber_central);
-                         bandcorr_a=double([hdrinfo.temperature_radiance_Ch_16_constant1; hdrinfo.temperature_radiance_Ch_17_constant1; hdrinfo.temperature_radiance_Ch_18_constant1; hdrinfo.temperature_radiance_Ch_19_constant1; hdrinfo.temperature_radiance_Ch_20_constant1]);
-                         bandcorr_b=double([hdrinfo.temperature_radiance_Ch_16_constant2; hdrinfo.temperature_radiance_Ch_17_constant2; hdrinfo.temperature_radiance_Ch_18_constant2; hdrinfo.temperature_radiance_Ch_19_constant2; hdrinfo.temperature_radiance_Ch_20_constant2]);
-                         
+                         %bandcorr_a=double([hdrinfo.temperature_radiance_Ch_16_constant1; hdrinfo.temperature_radiance_Ch_17_constant1; hdrinfo.temperature_radiance_Ch_18_constant1; hdrinfo.temperature_radiance_Ch_19_constant1; hdrinfo.temperature_radiance_Ch_20_constant1]);
+                         %bandcorr_b=double([hdrinfo.temperature_radiance_Ch_16_constant2; hdrinfo.temperature_radiance_Ch_17_constant2; hdrinfo.temperature_radiance_Ch_18_constant2; hdrinfo.temperature_radiance_Ch_19_constant2; hdrinfo.temperature_radiance_Ch_20_constant2]);
+                         % new band corr coeff 
+                         bandcorr_a=[ 0 0 0 0.0015 0.00289].';
+                         bandcorr_b=[ 1 1 1  1.00025 1.00138].';
+                         %DSV band corr coeff
+                         bandcorr_a_s=[ 0 0 0 0.00397 0.00392].';
+                         bandcorr_b_s=[ 1 1 1  0.99857 0.99811].';
+                        
+                  
                          % FIXME: so far, I follow EUMETSAT MHS prod. gen.
                          % spec.: they say: use a and b for both IWCT
                          % radiance and DSV radiance! This is not really
@@ -655,7 +662,7 @@ calculate_solarAndsatellite_azimuth_angle
                       
                       
                       % cold temp. bias correction
-                      dT_c=double([hdrinfo.Ch_16_cold_space_fixed_bias_correction; hdrinfo.Ch_17_cold_space_fixed_bias_correction; hdrinfo.Ch_18_cold_space_fixed_bias_correction; hdrinfo.Ch_19_cold_space_fixed_bias_correction; hdrinfo.Ch_20_cold_space_fixed_bias_correction]);
+                      %dT_c=double([hdrinfo.Ch_16_cold_space_fixed_bias_correction; hdrinfo.Ch_17_cold_space_fixed_bias_correction; hdrinfo.Ch_18_cold_space_fixed_bias_correction; hdrinfo.Ch_19_cold_space_fixed_bias_correction; hdrinfo.Ch_20_cold_space_fixed_bias_correction]);
                       % add  this to 2.73K and convert by planck %[0.24 0.24 0.24 0.24 0.24].';
                       
                       % need to set specific values for N15 and N17 since
@@ -674,13 +681,16 @@ calculate_solarAndsatellite_azimuth_angle
                       end
                       
                       % UNCERTAINTY
-                      %maybe another estimate: from stdev between different
-                      %profiles (for Metop-B at least):ch1-5:
-                      %0.27,0.04,0.06, 0.06, 0.03 . Definitely to small
-                      %when thinking of the discrepancy to AAPP results
-                      % maybe take stdev over all values (since assignment
-                      % to channels unclear): then it's 0.6
-                      u_dT_c=bsxfun(@times,ones(size(countDSV_av)),0.6*ones(size(dT_c)));%0.6*ones(size(dT_c)); %estimate of 0.6K from stdev in these corrections for the different space view profiles over all channels
+                      %estimate: from stdev for different
+                      %profiles ; per channel
+                      if strcmp(sat,'noaa15')
+                          u_dT_c_vec=[0.1725;    0.0330;    0.0263 ;   0.0263  ;  0.0263]; 
+                      elseif strcmp(sat,'noaa16')
+                          u_dT_c_vec=[0.1906 ;   0.0310 ;   0.0780 ;   0.0780 ;   0.0780 ];
+                      elseif strcmp(sat,'noaa17')
+                          u_dT_c_vec=[0.1195 ;   0.0231;    0.0419 ;   0.0419 ;   0.0419];
+                      end
+                      u_dT_c=bsxfun(@times,ones(size(countDSV_av)),u_dT_c_vec);%bsxfun(@times,ones(size(countDSV_av)),0.6*ones(size(dT_c)));%0.6*ones(size(dT_c)); %estimate of 0.6K from stdev in these corrections for the different space view profiles over all channels
                       
       %%%%%%%%%%%%%                      
                       % radiance of COSMIC MICROWAVE BACKGROUND for each
@@ -688,7 +698,7 @@ calculate_solarAndsatellite_azimuth_angle
                       % apply cold bias correction (dT_c) and
                       % bandcorrection (bandcorr_a,bandcorr_b)
                       T_CMB0=2.72548*ones(5,1); % the pure CMB
-                      T_CMB=bandcorr_a+bandcorr_b.*(T_CMB0+dT_c);
+                      T_CMB=bandcorr_a_s+bandcorr_b_s.*(T_CMB0+dT_c);
                       %radCMB=planck(invcm2hz(wavenumber_central),T_CMB);
                       %the conversion to radiance is done later
                      

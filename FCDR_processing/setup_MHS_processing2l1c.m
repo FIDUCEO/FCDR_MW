@@ -517,8 +517,15 @@ end
                          % Temperature to radiance conversion
                          wavenumber_central=double([hdrinfo.temperature_radiance_Ch_H1_central_wavenumber; hdrinfo.temperature_radiance_Ch_H2_central_wavenumber; hdrinfo.temperature_radiance_Ch_H3_central_wavenumber; hdrinfo.temperature_radiance_Ch_H4_central_wavenumber; hdrinfo.temperature_radiance_Ch_H5_central_wavenumber]);
                          chnfreq=invcm2hz(wavenumber_central);
-                         bandcorr_a=double([hdrinfo.temperature_radiance_Ch_H1_constant1; hdrinfo.temperature_radiance_Ch_H2_constant1; hdrinfo.temperature_radiance_Ch_H3_constant1; hdrinfo.temperature_radiance_Ch_H4_constant1; hdrinfo.temperature_radiance_Ch_H5_constant1]);
-                         bandcorr_b=double([hdrinfo.temperature_radiance_Ch_H1_constant2; hdrinfo.temperature_radiance_Ch_H2_constant2; hdrinfo.temperature_radiance_Ch_H3_constant2; hdrinfo.temperature_radiance_Ch_H4_constant2; hdrinfo.temperature_radiance_Ch_H5_constant2]);
+                         %bandcorr_a=double([hdrinfo.temperature_radiance_Ch_H1_constant1; hdrinfo.temperature_radiance_Ch_H2_constant1; hdrinfo.temperature_radiance_Ch_H3_constant1; hdrinfo.temperature_radiance_Ch_H4_constant1; hdrinfo.temperature_radiance_Ch_H5_constant1]);
+                         %bandcorr_b=double([hdrinfo.temperature_radiance_Ch_H1_constant2; hdrinfo.temperature_radiance_Ch_H2_constant2; hdrinfo.temperature_radiance_Ch_H3_constant2; hdrinfo.temperature_radiance_Ch_H4_constant2; hdrinfo.temperature_radiance_Ch_H5_constant2]);
+                         
+                         % new band corr coeff 
+                         bandcorr_a=[ 0 0 0 0.0015 0 ].';
+                         bandcorr_b=[ 1 1 1  1.00025 1 ].';
+                         %DSV band corr coeff
+                         bandcorr_a_s=[ 0 0 0 0.00397 0 ].';
+                         bandcorr_b_s=[ 1 1 1  0.99857 1 ].';
                          
                          % FIXME: so far, I follow EUMETSAT MHS prod. gen.
                          % spec.: they say: use a and b for both IWCT
@@ -621,13 +628,18 @@ end
                       % add  this to 2.73K and convert by planck %[0.24 0.24 0.24 0.24 0.24].';
                       
                       % UNCERTAINTY
-                      %maybe another estimate: from stdev between different
-                      %profiles (for Metop-B at least):ch1-5:
-                      %0.27,0.04,0.06, 0.06, 0.03 . Definitely to small
-                      %when thinking of the discrepancy to AAPP results
-                      % maybe take stdev over all values (since assignment
-                      % to channels unclear): then it's 0.6
-                      u_dT_c=bsxfun(@times,ones(size(countDSV_av)),0.6*ones(size(dT_c)));%0.6*ones(size(dT_c)); %estimate of 0.6K from stdev in these corrections for the different space view profiles over all channels
+                      %estimate: from stdev for different
+                      %profiles ; per channel
+                      if strcmp(sat,'noaa18')
+                          u_dT_c_vec=dT_c; % we estimate 100% uncertainty since we do not know why all channels get the same value...
+                      elseif strcmp(sat,'noaa19')
+                          u_dT_c_vec=[0.1822 ;   0.0614;    0.0819 ;   0.0819 ;   0.0562];
+                      elseif strcmp(sat,'metopa')
+                          u_dT_c_vec=[0.2872;    0.0545 ;   0.0714;    0.0714 ;   0.0436];
+                      elseif strcmp(sat,'metopb')
+                          u_dT_c_vec=[0.2658;    0.0356;    0.0640;    0.0640;    0.0300];
+                      end
+                      u_dT_c=bsxfun(@times,ones(size(countDSV_av)),u_dT_c_vec);%bsxfun(@times,ones(size(countDSV_av)),0.6*ones(size(dT_c)));%0.6*ones(size(dT_c)); %estimate of 0.6K from stdev in these corrections for the different space view profiles over all channels
                       
       %%%%%%%%%%%%%                      
                       % radiance of COSMIC MICROWAVE BACKGROUND for each

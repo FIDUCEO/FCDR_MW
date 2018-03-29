@@ -528,9 +528,13 @@ time_EpochSecond=round((InputDate-UnixOrigin)*86400);
                          %wavenumber_central=double([hdrinfo.temperature_radiance_Ch_1_central_wavenumber; hdrinfo.temperature_radiance_Ch_2_central_wavenumber; hdrinfo.temperature_radiance_Ch_3_central_wavenumber; hdrinfo.temperature_radiance_Ch_4_central_wavenumber; hdrinfo.temperature_radiance_Ch_5_central_wavenumber]);
                          chnfreq=[183.31 183.31 183.31 91.665 150.0].'.*10^9;%invcm2hz(wavenumber_central);
                          wavenumber_central=hz2invcm(chnfreq);
-                         bandcorr_a=[0 0 0 0 0].';
-                         bandcorr_b=[1 1 1 1 1].';
+                         % using new band corr coeff (only 0 and 1 given for SSMT2)
+                         bandcorr_a=[0.0015 0 0.00289 0 0].';
+                         bandcorr_b=[1.00025 1 1.00138 1 1].';
                          
+                         %DSV band corr coeff
+                         bandcorr_a_s=[0.00397 0 0.00392  0 0  ].';
+                         bandcorr_b_s=[0.99857 1 0.99811  1 1  ].';
 
                          
                          % UNCERTAINTY
