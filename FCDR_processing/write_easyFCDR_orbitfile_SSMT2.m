@@ -73,19 +73,19 @@ filenamenew=['/scratch/uni/u237/user_data/ihans/FCDR/easy/harmonisation_test_FCD
 % next/prev. file"
 
 btemps(:,:,1:3)=nan;
-btemps(:,:,end-3:end)=nan;
+btemps(:,:,end-2:end)=nan;
 
 u_random_btemps(:,:,1:3)=nan;
-u_random_btemps(:,:,end-3:end)=nan;
+u_random_btemps(:,:,end-2:end)=nan;
 
 u_nonrandom_btemps(:,:,1:3)=nan;
-u_nonrandom_btemps(:,:,end-3:end)=nan;
+u_nonrandom_btemps(:,:,end-2:end)=nan;
 
 u_common_btemps(:,:,1:3)=nan;
-u_common_btemps(:,:,end-3:end)=nan;
+u_common_btemps(:,:,end-2:end)=nan;
 
 % u_RFI_btemps(:,:,1:3)=nan;
-% u_RFI_btemps(:,:,end-3:end)=nan;
+% u_RFI_btemps(:,:,end-2:end)=nan;
  
  defl_level=5;
  n_frequencies=length(srf_frequencies);%MAXIMUM NUMBER OF FREQ
@@ -171,9 +171,12 @@ u_common_btemps(:,:,end-3:end)=nan;
   
   %%%% correlations    
   nccreate(filenamenew,'/channel_correlation_matrix_independent','Dimensions',{'channel',5,'channel',5},...
-          'Datatype','uint8','Format','netcdf4','FillValue',fillvaluint8,'DeflateLevel',defl_level)
+          'Datatype','int16','Format','netcdf4','FillValue',fillvalint16,'DeflateLevel',defl_level)
   nccreate(filenamenew,'/channel_correlation_matrix_structured','Dimensions',{'channel',5,'channel',5},...
-          'Datatype','uint8','Format','netcdf4','FillValue',fillvaluint8,'DeflateLevel',defl_level)
+          'Datatype','int16','Format','netcdf4','FillValue',fillvalint16,'DeflateLevel',defl_level)
+  nccreate(filenamenew,'/channel_correlation_matrix_common','Dimensions',{'channel',5,'channel',5},...
+          'Datatype','int16','Format','netcdf4','FillValue',fillvalint16,'DeflateLevel',defl_level)
+  
   nccreate(filenamenew,'/error_correlation_scale_cross_element_x','Dimensions',{'channel',5},...
           'Datatype','uint8','Format','netcdf4','FillValue',fillvaluint8,'DeflateLevel',defl_level)
   nccreate(filenamenew,'/error_correlation_scale_cross_line_y','Dimensions',{'channel',5},...
@@ -426,10 +429,14 @@ u_common_btemps(:,:,end-3:end)=nan;
 %   
   
   %ncwrite(filenamenew,'/u_structuredrandom_btemps',size(btempsK))
-  channel_correlation_matrix_independent=eye(5,5);
-  ncwrite(filenamenew,'/channel_correlation_matrix_independent',channel_correlation_matrix_independent)
-  channel_correlation_matrix_structured=ones(5,5);
-  ncwrite(filenamenew,'/channel_correlation_matrix_structured',channel_correlation_matrix_structured)
+   invscfac_corr_mat=1e2;
+   scfac_corr_mat=1/invscfac_corr_mat;
+  channel_correlation_matrix_independent=R_c_i;
+  ncwrite(filenamenew,'/channel_correlation_matrix_independent',int16(channel_correlation_matrix_independent.*invscfac_corr_mat))
+  channel_correlation_matrix_structured=R_c_s;
+  ncwrite(filenamenew,'/channel_correlation_matrix_structured',int16(channel_correlation_matrix_structured.*invscfac_corr_mat))
+  channel_correlation_matrix_common=R_c_co;
+  ncwrite(filenamenew,'/channel_correlation_matrix_common',int16(channel_correlation_matrix_common.*invscfac_corr_mat))
   
   error_correlation_scale_cross_element_x=[28 28 28 28 28].';
   ncwrite(filenamenew,'/error_correlation_scale_cross_element_x',error_correlation_scale_cross_element_x)
@@ -775,13 +782,19 @@ ncwriteatt(filenamenew,'/','instrument',[sen]);
  
  ncwriteatt(filenamenew,'/channel_correlation_matrix_independent','long_name',['Channel_error_correlation_matrix_independent_effects']);
  ncwriteatt(filenamenew,'/channel_correlation_matrix_independent','units',['1']);
- ncwriteatt(filenamenew,'/channel_correlation_matrix_independent','scale_factor',1); 
- ncwriteatt(filenamenew,'/channel_correlation_matrix_independent','description',['Channel error correlation matrix for independent effects. WARNING: filled with dummy values!']);
+ ncwriteatt(filenamenew,'/channel_correlation_matrix_independent','scale_factor',scfac_corr_mat); 
+ ncwriteatt(filenamenew,'/channel_correlation_matrix_independent','description',['Cross-Channel error correlation matrix for independent effects. ']);
  
  ncwriteatt(filenamenew,'/channel_correlation_matrix_structured','long_name',['Channel_error_correlation_matrix_structured_effects']);
  ncwriteatt(filenamenew,'/channel_correlation_matrix_structured','units',['1']);
- ncwriteatt(filenamenew,'/channel_correlation_matrix_structured','scale_factor',1); 
- ncwriteatt(filenamenew,'/channel_correlation_matrix_structured','description',['Channel error correlation matrix for structured effects. WARNING: filled with dummy values!']);
+ ncwriteatt(filenamenew,'/channel_correlation_matrix_structured','scale_factor',scfac_corr_mat); 
+ ncwriteatt(filenamenew,'/channel_correlation_matrix_structured','description',['Cross-Channel error correlation matrix for structured effects. ']);
+ 
+ ncwriteatt(filenamenew,'/channel_correlation_matrix_common','long_name',['Channel_error_correlation_matrix_common_effects']);
+ ncwriteatt(filenamenew,'/channel_correlation_matrix_common','units',['1']);
+ ncwriteatt(filenamenew,'/channel_correlation_matrix_common','scale_factor',scfac_corr_mat); 
+ ncwriteatt(filenamenew,'/channel_correlation_matrix_common','description',['Cross-Channel error correlation matrix for common effects.']);
+
  
  ncwriteatt(filenamenew,'/error_correlation_scale_cross_element_x','long_name',['error_correlation_scale_cross_element_x']);
  ncwriteatt(filenamenew,'/error_correlation_scale_cross_element_x','units',['elements']);
