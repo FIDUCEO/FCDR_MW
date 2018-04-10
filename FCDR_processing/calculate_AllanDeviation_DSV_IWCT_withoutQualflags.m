@@ -68,4 +68,4 @@ AllanDev_IWCT_perline_withoutflags(:,length(AllanDev_IWCT_300window_withoutflags
 % this AllanDev_X_perline now enters 
 % the quality checks to have a threshold-deviation
 dsvcountallandev_med=AllanDev_DSV_perline_withoutflags;
-iwctcountallandev_med=AllanDev_DSV_perline_withoutflags;
+iwctcountallandev_med=AllanDev_IWCT_perline_withoutflags;
