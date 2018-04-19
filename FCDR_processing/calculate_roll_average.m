@@ -198,9 +198,9 @@ for chn=1:5
     % writing-process the 3 lines before and after are deleted.
     
     % Vector M contains the number of non-zero elements of D's rows. Count
-    % the non-zero elements per row of D (i.e. sum(D not equal zero)), i.e.
+    % the non-zero elements per row of D (i.e. sum-over-rows("matrix with 1 where D not equal zero")), i.e.
     % the number of usable scanlines per scanline:
-    M_DSV=ones(1,totalnumberofscanlines);
+    M_DSV=ones(1,totalnumberofscanlines); %initialize M with ones 
     M_DSV=sum(D_DSV~=0,1);
         % store M_DSV for later use to generate flag
         num_usedlinesDSV(chn,:)=M_DSV;
@@ -217,11 +217,16 @@ for chn=1:5
         % first compute the share of S that each used scanline will get:
             addshare_DSV=S_DSV./M_DSV; 
             expand_addshare_DSV=repmat(addshare_DSV,totalnumberofscanlines,1);
-            %note: addshare gets 1 for UNusable lines (since M_DSV
-            %artificailly set to 1 to evade division by zero). But: later
+            %note: addshare gets Inf for UNusable lines (since M_DSV
+            %gets zero at UNusable lines due to storage as sparse matrix). later
             %it is multiplied elementwise by matrix usable lines. There,
-            %every 1 from addshare is eliminated since the UNusable lines
-            %have zero.
+            %it yields NAN with the UNUSABLE lines (having zero entries). This NAN gets added to
+            %the weights G_X, that will in turn generate NAN for UNusable
+            %lines in the average.
+            % in the other dimension M_DSV is not Inf but has a nonzero
+            % finite values. This extra-share that should not be added, is
+            % actually destoyed by multiplying ith usable lines (having
+            % zero at unusable lines).
             
             
             addshare_IWCT=S_IWCT./M_IWCT; 
@@ -237,10 +242,10 @@ for chn=1:5
     % weights. Note: dsvmean_per_line has already the mean over the good-dsv for
     % Moonintrusions and has nan where all views are bad due to Moon
     % intrusion.
-    dsv_count_roll_av{chn}=G_DSV.'*dsvmean_per_line(chn,:).';
+    dsv_count_roll_av{chn}=G_DSV.'*dsvmean_per_line(chn,:).'; %any NANs in G now yield NAN in the average
     iwct_count_roll_av{chn}=G_IWCT.'*iwctmean_per_line(chn,:).';
-    % for the AllanVariance to be propagated through the 7-scnlin av, need
-    % the derivative of the weighting avergae, i.e. G_X^2*AllanVariance
+    % for the uncertainty on Counts (--> AllanVariance) to be propagated through the 7-scnlin av, need
+    % the derivative of the weighting average, i.e.   av.-uncert^2=av.-AllanVar=G_X^2*AllanVariance
      AllanVar_dsv_count_roll_av{chn}=(G_DSV.^2).'*AllanVar_DSV_perline(chn,:).';
      AllanVar_iwct_count_roll_av{chn}=(G_IWCT.^2).'*AllanVar_IWCT_perline(chn,:).';
     % take sqrt to get the AllanDev. for every scanline

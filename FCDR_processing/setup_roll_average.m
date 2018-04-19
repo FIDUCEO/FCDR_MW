@@ -32,7 +32,7 @@ cleaned_allbadDSV=uint32(qualflag_DSV_badline_furtherthan5lines-expanded_moonfla
 %unify this difference with the bad-Moon-lines
 flags_badDSV{1}=cleaned_allbadDSV;
 flags_badDSV{2}=uint32(bsxfun(@times,permute(moonflagAllViewsBad,[2 1]),ones(size(qualflag_allbadDSV)))); %expand moonflagAllViewsBad, and transform to uint32
-truebadDSVlines=unify_qualflags(flags_badDSV);
+truebadDSVlines=(logical(flags_badDSV{1})|logical(flags_badDSV{2}));%unify_qualflags(flags_badDSV);
 
 % list of truebadDSVlines
 scnlin_DSV_truebadline{1}=find(truebadDSVlines(1,:)==1).';
@@ -73,7 +73,7 @@ scnlin_DSV_truebadline{5}=find(truebadDSVlines(5,:)==1).';
 % define lines on which the 7-scanline-average shall be executed
 flags_DSV{1}=truebadDSVlines;
 flags_DSV{2}=uint32(bsxfun(@times,permute(qualflag_missing_scanline,[2 1]),ones(size(truebadDSVlines)))); %expand qualflag_missingscanlines, and transform to uint32
-usablelines_DSV=~unify_qualflags(flags_DSV);%take the negation ~ to get the good lines and lines with marginal DSV views (zero becomes one an vice versa)
+usablelines_DSV=~(logical(flags_DSV{1})|logical(flags_DSV{2}));%~unify_qualflags(flags_DSV);%take the negation ~ to get the good lines and lines with marginal DSV views (zero becomes one an vice versa)
     
 
 
@@ -85,7 +85,7 @@ usablelines_DSV=~unify_qualflags(flags_DSV);%take the negation ~ to get the good
 % define lines on which the 7-scanline-average shall be executed
 flags_IWCT{1}=qualflag_IWCT_badline_furtherthan5lines;%qualflag_allbadIWCT;
 flags_IWCT{2}=uint32(bsxfun(@times,permute(qualflag_missing_scanline,[2 1]),ones(size(qualflag_allbadIWCT)))); %expand qualflag_missingscanlines, and transform to uint32
-usablelines_IWCT=~unify_qualflags(flags_IWCT);%take the negation ~ to get the good lines and lines with marginal IWCT views (zero becomes one an vice versa)
+usablelines_IWCT=~(logical(flags_IWCT{1})|logical(flags_IWCT{2}));%~unify_qualflags(flags_IWCT);%take the negation ~ to get the good lines and lines with marginal IWCT views (zero becomes one an vice versa)
   
 
  % now everything is prepared to proceed with the scanline averaging on the
@@ -96,6 +96,6 @@ usablelines_IWCT=~unify_qualflags(flags_IWCT);%take the negation ~ to get the go
 % define lines on which the 7-scanline-average shall be executed
 flags_PRT{1}=qualflag_PRT_badline_furtherthan5lines;%qualflag_allbadPRT;
 flags_PRT{2}=qualflag_missing_scanline.';%uint32(bsxfun(@times,permute(qualflag_missing_scanline,[2 1]),ones(size(qualflag_allbadPRT)))); %expand qualflag_missingscanlines, and transform to uint32
-usablelines_PRT=~unify_qualflags(flags_PRT);%take the negation ~ to get the good lines and lines with marginal PRT(zero becomes one an vice versa)
+usablelines_PRT=~(logical(flags_PRT{1})|logical(flags_PRT{2}));%~unify_qualflags(flags_PRT);%take the negation ~ to get the good lines and lines with marginal PRT(zero becomes one an vice versa)
  
 
