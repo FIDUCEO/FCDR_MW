@@ -72,6 +72,10 @@ quality_scanline_bitmask=qualbit_SARRB_status.*2^5+qualbit_SARRA_status.*2^4+qua
 
 
 %% Channel specific issues: quality_issue_pixel_ChX_bitmask 
+%expand missing scanlines to channel-dim
+qualbit_missing_scanline_unexp=qualflag_missing_scanline;
+expchannel_qualbit_missing_scanline=permute(repmat(qualbit_missing_scanline_unexp,[1  5]),[2  1]);
+
 
 %qualflag_chX_Earthcountbad= from full set of flags
 
@@ -81,8 +85,8 @@ quality_scanline_bitmask=qualbit_SARRB_status.*2^5+qualbit_SARRA_status.*2^4+qua
 % qualbit_IWCT_nocalib DONE
 % qualbit_DSV_nocalib DONE
 
-qualbit_no_calibration_DSV= logical(qualbit_DSV_nocalib);%I do not include the following, since they imply already a major sensor error. | logical(qualbit_calib_Moon_checkfail) | logical(qualbit_calib_Moon_noCalib);
-qualbit_no_calibration_IWCT=logical(qualbit_IWCT_nocalib);
+qualbit_no_calibration_DSV= logical(qualbit_DSV_nocalib) | logical(expchannel_qualbit_missing_scanline).';%Also set, if missing scan line. I do not include the following, since they imply already a major sensor error. | logical(qualbit_calib_Moon_checkfail) | logical(qualbit_calib_Moon_noCalib);
+qualbit_no_calibration_IWCT=logical(qualbit_IWCT_nocalib)| logical(expchannel_qualbit_missing_scanline).';
 
 %expand to match chn X pixel x scnlin 
 expand_qualbit_no_calibration_DSV=permute(repmat(qualbit_no_calibration_DSV,[1 1 number_of_fovs]),[2 3 1]);
@@ -98,8 +102,9 @@ expand_qualbit_no_calibration_IWCT=permute(repmat(qualbit_no_calibration_IWCT,[1
 % qualbit_DSV_fewerlines 
 % qualflag_moononeviewok (it is the qualbit_calib_Moon_useGoodviews expanded to chn x scnlin)
 
-qualbit_suspect_calibration_DSV= logical(qualbit_DSV_calib5closest) | logical(qualbit_DSV_less4Views) |logical(qualbit_DSV_fewerlines);
-qualbit_suspect_calibration_IWCT= logical(qualbit_IWCT_calib5closest) | logical(qualbit_IWCT_less4Views) |logical(qualbit_IWCT_fewerlines);
+
+qualbit_suspect_calibration_DSV= (logical(qualbit_DSV_calib5closest) | logical(qualbit_DSV_less4Views) |logical(qualbit_DSV_fewerlines)) & ~logical(expchannel_qualbit_missing_scanline).'; % DO NOT set the suspect-flag for missing scan lines
+qualbit_suspect_calibration_IWCT= (logical(qualbit_IWCT_calib5closest) | logical(qualbit_IWCT_less4Views) |logical(qualbit_IWCT_fewerlines)) & ~logical(expchannel_qualbit_missing_scanline).';% DO NOT set the suspect-flag for missing scan lines
 
 
 %expand to match  channel x pixel x scnlin 
@@ -132,7 +137,7 @@ exp_qualbit_missing_scanline=permute(repmat(qualbit_missing_scanline_unexp,[1  n
     % calibrated correctly and was rejected "
     qualbit_prev_next_file=zeros(size(squeeze(btemps(1,:,:))));
     qualbit_prev_next_file(:,1:3)=1;
-    qualbit_prev_next_file(:,end-3:end)=1;
+    qualbit_prev_next_file(:,end-2:end)=1;
 
 % set flag for padded data
 qualbit_padded_data=exp_qualbit_missing_scanline | qualbit_prev_next_file;
