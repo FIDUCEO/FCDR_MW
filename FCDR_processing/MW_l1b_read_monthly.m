@@ -56,7 +56,7 @@ orbitdata_record= cell(1,length(file_list));
 orbitdata_header= cell(1,length(file_list));
 
 
-for ifile = 1:10%length(file_list)%length(file_list)
+for ifile = 1:length(file_list)%length(file_list)
     
     %Loop over all files during one day and save filedata to
     %daily_data_struc
