@@ -244,52 +244,133 @@ for fov=1:num_fov
 
         % 3. dT_c
        % correlation between channels 3-4? (3,4 get same values for MHS, 18-20 get same values for AMSUB)
-        R{3}=  [1 0 0 0 0;
+       if strcmp(sen,'amsub')
+            R{3}= [1 0 0 0 0;
+                0 1 0 0 0;
+                0 0 1 1 1 ;
+                0 0 1 1 1;
+                0 0 1 1 1];
+
+       elseif strcmp(sen,'mhs')
+            R{3}=  [1 0 0 0 0;
                 0 1 0 0 0;
                 0 0 1 1 0 ;
                 0 0 1 1 0;
                 0 0 0 0 1];
-        
+
+       elseif strcmp(sen,'ssmt2')
+            R{3}=  [1 1 1 0 0;
+                    1 1 1 0 0;
+                    1 1 1 0 0 ;
+                    0 0 0 1 0;
+                    0 0 0 0 1];
+       end
+       
         % 4. nonlinearity
-        % some correlation between 3-4 and 2, small corr to chn1? estimated
-        % from Atkinson1998 Fig 6; MatraMarconi tests?
-        R{4}=  [1.0 0.0 0.0 0.0 0.0;
-                0.0 1.0 0.3 0.3 0.3;
-                0.0 0.3 1.0 0.8 0.8;
-                0.0 0.3 0.8 1.0 0.8;
-                0.0 0.3 0.8 0.8 1.0];
-        
-        % 5. alpha
-        % correlation between channels 3-4? (3,4 get same values for MHS; AMSUB gets none...)
-        R{5}=  [1 0 0 0 0;
+        % no correlation? MatraMarconi tests?
+        R{4}=  [1 0 0 0 0;
                 0 1 0 0 0;
-                0 0 1 1 0;
-                0 0 1 1 0;
+                0 0 1 0 0;
+                0 0 0 1 0;
                 0 0 0 0 1];
         
+        % 5. alpha
+        % correlation between channels 3-4? (3,4 get same values for MHS (5 is very similar, only other sign); AMSUB gets none...)
+        
+        if strcmp(sen,'amsub')
+            R{5}= [1 0 0 0 0;
+                0 1 0 0 0;
+                0 0 1 1 1 ;
+                0 0 1 1 1;
+                0 0 1 1 1];
+
+       elseif strcmp(sen,'mhs')
+            R{5}=[1 0 0 0 0;
+                0 1 0 0 0;
+                0 0 1 1 1 ;
+                0 0 1 1 1;
+                0 0 1 1 1];
+
+       elseif strcmp(sen,'ssmt2')
+            R{5}=  [1 1 1 0 0;
+                    1 1 1 0 0;
+                    1 1 1 0 0 ;
+                    0 0 0 1 0;
+                    0 0 0 0 1];
+        end
+       
         % 6. Antenna correction Earth contribution
         % correlation between channels 3-4-5?
-        R{6}=  [1 0 0 0 0;
+        
+       if strcmp(sen,'amsub')
+           R{6}= [1 0 0 0 0;
                 0 1 0 0 0;
-                0 0 1 1 0.9;
-                0 0 1 1 0.9;
-                0 0 0.9 0.9 1];
+                0 0 1 1 1 ;
+                0 0 1 1 1;
+                0 0 1 1 1];
+
+       elseif strcmp(sen,'mhs')
+            R{6}=  [1 0 0 0 0;
+                0 1 0 0 0;
+                0 0 1 1 0 ;
+                0 0 1 1 0;
+                0 0 0 0 1];
+
+       elseif strcmp(sen,'ssmt2')
+            R{6}=  [1 1 1 0 0;
+                    1 1 1 0 0;
+                    1 1 1 0 0 ;
+                    0 0 0 1 0;
+                    0 0 0 0 1];
+       end
         
         % 7. Antenna correction Space contribution
         % correlation between channels 3-4?
-        R{7}=  [1 0 0 0 0;
+        if strcmp(sen,'amsub')
+           R{7}= [1 0 0 0 0;
                 0 1 0 0 0;
-                0 0 1 1 0.9;
-                0 0 1 1 0.9;
-                0 0 0.9 0.9 1];
+                0 0 1 1 1 ;
+                0 0 1 1 1;
+                0 0 1 1 1];
+
+       elseif strcmp(sen,'mhs')
+            R{7}=  [1 0 0 0 0;
+                0 1 0 0 0;
+                0 0 1 1 0 ;
+                0 0 1 1 0;
+                0 0 0 0 1];
+
+       elseif strcmp(sen,'ssmt2')
+            R{7}=  [1 1 1 0 0;
+                    1 1 1 0 0;
+                    1 1 1 0 0 ;
+                    0 0 0 1 0;
+                    0 0 0 0 1];
+       end
         
         % 8. Antenna correction Platform contribution
         % correlation between channels 3-4?
-        R{8}=   [1 0 0 0 0;
+        if strcmp(sen,'amsub')
+           R{8}= [1 0 0 0 0;
                 0 1 0 0 0;
-                0 0 1 1 0.9;
-                0 0 1 1 0.9;
-                0 0 0.9 0.9 1];
+                0 0 1 1 1 ;
+                0 0 1 1 1;
+                0 0 1 1 1];
+
+        elseif strcmp(sen,'mhs')
+            R{8}=  [1 0 0 0 0;
+                0 1 0 0 0;
+                0 0 1 1 0 ;
+                0 0 1 1 0;
+                0 0 0 0 1];
+
+        elseif strcmp(sen,'ssmt2')
+            R{8}=  [1 1 1 0 0;
+                    1 1 1 0 0;
+                    1 1 1 0 0 ;
+                    0 0 0 1 0;
+                    0 0 0 0 1];
+        end
         
         % 9. Radiance of Platform
         % fully correlated between channels 
@@ -297,23 +378,23 @@ for fov=1:num_fov
         
         % 10. Antenna position Earth view (systematic)
         % correlation between channels 3-4-5?
-        R{10}=[1 0 0 0 0;
+        R{10}= [1 0 0 0 0;
                 0 1 0 0 0;
-                0 0 1 1 0.9;
-                0 0 1 1 0.9;
-                0 0 0.9 0.9 1];
+                0 0 1 0 0;
+                0 0 0 1 0;
+                0 0 0 0 1];
         
         % 11. Antenna position Space view (systematic)
         % correlation between channels 3-4-5?
         R{11}=[1 0 0 0 0;
                 0 1 0 0 0;
-                0 0 1 1 0.9;
-                0 0 1 1 0.9;
-                0 0 0.9 0.9 1];
+                0 0 1 0 0;
+                0 0 0 1 0;
+                0 0 0 0 1];
         
         % 12. RFI
         % uncorrelated between channels
-        R{11}=diag([1 1 1 1 1]);
+        R{12}=diag([1 1 1 1 1]);
         
         
 
@@ -383,7 +464,7 @@ for fov=1:num_fov
 
         % loop over effects:
         S=zeros(size(R{1}));
-        for k_effect=1:4%length(R)
+        for k_effect=1:length(R)
 
             S=S+U{k_effect}*R{k_effect}*U{k_effect}.';
 
