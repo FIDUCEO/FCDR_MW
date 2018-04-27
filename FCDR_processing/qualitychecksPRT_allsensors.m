@@ -42,7 +42,7 @@ end
  
 temp_thr=[250 310]; % for AMSUB?: temp_thr=[270 310]; %[270 310]
 allowed_dev_from_median=0.3; %0.2K %0.3 suggestion by martin
-jump_thr_prt=0.3; %allow 0.3K jumps Warning: first guess for testing purposes
+jump_thr_prt=0.1; %Removed: "allow 0.3K jumps Warning: first guess for testing purposes"
 
  
 % median of the 5 or 7 sensors per scanline
