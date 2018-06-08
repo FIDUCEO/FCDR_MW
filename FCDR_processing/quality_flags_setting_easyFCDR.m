@@ -124,8 +124,8 @@ quality_issue_pixel_Ch3_bitmask=squeeze(quality_issue_pixel_bitmask(3,:,:));
 quality_issue_pixel_Ch4_bitmask=squeeze(quality_issue_pixel_bitmask(4,:,:));
 quality_issue_pixel_Ch5_bitmask=squeeze(quality_issue_pixel_bitmask(5,:,:));
 
-%% General bitmask: quality_pixel_bitmask 
-
+%% bitmasks: quality_pixel_bitmask (General) and data_quality_bitmask (Sensor specific part)
+% 
 %-----------------------------------------------------------------------%
 % Padded data flag
 %
@@ -170,6 +170,11 @@ exp_qualbit_suspect_calibration_prt=permute(repmat(qualbit_suspect_calibration_p
 % not used so far:
 %exp_qualbit_do_not_use_l1bdata=permute(repmat(qualbit_do_not_use_l1bdata,[1  number_of_fovs]),[2  1]); 
 
+%-----------------------------------------------------------------------%
+% Sensor specific part
+% data_quality_bitmask
+data_quality_bitmask=exp_qualbit_suspect_calibration_moon_intrus.*2^5+exp_qualbit_suspect_calibration_prt.*2^4 ...
+    +exp_qualbit_suspect_calibration_BB_temp.*2^3+exp_qualbit_no_calibration_moon_intrus.*2^2+exp_qualbit_no_calibration_prt.*2^1 + qualbit_exp_calib_Moon_checkfail;
 
 %-----------------------------------------------------------------------%
 % General part
@@ -212,9 +217,7 @@ qualbit_use_with_caution_final= qualbit_use_with_caution & ~logical(qualbit_inva
 
 %-----------------------------------------------------------------------%
 % build bitmask 
-quality_pixel_bitmask=exp_qualbit_suspect_calibration_moon_intrus.*2^13+exp_qualbit_suspect_calibration_prt.*2^12 ...
-    +exp_qualbit_suspect_calibration_BB_temp.*2^11+exp_qualbit_no_calibration_moon_intrus.*2^10+exp_qualbit_no_calibration_prt.*2^9 + qualbit_exp_calib_Moon_checkfail.*2^8  ...
-    +qualbit_channels_incomplete.*2^7+qualbit_padded_data.*2^6+qualbit_sensor_error.*2^5+qualbit_invalid_time.*2^4 ...
+quality_pixel_bitmask= qualbit_channels_incomplete.*2^7+qualbit_padded_data.*2^6+qualbit_sensor_error.*2^5+qualbit_invalid_time.*2^4 ...
     +qualbit_invalid_geolocation.*2^3+qualbit_invalid_input.*2^2+qualbit_use_with_caution_final.*2+qualbit_invalid;
 
 

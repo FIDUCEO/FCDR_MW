@@ -59,9 +59,9 @@ ymdhms_end=[num2str( vectorenddate(1), '%02i'),num2str( vectorenddate(2), '%02i'
 %%filenamenew=['/scratch/uni/u237/user_data/ihans/FCDR/v0.3/easy/',sat,'/',num2str( vectorstartdate(1), '%02i'),'/',num2str( vectorstartdate(2), '%02i'),'/',num2str( vectorstartdate(3), '%02i'),'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v00.3_fv00.3','.nc'];
 %%filenamenew=['/scratch/uni/u237/user_data/ihans/FCDR/metopb_mhs_forGaiaClim/easy/',sat,'/',num2str( vectorstartdate(1), '%02i'),'/',num2str( vectorstartdate(2), '%02i'),'/',num2str( vectorstartdate(3), '%02i'),'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v00.3_fv00.3','.nc'];
 %filename for FCDR generation
-%filenamenew=['/scratch/uni/u237/users/ihans/FIDUCEO_testdata/',selectsatellite,'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v2.X_fv1.1.3','.nc'];
-%filenamenew=['/scratch/uni/u237/user_data/ihans/FCDR/easy/v2fv1_1_3/',selectsatellite,'/',num2str( vectorstartdate(1), '%02i'),'/',num2str( vectorstartdate(2), '%02i'),'/',num2str( vectorstartdate(3), '%02i'),'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v2.X_fv1.1.3','.nc'];
-filenamenew=['/scratch/uni/u237/user_data/ihans/FCDR/easy/harmonisation_test_FCDRv2/',selectsatellite,'/',num2str( vectorstartdate(1), '%02i'),'/',num2str( vectorstartdate(2), '%02i'),'/',num2str( vectorstartdate(3), '%02i'),'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v2.X_fv1.1.3','.nc'];
+%filenamenew=['/scratch/uni/u237/users/ihans/FIDUCEO_testdata/',selectsatellite,'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v2.0_fv1.1.4','.nc'];
+filenamenew=['/scratch/uni/u237/user_data/ihans/FCDR/easy/v2_0fv1_1_4/',selectsatellite,'/',num2str( vectorstartdate(1), '%02i'),'/',num2str( vectorstartdate(2), '%02i'),'/',num2str( vectorstartdate(3), '%02i'),'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v2.0_fv1.1.4','.nc'];
+%filenamenew=['/scratch/uni/u237/user_data/ihans/FCDR/easy/harmonisation_test_FCDRv2/',selectsatellite,'/',num2str( vectorstartdate(1), '%02i'),'/',num2str( vectorstartdate(2), '%02i'),'/',num2str( vectorstartdate(3), '%02i'),'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v2.0_fv1.1.4','.nc'];
 %filenamenew=['/scratch/uni/u237/users/ihans/FIDUCEO_testdata/sensitivity_study/',effect,'/',selectsatellite,'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v1.0_fv1.0_',effect,'_',value,'.nc'];
 
  % 
@@ -137,7 +137,10 @@ u_common_btemps(:,:,end-2:end)=nan;
 
   nccreate(filenamenew,'/quality_pixel_bitmask','Dimensions',{'x',28,'y',scanlinedimension},...
           'Datatype','uint16','Format','netcdf4','FillValue',fillvaluint8,'DeflateLevel',defl_level,'ChunkSize',[chunkpix chunkline]) % I used fillvalue -1 since this means fillvaluint8 in uint8 and therefore all 8 bit to "on" which is not very likely to happen in reality
+  nccreate(filenamenew,'/data_quality_bitmask','Dimensions',{'x',28,'y',scanlinedimension},...
+          'Datatype','uint16','Format','netcdf4','FillValue',fillvaluint8,'DeflateLevel',defl_level,'ChunkSize',[chunkpix chunkline]) % I used fillvalue -1 since this means fillvaluint8 in uint8 and therefore all 8 bit to "on" which is not very likely to happen in reality
 
+      
 % not yet available for SSMT2
   nccreate(filenamenew,'/quality_scanline_bitmask','Dimensions',{'y',scanlinedimension},...
           'Datatype','uint8','Format','netcdf4','FillValue',fillvaluint8,'DeflateLevel',defl_level,'ChunkSize',[chunkline])    
@@ -331,6 +334,8 @@ u_common_btemps(:,:,end-2:end)=nan;
   
   
   ncwrite(filenamenew,'/quality_pixel_bitmask',uint16(quality_pixel_bitmask))
+  
+  ncwrite(filenamenew,'/data_quality_bitmask',uint16(data_quality_bitmask))
  
 
 %not yet available for SSMT2: therefore set the zeros to nan
@@ -520,14 +525,21 @@ ncwriteatt(filenamenew,'/','instrument',[sen]);
  
  % Global flags
  ncwriteatt(filenamenew,'/quality_pixel_bitmask','standard_name',['status_flag']); %read out as dec2bin(typecast(int8(qual_scnlin_bitmask),'uint8'),8)
+ ncwriteatt(filenamenew,'/quality_pixel_bitmask','coordinates',['latitude longitude']);
  ncwriteatt(filenamenew,'/quality_pixel_bitmask','long_name',['Bitmask for quality per pixel']); %read out as dec2bin(typecast(int8(qual_scnlin_bitmask),'uint8'),8)
- ncwriteatt(filenamenew,'/quality_pixel_bitmask','flag_masks',['1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192']); 
+ ncwriteatt(filenamenew,'/quality_pixel_bitmask','flag_masks',['1, 2, 4, 8, 16, 32, 64, 128']); 
  ncwriteatt(filenamenew,'/quality_pixel_bitmask','flag_meanings',['invalid use_with_caution invalid_input invalid_geoloc '...
-     'invalid_time sensor_error padded_data incomplete_channel_data '...
-    'moon_check_fails no_calib_bad_prt no_calib_moon_intrusion susp_calib_bb_temp '...
-    'susp_calib_prt susp_calib_moon_intrusion ']);
+     'invalid_time sensor_error padded_data incomplete_channel_data ']);
 
 % Sensor Specific flags
+
+ ncwriteatt(filenamenew,'/data_quality_bitmask','standard_name',['status_flag']); %read out as dec2bin(typecast(int8(qual_scnlin_bitmask),'uint8'),8)
+ ncwriteatt(filenamenew,'/data_quality_bitmask','coordinates',['latitude longitude']);
+ ncwriteatt(filenamenew,'/data_quality_bitmask','long_name',['Sensor specific bitmask for quality per pixel']); %read out as dec2bin(typecast(int8(qual_scnlin_bitmask),'uint8'),8)
+ ncwriteatt(filenamenew,'/data_quality_bitmask','flag_masks',['1, 2, 4, 8, 16, 32']); 
+ ncwriteatt(filenamenew,'/data_quality_bitmask','flag_meanings',['moon_check_fails no_calib_bad_prt no_calib_moon_intrusion susp_calib_bb_temp '...
+    'susp_calib_prt susp_calib_moon_intrusion ']);
+
 % scanline specific
  ncwriteatt(filenamenew,'/quality_scanline_bitmask','standard_name',['status_flag']); %read out as dec2bin(typecast(int8(qual_scnlin_bitmask),'uint8'),8)
  ncwriteatt(filenamenew,'/quality_scanline_bitmask','long_name',['Bitmask for quality per scanline']); %read out as dec2bin(typecast(int8(qual_scnlin_bitmask),'uint8'),8)
@@ -539,31 +551,36 @@ ncwriteatt(filenamenew,'/','instrument',[sen]);
  
  % Channel specific issues: quality_issue_pixel_ChX_bitmask
  ncwriteatt(filenamenew,'/quality_issue_pixel_Ch1_bitmask','standard_name',['status_flag']); %read out as dec2bin(typecast(int8(qual_scnlin_bitmask),'uint8'),8)
- ncwriteatt(filenamenew,'/quality_issue_pixel_Ch1_bitmask','long_name',['Bitmask for quality issues per pixel']); %read out as dec2bin(typecast(int8(qual_scnlin_bitmask),'uint8'),8)
+ ncwriteatt(filenamenew,'/quality_issue_pixel_Ch1_bitmask','long_name',['Bitmask for quality issues in Ch1 per pixel']); %read out as dec2bin(typecast(int8(qual_scnlin_bitmask),'uint8'),8)
+ ncwriteatt(filenamenew,'/quality_issue_pixel_Ch1_bitmask','coordinates',['latitude longitude']);
  ncwriteatt(filenamenew,'/quality_issue_pixel_Ch1_bitmask','flag_masks',['1,2,4,8,16']); 
  ncwriteatt(filenamenew,'/quality_issue_pixel_Ch1_bitmask','flag_meanings',['susp_calib_DSV susp_calib_IWCT no_calib_bad_DSV no_calib_bad_IWCT bad_data_earthview']);
 
  
  ncwriteatt(filenamenew,'/quality_issue_pixel_Ch2_bitmask','standard_name',['status_flag']); %read out as dec2bin(typecast(int8(qual_scnlin_bitmask),'uint8'),8)
- ncwriteatt(filenamenew,'/quality_issue_pixel_Ch2_bitmask','long_name',['Bitmask for quality issues per pixel']); %read out as dec2bin(typecast(int8(qual_scnlin_bitmask),'uint8'),8)
+ ncwriteatt(filenamenew,'/quality_issue_pixel_Ch2_bitmask','long_name',['Bitmask for quality issues in Ch2 per pixel']); %read out as dec2bin(typecast(int8(qual_scnlin_bitmask),'uint8'),8)
+ ncwriteatt(filenamenew,'/quality_issue_pixel_Ch2_bitmask','coordinates',['latitude longitude']);
  ncwriteatt(filenamenew,'/quality_issue_pixel_Ch2_bitmask','flag_masks',['1,2,4,8,16']); 
  ncwriteatt(filenamenew,'/quality_issue_pixel_Ch2_bitmask','flag_meanings',['susp_calib_DSV susp_calib_IWCT no_calib_bad_DSV no_calib_bad_IWCT bad_data_earthview']);
 
  
  ncwriteatt(filenamenew,'/quality_issue_pixel_Ch3_bitmask','standard_name',['status_flag']); %read out as dec2bin(typecast(int8(qual_scnlin_bitmask),'uint8'),8)
- ncwriteatt(filenamenew,'/quality_issue_pixel_Ch3_bitmask','long_name',['Bitmask for quality issues per pixel']); %read out as dec2bin(typecast(int8(qual_scnlin_bitmask),'uint8'),8)
+ ncwriteatt(filenamenew,'/quality_issue_pixel_Ch3_bitmask','long_name',['Bitmask for quality issues in Ch3 per pixel']); %read out as dec2bin(typecast(int8(qual_scnlin_bitmask),'uint8'),8)
+ ncwriteatt(filenamenew,'/quality_issue_pixel_Ch3_bitmask','coordinates',['latitude longitude']);
  ncwriteatt(filenamenew,'/quality_issue_pixel_Ch3_bitmask','flag_masks',['1,2,4,8,16']); 
  ncwriteatt(filenamenew,'/quality_issue_pixel_Ch3_bitmask','flag_meanings',['susp_calib_DSV susp_calib_IWCT no_calib_bad_DSV no_calib_bad_IWCT bad_data_earthview']);
 
  
  ncwriteatt(filenamenew,'/quality_issue_pixel_Ch4_bitmask','standard_name',['status_flag']); %read out as dec2bin(typecast(int8(qual_scnlin_bitmask),'uint8'),8)
- ncwriteatt(filenamenew,'/quality_issue_pixel_Ch4_bitmask','long_name',['Bitmask for quality issues per pixel']); %read out as dec2bin(typecast(int8(qual_scnlin_bitmask),'uint8'),8)
+ ncwriteatt(filenamenew,'/quality_issue_pixel_Ch4_bitmask','long_name',['Bitmask for quality issues in Ch4 per pixel']); %read out as dec2bin(typecast(int8(qual_scnlin_bitmask),'uint8'),8)
+ ncwriteatt(filenamenew,'/quality_issue_pixel_Ch4_bitmask','coordinates',['latitude longitude']);
  ncwriteatt(filenamenew,'/quality_issue_pixel_Ch4_bitmask','flag_masks',['1,2,4,8,16']); 
  ncwriteatt(filenamenew,'/quality_issue_pixel_Ch4_bitmask','flag_meanings',['susp_calib_DSV susp_calib_IWCT no_calib_bad_DSV no_calib_bad_IWCT bad_data_earthview']);
 
  
  ncwriteatt(filenamenew,'/quality_issue_pixel_Ch5_bitmask','standard_name',['status_flag']); %read out as dec2bin(typecast(int8(qual_scnlin_bitmask),'uint8'),8)
- ncwriteatt(filenamenew,'/quality_issue_pixel_Ch5_bitmask','long_name',['Bitmask for quality issues per pixel']); %read out as dec2bin(typecast(int8(qual_scnlin_bitmask),'uint8'),8)
+ ncwriteatt(filenamenew,'/quality_issue_pixel_Ch5_bitmask','long_name',['Bitmask for quality issues in Ch5 per pixel']); %read out as dec2bin(typecast(int8(qual_scnlin_bitmask),'uint8'),8)
+ ncwriteatt(filenamenew,'/quality_issue_pixel_Ch5_bitmask','coordinates',['latitude longitude']);
  ncwriteatt(filenamenew,'/quality_issue_pixel_Ch5_bitmask','flag_masks',['1,2,4,8,16']); 
  ncwriteatt(filenamenew,'/quality_issue_pixel_Ch5_bitmask','flag_meanings',['susp_calib_DSV susp_calib_IWCT no_calib_bad_DSV no_calib_bad_IWCT bad_data_earthview']);
 
@@ -573,7 +590,6 @@ ncwriteatt(filenamenew,'/','instrument',[sen]);
  ncwriteatt(filenamenew,'/latitude','standard_name',['latitude']);
  ncwriteatt(filenamenew,'/latitude','long_name',['latitude']);
  ncwriteatt(filenamenew,'/latitude','units',['degree north']);
- ncwriteatt(filenamenew,'/latitude','_CoordinateAxisType',['Lat']);
  ncwriteatt(filenamenew,'/latitude','scale_factor',scfac_latlon); 
  ncwriteatt(filenamenew,'/latitude','description',['Latitude for each pixel in every scanline.']);
  
@@ -581,7 +597,6 @@ ncwriteatt(filenamenew,'/','instrument',[sen]);
  ncwriteatt(filenamenew,'/longitude','standard_name',['longitude']);
  ncwriteatt(filenamenew,'/longitude','long_name',['longitude']);
  ncwriteatt(filenamenew,'/longitude','units',['degree east']); 
- ncwriteatt(filenamenew,'/longitude','_CoordinateAxisType',['Lon']);
  ncwriteatt(filenamenew,'/longitude','scale_factor',scfac_latlon); 
  ncwriteatt(filenamenew,'/longitude','description',['Longitude for each pixel in every scanline.']);
  
@@ -621,6 +636,7 @@ ncwriteatt(filenamenew,'/','instrument',[sen]);
 
  ncwriteatt(filenamenew,'/Ch1_BT','standard_name',['toa_brightness_temperature']);
  ncwriteatt(filenamenew,'/Ch1_BT','long_name',['channel1-183.31pm3GHz_toa_brightness_temperature']);
+ ncwriteatt(filenamenew,'/Ch1_BT','coordinates',['latitude longitude']);
  ncwriteatt(filenamenew,'/Ch1_BT','units',['K']);
  ncwriteatt(filenamenew,'/Ch1_BT','scale_factor',scfac_bt); %FIXME: need to adapt to smallest uncertainty!
  ncwriteatt(filenamenew,'/Ch1_BT','description',['channel 1 brightness temperature per view (x) and scanline (y). This channel corresponds to AMSU-B Ch19.']);
@@ -628,6 +644,7 @@ ncwriteatt(filenamenew,'/','instrument',[sen]);
  
  ncwriteatt(filenamenew,'/Ch2_BT','standard_name',['toa_brightness_temperature']);
  ncwriteatt(filenamenew,'/Ch2_BT','long_name',['channel2-183.31pm1GHz_toa_brightness_temperature']);
+ ncwriteatt(filenamenew,'/Ch2_BT','coordinates',['latitude longitude']);
  ncwriteatt(filenamenew,'/Ch2_BT','units',['K']);
  ncwriteatt(filenamenew,'/Ch2_BT','scale_factor',scfac_bt); %FIXME: need to adapt to smallest uncertainty!
  ncwriteatt(filenamenew,'/Ch2_BT','description',['channel 2 brightness temperature per view (x) and scanline (y). This channel corresponds to AMSU-B Ch18.']);
@@ -635,6 +652,7 @@ ncwriteatt(filenamenew,'/','instrument',[sen]);
  
  ncwriteatt(filenamenew,'/Ch3_BT','standard_name',['toa_brightness_temperature']);
  ncwriteatt(filenamenew,'/Ch3_BT','long_name',['channel3-183.31pm7GHz_toa_brightness_temperature']);
+ ncwriteatt(filenamenew,'/Ch3_BT','coordinates',['latitude longitude']);
  ncwriteatt(filenamenew,'/Ch3_BT','units',['K']);
  ncwriteatt(filenamenew,'/Ch3_BT','scale_factor',scfac_bt); %FIXME: need to adapt to smallest uncertainty!
  ncwriteatt(filenamenew,'/Ch3_BT','description',['channel 3 brightness temperature per view (x) and scanline (y). This channel corresponds to AMSU-B Ch20.']);
@@ -642,6 +660,7 @@ ncwriteatt(filenamenew,'/','instrument',[sen]);
 
  ncwriteatt(filenamenew,'/Ch4_BT','standard_name',['toa_brightness_temperature']);
  ncwriteatt(filenamenew,'/Ch4_BT','long_name',['channel4-91.665pm1.25GHz_toa_brightness_temperature']);
+ ncwriteatt(filenamenew,'/Ch4_BT','coordinates',['latitude longitude']);
  ncwriteatt(filenamenew,'/Ch4_BT','units',['K']);
  ncwriteatt(filenamenew,'/Ch4_BT','scale_factor',scfac_bt); %FIXME: need to adapt to smallest uncertainty!
  ncwriteatt(filenamenew,'/Ch4_BT','description',['channel 4 brightness temperature per view (x) and scanline (y).This channels frequency is close to AMSU-B Ch16s frequency..']);
@@ -649,6 +668,7 @@ ncwriteatt(filenamenew,'/','instrument',[sen]);
  
  ncwriteatt(filenamenew,'/Ch5_BT','standard_name',['toa_brightness_temperature']);
  ncwriteatt(filenamenew,'/Ch5_BT','long_name',['channel5-150.0pm1.25GHz_toa_brightness_temperature']);
+ ncwriteatt(filenamenew,'/Ch5_BT','coordinates',['latitude longitude']);
  ncwriteatt(filenamenew,'/Ch5_BT','units',['K']);
  ncwriteatt(filenamenew,'/Ch5_BT','scale_factor',scfac_bt); %FIXME: need to adapt to smallest uncertainty!
  ncwriteatt(filenamenew,'/Ch5_BT','description',['channel 5 brightness temperature per view (x) and scanline (y). This channel corresponds to AMSU-B Ch17.']);
@@ -658,30 +678,35 @@ ncwriteatt(filenamenew,'/','instrument',[sen]);
 
  ncwriteatt(filenamenew,'/u_independent_Ch1_BT','long_name',['uncertainty_of_channel16_toa_brightness_temperature_independent_effects']);
  ncwriteatt(filenamenew,'/u_independent_Ch1_BT','units',['K']);
+ ncwriteatt(filenamenew,'/u_independent_Ch1_BT','coordinates',['latitude longitude']);
  ncwriteatt(filenamenew,'/u_independent_Ch1_BT','scale_factor',scfac_ur); 
  ncwriteatt(filenamenew,'/u_independent_Ch1_BT','description',['Uncertainty of the TOA brightness temperature. Contains all considered independent effects of uncertainty.']);
  
 
  ncwriteatt(filenamenew,'/u_independent_Ch2_BT','long_name',['uncertainty_of_channel17_toa_brightness_temperature_independent_effects']);
  ncwriteatt(filenamenew,'/u_independent_Ch2_BT','units',['K']);
+ ncwriteatt(filenamenew,'/u_independent_Ch2_BT','coordinates',['latitude longitude']);
  ncwriteatt(filenamenew,'/u_independent_Ch2_BT','scale_factor',scfac_ur); 
  ncwriteatt(filenamenew,'/u_independent_Ch2_BT','description',['Uncertainty of the TOA brightness temperature. Contains all considered independent effects of uncertainty.']);
  
 
  ncwriteatt(filenamenew,'/u_independent_Ch3_BT','long_name',['uncertainty_of_channel18_toa_brightness_temperature_independent_effects']);
  ncwriteatt(filenamenew,'/u_independent_Ch3_BT','units',['K']);
+ ncwriteatt(filenamenew,'/u_independent_Ch3_BT','coordinates',['latitude longitude']);
  ncwriteatt(filenamenew,'/u_independent_Ch3_BT','scale_factor',scfac_ur); 
  ncwriteatt(filenamenew,'/u_independent_Ch3_BT','description',['Uncertainty of the TOA brightness temperature. Contains all considered independent effects of uncertainty.']);
  
 
  ncwriteatt(filenamenew,'/u_independent_Ch4_BT','long_name',['uncertainty_of_channel19_toa_brightness_temperature_independent_effects']);
  ncwriteatt(filenamenew,'/u_independent_Ch4_BT','units',['K']);
+ ncwriteatt(filenamenew,'/u_independent_Ch4_BT','coordinates',['latitude longitude']);
  ncwriteatt(filenamenew,'/u_independent_Ch4_BT','scale_factor',scfac_ur); 
  ncwriteatt(filenamenew,'/u_independent_Ch4_BT','description',['Uncertainty of the TOA brightness temperature. Contains all considered independent effects of uncertainty.']);
  
 
  ncwriteatt(filenamenew,'/u_independent_Ch5_BT','long_name',['uncertainty_of_channel20_toa_brightness_temperature_independent_effects']);
  ncwriteatt(filenamenew,'/u_independent_Ch5_BT','units',['K']);
+ ncwriteatt(filenamenew,'/u_independent_Ch5_BT','coordinates',['latitude longitude']);
  ncwriteatt(filenamenew,'/u_independent_Ch5_BT','scale_factor',scfac_ur); 
  ncwriteatt(filenamenew,'/u_independent_Ch5_BT','description',['Uncertainty of the TOA brightness temperature. Contains all considered independent effects of uncertainty.']);
  
@@ -689,60 +714,70 @@ ncwriteatt(filenamenew,'/','instrument',[sen]);
 
  ncwriteatt(filenamenew,'/u_structured_Ch1_BT','long_name',['uncertainty_of_channel16_toa_brightness_temperature_structured_effects']);
  ncwriteatt(filenamenew,'/u_structured_Ch1_BT','units',['K']);
+ ncwriteatt(filenamenew,'/u_structured_Ch1_BT','coordinates',['latitude longitude']);
  ncwriteatt(filenamenew,'/u_structured_Ch1_BT','scale_factor',scfac_unr); 
  ncwriteatt(filenamenew,'/u_structured_Ch1_BT','description',['Uncertainty of the TOA brightness temperature. Contains all considered structured effects of uncertainty.']);
  
  
  ncwriteatt(filenamenew,'/u_structured_Ch2_BT','long_name',['uncertainty_of_channel17_toa_brightness_temperature_structured_effects']);
  ncwriteatt(filenamenew,'/u_structured_Ch2_BT','units',['K']);
+ ncwriteatt(filenamenew,'/u_structured_Ch2_BT','coordinates',['latitude longitude']);
  ncwriteatt(filenamenew,'/u_structured_Ch2_BT','scale_factor',scfac_unr); 
  ncwriteatt(filenamenew,'/u_structured_Ch2_BT','description',['Uncertainty of the TOA brightness temperature. Contains all considered structured effects of uncertainty.']);
  
 
  ncwriteatt(filenamenew,'/u_structured_Ch3_BT','long_name',['uncertainty_of_channel18_toa_brightness_temperature_structured_effects']);
  ncwriteatt(filenamenew,'/u_structured_Ch3_BT','units',['K']);
+ ncwriteatt(filenamenew,'/u_structured_Ch3_BT','coordinates',['latitude longitude']);
  ncwriteatt(filenamenew,'/u_structured_Ch3_BT','scale_factor',scfac_unr); 
  ncwriteatt(filenamenew,'/u_structured_Ch3_BT','description',['Uncertainty of the TOA brightness temperature. Contains all considered structured effects of uncertainty.']);
  
 
  ncwriteatt(filenamenew,'/u_structured_Ch4_BT','long_name',['uncertainty_of_channel19_toa_brightness_temperature_structured_effects']);
  ncwriteatt(filenamenew,'/u_structured_Ch4_BT','units',['K']);
+ ncwriteatt(filenamenew,'/u_structured_Ch4_BT','coordinates',['latitude longitude']);
  ncwriteatt(filenamenew,'/u_structured_Ch4_BT','scale_factor',scfac_unr); 
  ncwriteatt(filenamenew,'/u_structured_Ch4_BT','description',['Uncertainty of the TOA brightness temperature. Contains all considered structured effects of uncertainty.']);
  
  
  ncwriteatt(filenamenew,'/u_structured_Ch5_BT','long_name',['uncertainty_of_channel20_toa_brightness_temperature_structured_effects']);
  ncwriteatt(filenamenew,'/u_structured_Ch5_BT','units',['K']);
+ ncwriteatt(filenamenew,'/u_structured_Ch5_BT','coordinates',['latitude longitude']);
  ncwriteatt(filenamenew,'/u_structured_Ch5_BT','scale_factor',scfac_unr); 
  ncwriteatt(filenamenew,'/u_structured_Ch5_BT','description',['Uncertainty of the TOA brightness temperature. Contains all considered structured effects of uncertainty.']);
  
  
  ncwriteatt(filenamenew,'/u_common_Ch1_BT','long_name',['uncertainty_of_channel16_toa_brightness_temperature_common_effects']);
  ncwriteatt(filenamenew,'/u_common_Ch1_BT','units',['K']);
+ ncwriteatt(filenamenew,'/u_common_Ch1_BT','coordinates',['latitude longitude']);
  ncwriteatt(filenamenew,'/u_common_Ch1_BT','scale_factor',scfac_unr); 
  ncwriteatt(filenamenew,'/u_common_Ch1_BT','description',['Uncertainty of the TOA brightness temperature. Contains all considered common effects of uncertainty.']);
  
  
  ncwriteatt(filenamenew,'/u_common_Ch2_BT','long_name',['uncertainty_of_channel17_toa_brightness_temperature_common_effects']);
  ncwriteatt(filenamenew,'/u_common_Ch2_BT','units',['K']);
+ ncwriteatt(filenamenew,'/u_common_Ch2_BT','coordinates',['latitude longitude']);
  ncwriteatt(filenamenew,'/u_common_Ch2_BT','scale_factor',scfac_unr); 
  ncwriteatt(filenamenew,'/u_common_Ch2_BT','description',['Uncertainty of the TOA brightness temperature. Contains all considered common effects of uncertainty.']);
  
 
  ncwriteatt(filenamenew,'/u_common_Ch3_BT','long_name',['uncertainty_of_channel18_toa_brightness_temperature_common_effects']);
  ncwriteatt(filenamenew,'/u_common_Ch3_BT','units',['K']);
+ ncwriteatt(filenamenew,'/u_common_Ch3_BT','coordinates',['latitude longitude']);
  ncwriteatt(filenamenew,'/u_common_Ch3_BT','scale_factor',scfac_unr); 
  ncwriteatt(filenamenew,'/u_common_Ch3_BT','description',['Uncertainty of the TOA brightness temperature. Contains all considered common effects of uncertainty.']);
  
 
  ncwriteatt(filenamenew,'/u_common_Ch4_BT','long_name',['uncertainty_of_channel19_toa_brightness_temperature_common_effects']);
  ncwriteatt(filenamenew,'/u_common_Ch4_BT','units',['K']);
+ ncwriteatt(filenamenew,'/u_common_Ch4_BT','coordinates',['latitude longitude']);
  ncwriteatt(filenamenew,'/u_common_Ch4_BT','scale_factor',scfac_unr); 
  ncwriteatt(filenamenew,'/u_common_Ch4_BT','description',['Uncertainty of the TOA brightness temperature. Contains all considered common effects of uncertainty.']);
  
  
  ncwriteatt(filenamenew,'/u_common_Ch5_BT','long_name',['uncertainty_of_channel20_toa_brightness_temperature_common_effects']);
  ncwriteatt(filenamenew,'/u_common_Ch5_BT','units',['K']);
+ ncwriteatt(filenamenew,'/u_common_Ch5_BT','coordinates',['latitude longitude']);
  ncwriteatt(filenamenew,'/u_common_Ch5_BT','scale_factor',scfac_unr); 
  ncwriteatt(filenamenew,'/u_common_Ch5_BT','description',['Uncertainty of the TOA brightness temperature. Contains all considered common effects of uncertainty.']);
  
