@@ -1,7 +1,3 @@
-
-
-
-
 function [hours,minutes,seconds,mi]=mills2hmsmill(input)
 timeinmilliseconds=input;
 timeinseconds=timeinmilliseconds/1000;

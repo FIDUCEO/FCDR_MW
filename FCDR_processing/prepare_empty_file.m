@@ -28,7 +28,10 @@
     quality_issue_pixel_Ch3_bitmask=0*ones(number_of_fovs,scanlinenumbers(end));
     quality_issue_pixel_Ch4_bitmask=0*ones(number_of_fovs,scanlinenumbers(end));
     quality_issue_pixel_Ch5_bitmask=0*ones(number_of_fovs,scanlinenumbers(end));
-  
+    
+    R_c_i=-32768*ones(5,5); %-32768=fillvalint16
+    R_c_s=-32768*ones(5,5);
+    R_c_co=-32768*ones(5,5);
  
     
     

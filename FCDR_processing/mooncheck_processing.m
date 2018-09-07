@@ -12,8 +12,8 @@
 %%%%% mean with reduced number of scanlines)
 %
  % Copyright (C) 2017-04-12 Imke Hans
- % This code was developed for the EC project �Fidelity and Uncertainty in   
- %  Climate Data Records from Earth Observations (FIDUCEO)�. 
+ % This code was developed for the EC project ?Fidelity and Uncertainty in   
+ %  Climate Data Records from Earth Observations (FIDUCEO)?. 
  % Grant Agreement: 638822
  %  <Version> Reviewed and approved by <name, instituton>, <date>
  %
@@ -69,7 +69,6 @@
 
 
 %% 
-
 
 % % build filename
 % arraychar=char(that_file(selectorbit));
@@ -277,7 +276,4 @@ else
     
     
 end
-
-
-
 

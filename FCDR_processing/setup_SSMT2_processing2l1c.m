@@ -715,13 +715,13 @@ time_EpochSecond=round((InputDate-UnixOrigin)*86400);
 %                         % from fdf.dat-file
 %                         % alpha= 1-quotient of reflectivities
 %                         alpha=[0.0002 0.0015 -0.0022 -0.0022 0.0021];
-                          alphaMHSN18=[0.0002 0.0015 -0.0022 -0.0022 0.0021];
-                          
+                          alphaMHSN18_SSMT2=[-0.0022 -0.0022 -0.0021 -0.0002 -0.0015]; %changed order to match SSMT2; all negative since SSMT2 all H-polaris.
+                         
                         % UNCERTAINTY
                         % alpha is zero for ssmt2 (there is no polarization
                         % correction at all). But use MHSN18 values as
                         % uncertainty.
-                        u_alpha=abs(alphaMHSN18);%abs(alphaMHSN18); % estimate of 100% uncertainty (rel. to values for N18. 
+                        u_alpha=abs(alphaMHSN18_SSMT2);%abs(alphaMHSN18); % estimate of 100% uncertainty (rel. to values for N18. 
                                                   % No other MHS instrument gets these values. But why not?
                                                   % We represent this fact by 100% uncertainty)
       

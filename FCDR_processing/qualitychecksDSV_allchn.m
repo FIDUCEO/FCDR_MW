@@ -183,7 +183,7 @@ for chn=1:5
         [sorted,sortedloc]=sort(abs(scnlin_good_checksdsv{chn}-scnlin_bad_checksdsv{chn}(indexbad)));%check for the next good scanlines adjacent to the bad one, i.e sort the differences; then take the num_closestlines (e.g.=5) closest goodlines
         if sorted(1)<5 % if the good one is closer than 5 scanlines apart, then:
             %dsv_mean_intermed(scnlin_bad_checksdsv{chn}(indexbad),chn)=median(dsv_meanOLD(scnlin_good_checksdsv{chn}(sortedloc(1:num_closestlines)),chn)); %dsv_mean(badPRTline,channel)=dsv_mean(closestgoodPRTlines,channel);
-            dsvmean_per_line(scnlin_bad_checksdsv{chn}(indexbad),chn)=median(dsv_meanOLD(scnlin_good_checksdsv{chn}(sortedloc(1:num_closestlines)),chn)); %dsv_mean(badPRTline,channel)=dsv_mean(closestgoodPRTlines,channel);
+            %dsvmean_per_line(scnlin_bad_checksdsv{chn}(indexbad),chn)=median(dsv_meanOLD(scnlin_good_checksdsv{chn}(sortedloc(1:num_closestlines)),chn)); %dsv_mean(badPRTline,channel)=dsv_mean(closestgoodPRTlines,channel);
             
             %this is also done for missing scanlines! i.e. the DSV and DSV counts are estimated.
             %But since there are no C_E, the calibration is not possible and there are NaNs in btemps which are converted to fillvalue with change-type.
@@ -201,7 +201,7 @@ for chn=1:5
             %dsv_mean_intermed(scnlin_bad_checksdsv{chn}(indexbad),chn)=nan;
             dsvmean_per_line(scnlin_bad_checksdsv{chn}(indexbad),chn)=nan;
             
-        end
+         end
 
     end
 
@@ -229,38 +229,35 @@ scnlin_DSV_badline_furtherthan5lines{5}=find(qualflag_DSV_badline_furtherthan5li
             
 %% compute the count mean over the views:
 %construct matrix having 1 at views that should enter the mean over the
-%views. Note that we also put in the lines for the 5-closest case since
-%they got filled with data and should enter the final 7-scnlin rolling
-%average (therefore they need to be view-averaged, too; which they are
-%already since they got filled with the median of the 5closest lines'
-%view-mean values. But they must appear here as usable views otherwise they
-%get overwritten by NAN).
+%views. 
 % set zero to NAN , to generate NAN values
 %  for bad views:
 expand_qualflag_DSV_badline_5closest=repmat(qualflag_DSV_badline_5closest,[1 1 4]);
-usedDSVviews=double(logical(qualflag_DSVview_good_checks) |logical(expand_qualflag_DSV_badline_5closest));
+usedDSVviews=double(logical(qualflag_DSVview_good_checks)) ; % |logical(expand_qualflag_DSV_badline_5closest));
 usedDSVviews(usedDSVviews==0)=nan;%(qualflag_IWCTview_good_checks==0)=nan;
 
 dsv_counts_use=usedDSVviews.* dsv_counts_raw; % calculate the counts to be used by elementwise multiplication with usable-views-matrix
 dsv_mean_appliedflags_withoutMooncheck= mean(dsv_counts_use,3,'omitnan'); %calculate mean over all usable views, omitting the NANs, i.e. the mean is calculated correeclty over reduced number of views (in case it is necessary)
 % this dsv_mean_appliedflags_withoutMooncheck needs to be combined with the
 % dsv_mean-on-ok-moon-views, in order to obtain the dsv_mean that shall go
-% into the rolling average. Note: 1. that the 5-closest-case-TRUE-lines ARE
-% included in the rolling average, therefore the median of the 5 closest
-% have been written into dsvmean_perline which enters the rolling average
-% (the average is ONLY NOT performed on "further-away cases only"). 2. that
+% into the rolling average. 
+% TRUE: Note that
 % the badline further away than 5 lines from a good one, got NAN as
 % dsv_mean_perline.
 
-% 1. dsv_mean_appliedflags_withoutMooncheck combined with dsvmean_per_line (containting the 5closest-medians) to new dsvmean_per_line
+% % 1. dsv_mean_appliedflags_withoutMooncheck combined with dsvmean_per_line (containting the 5closest-medians) to new dsvmean_per_line
 % 2. this dsvmean_per_line + dsvmeanviewok = dsvmean_per_line
 % 3. rollingaverage(dsvmean_per_line)= averaged_dsv_mean_intermed
 % 4. averaged_dsv_mean_intermed = final_dsv_mean
 
-% step 1.
-dsvmean_per_line_transp=dsvmean_per_line.';
-dsv_mean_appliedflags_withoutMooncheck(qualflag_DSV_badline_5closest==1)=dsvmean_per_line_transp(qualflag_DSV_badline_5closest==1);
-% now the 5-closest case lines are included with their median estimates
+% % step 1.
+% dsvmean_per_line_transp=dsvmean_per_line.';
+% dsv_mean_appliedflags_withoutMooncheck(qualflag_DSV_badline_5closest==1)=dsvmean_per_line_transp(qualflag_DSV_badline_5closest==1);
+% % now the 5-closest case lines are included with their median estimates
+
+% don't do step 1; since we DO NOT include the 5-closest case in the
+% 7-scanlin av! (we want to fill them up only AFTER the roll av.)
+
 
 % prepare step 2.
 % put the mean without mooncheck into new variable. The moon-check-mean for

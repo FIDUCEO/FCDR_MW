@@ -186,7 +186,7 @@ for chn=1:5
         [sorted,sortedloc]=sort(abs(scnlin_good_checksiwct{chn}-scnlin_bad_checksiwct{chn}(indexbad)));%check for the next good scanlines adjacent to the bad one, i.e sort the differences; then take the num_closestlines (e.g.=5) closest goodlines
         if sorted(1)<5 % if the good one is closer than 5 scanlines apart, then:
             %iwct_mean_intermed(scnlin_bad_checksiwct{chn}(indexbad),chn)=median(iwct_meanOLD(scnlin_good_checksiwct{chn}(sortedloc(1:num_closestlines)),chn)); %iwct_mean(badPRTline,channel)=iwct_mean(closestgoodPRTlines,channel);
-            iwctmean_per_line(scnlin_bad_checksiwct{chn}(indexbad),chn)=median(iwct_meanOLD(scnlin_good_checksiwct{chn}(sortedloc(1:num_closestlines)),chn)); %iwct_mean(badPRTline,channel)=iwct_mean(closestgoodPRTlines,channel);
+            %iwctmean_per_line(scnlin_bad_checksiwct{chn}(indexbad),chn)=median(iwct_meanOLD(scnlin_good_checksiwct{chn}(sortedloc(1:num_closestlines)),chn)); %iwct_mean(badPRTline,channel)=iwct_mean(closestgoodPRTlines,channel);
             %?! the iwct mean has a wrong value at 1655 . some where it gets back its wrong values.
             %this is also done for missing scanlines! i.e. the IWCT and IWCT counts are estimated.
             %But since there are no C_E, the calibration is not possible and there are NaNs in btemps which are converted to fillvalue with change-type.
@@ -204,7 +204,7 @@ for chn=1:5
             
             %iwct_mean_intermed(scnlin_bad_checksiwct{chn}(indexbad),chn)=nan;
             iwctmean_per_line(scnlin_bad_checksiwct{chn}(indexbad),chn)=nan;
-        end
+         end
 
     end
     
@@ -234,12 +234,7 @@ scnlin_IWCT_badline_furtherthan5lines{5}=find(qualflag_IWCT_badline_furtherthan5
             
 %% compute the count mean over the views:
 %construct matrix having 1 at views that should enter the mean over the
-%views. Note that we also put in the lines for the 5-closest case since
-%they got filled with data and should enter the final 7-scnlin rolling
-%average (therefore they need to be view-averaged, too; which they are
-%already since they got filled with the median of the 5closest lines'
-%view-mean values. But they must appear here as usable views otherwise they
-%get overwritten by NAN).
+%views. 
 % set zero to NAN , to generate NAN values
 %  for bad views:
 expand_qualflag_IWCT_badline_5closest=repmat(qualflag_IWCT_badline_5closest,[1 1 4]);
@@ -260,9 +255,12 @@ iwct_mean_appliedflags= mean(iwct_counts_use,3,'omitnan'); %calculate mean over 
 % 2. rollingaverage(iwctmean_per_line)= averaged_iwct_mean_intermed
 % 3. averaged_iwct_mean_intermed = final_iwct_mean
 
-% step 1.
-iwctmean_per_line_transp=iwctmean_per_line.';
-iwct_mean_appliedflags(qualflag_IWCT_badline_5closest==1)=iwctmean_per_line_transp(qualflag_IWCT_badline_5closest==1);
+% % step 1.
+% iwctmean_per_line_transp=iwctmean_per_line.';
+% iwct_mean_appliedflags(qualflag_IWCT_badline_5closest==1)=iwctmean_per_line_transp(qualflag_IWCT_badline_5closest==1);
+
+% don't do step 1; since we DO NOT include the 5-closest case in the
+% 7-scanlin av! (we want to fill them up only AFTER the roll av.)
 
 % for step 2.
 % put the mean into new variables that will enter the rolling average

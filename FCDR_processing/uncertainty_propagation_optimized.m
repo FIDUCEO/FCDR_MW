@@ -226,10 +226,10 @@ u_rad_alpha=1/(2*Antenna_corrcoeff_earthcontribution_mat).*(R_IWCT_mat-R_Eprime_
 u_rad_R_Eprime=1-alpha_mat./2.*(cos(deg2rad(2*Antenna_position_earthview_mat))-cos(deg2rad(2*Antenna_position_spaceview_mat)));
 
 % Antenna position Space views alpha_mat
-u_rad_Antenna_position_spaceview=0.0022./Antenna_corrcoeff_earthcontribution_mat .* (R_IWCT_mat-R_Eprime_mat).* sin(deg2rad(2*Antenna_position_spaceview_mat));
+u_rad_Antenna_position_spaceview=alpha_mat./Antenna_corrcoeff_earthcontribution_mat .* (R_IWCT_mat-R_Eprime_mat).* sin(deg2rad(2*Antenna_position_spaceview_mat));
 
 % Antenna position Earth views alpha_mat
-u_rad_Antenna_position_earthview=-0.0022./Antenna_corrcoeff_earthcontribution_mat .* (R_IWCT_mat-R_Eprime_mat).* sin(deg2rad(2*Antenna_position_earthview_mat));
+u_rad_Antenna_position_earthview=-alpha_mat./Antenna_corrcoeff_earthcontribution_mat .* (R_IWCT_mat-R_Eprime_mat).* sin(deg2rad(2*Antenna_position_earthview_mat));
 
 % Antenna correction coefficients for Earth conntribution
 u_rad_Antenna_corrcoeff_earthcontribution=-1/Antenna_corrcoeff_earthcontribution_mat.^2.*(R_ME_mat-(1-Antenna_corrcoeff_earthcontribution_mat-(1-assumption).*g_Sat_mat).*R_CMB0_mat-(1-assumption).*g_Sat_mat.*R_Sat_mat).*(1- alpha_mat./2 .*(cos(deg2rad(2*Antenna_position_earthview_mat))-cos(deg2rad(2*Antenna_position_spaceview_mat))));%-1/Antenna_corrcoeff_earthview_mat .*(R_E_mat-R_CMB0_mat);

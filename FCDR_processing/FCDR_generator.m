@@ -1,15 +1,12 @@
-
-
-
 % FCDR generator
 
 function FCDR_generator(sat,sen,year,chosen_month)
 
 % Choose satellite, sensor, year and month
-% sat='noaa18';
-% sen='mhs';
-% year=2014;
-% chosen_month=11;
+% sat='noaa15';
+% sen='amsub';
+% year=1999;
+% chosen_month=6;
 
 
 
@@ -33,10 +30,12 @@ disp('Determine equator crossings...')
 equator_crossings=determine_EQcrossings(sat,sen,monthly_data_record);
 
 % Determine data gaps larger than 1/2 orbit (to get start/ end of file correct in this case)
-scnlin_before_datagap=determine_data_gaps(sat,sen,monthly_data_record);
+[scnlin_before_datagap,equator_crossings_cleaned]=determine_data_gaps(sat,sen,monthly_data_record,equator_crossings);
+
+
 
 % Combine equator crossings and "scanlines before found gaps" 
-crossings_and_gap_withoffsets=[equator_crossings scnlin_before_datagap; 3*ones(1,length(equator_crossings)) -1*ones(1,length(scnlin_before_datagap)) ; 3*ones(1,length(equator_crossings)) zeros(1,length(scnlin_before_datagap)) ];
+crossings_and_gap_withoffsets=[equator_crossings_cleaned scnlin_before_datagap; 3*ones(1,length(equator_crossings_cleaned)) -1*ones(1,length(scnlin_before_datagap)) ; 3*ones(1,length(equator_crossings_cleaned)) zeros(1,length(scnlin_before_datagap)) ];
 
 % Combine equator crossings and scanlines before found gaps
 crossings_and_gap=sortrows(crossings_and_gap_withoffsets.').';
@@ -46,4 +45,3 @@ disp('Produce EQ-to-EQ files and start processing:')
 process_FCDR
 
 disp(['Month ', num2str(chosen_month), ' has been processed sucessfully.'] )
-

@@ -614,10 +614,30 @@ calculate_solarAndsatellite_azimuth_angle
                         
                         % values for dT_w for the 3 reference temperatures for each
                         % channel (probably always zero)
-                        dT_w_min=double([hdrinfo.Ch_16_warm_target_fixed_bias_correction_min_temp; hdrinfo.Ch_17_warm_target_fixed_bias_correction_min_temp;hdrinfo.Ch_18_warm_target_fixed_bias_correction_min_temp;hdrinfo.Ch_19_warm_target_fixed_bias_correction_min_temp;hdrinfo.Ch_20_warm_target_fixed_bias_correction_min_temp]);
-                        dT_w_nom=double([hdrinfo.Ch_16_warm_target_fixed_bias_correction_nom_temp; hdrinfo.Ch_17_warm_target_fixed_bias_correction_nom_temp; hdrinfo.Ch_18_warm_target_fixed_bias_correction_nom_temp; hdrinfo.Ch_19_warm_target_fixed_bias_correction_nom_temp; hdrinfo.Ch_20_warm_target_fixed_bias_correction_nom_temp]);
-                        dT_w_max=double([hdrinfo.Ch_16_warm_target_fixed_bias_correction_max_temp;hdrinfo.Ch_17_warm_target_fixed_bias_correction_max_temp;hdrinfo.Ch_18_warm_target_fixed_bias_correction_max_temp;hdrinfo.Ch_19_warm_target_fixed_bias_correction_max_temp;hdrinfo.Ch_20_warm_target_fixed_bias_correction_max_temp]);
+                        dT_w_min=[0;0;0;0;0];%double([hdrinfo.Ch_16_warm_target_fixed_bias_correction_min_temp; hdrinfo.Ch_17_warm_target_fixed_bias_correction_min_temp;hdrinfo.Ch_18_warm_target_fixed_bias_correction_min_temp;hdrinfo.Ch_19_warm_target_fixed_bias_correction_min_temp;hdrinfo.Ch_20_warm_target_fixed_bias_correction_min_temp]);
+                        dT_w_nom=[0;0;0;0;0];%double([hdrinfo.Ch_16_warm_target_fixed_bias_correction_nom_temp; hdrinfo.Ch_17_warm_target_fixed_bias_correction_nom_temp; hdrinfo.Ch_18_warm_target_fixed_bias_correction_nom_temp; hdrinfo.Ch_19_warm_target_fixed_bias_correction_nom_temp; hdrinfo.Ch_20_warm_target_fixed_bias_correction_nom_temp]);
+                        dT_w_max=[0;0;0;0;0];%double([hdrinfo.Ch_16_warm_target_fixed_bias_correction_max_temp;hdrinfo.Ch_17_warm_target_fixed_bias_correction_max_temp;hdrinfo.Ch_18_warm_target_fixed_bias_correction_max_temp;hdrinfo.Ch_19_warm_target_fixed_bias_correction_max_temp;hdrinfo.Ch_20_warm_target_fixed_bias_correction_max_temp]);
+%                        % HARMONISED PARAMETERS  
+
+                       
+                          
+                          if strcmp(sat,'noaa15')
+                              ch18_dTw=-0.58;
+                          elseif strcmp(sat,'noaa16')
+                              ch18_dTw=-0.08;
+                          elseif strcmp(sat,'noaa17')
+                              ch18_dTw=3.85;
+                          end
+                          %ch18_dTw=3.85;
+                        dT_w_min=double([hdrinfo.Ch_16_warm_target_fixed_bias_correction_min_temp; hdrinfo.Ch_17_warm_target_fixed_bias_correction_min_temp;ch18_dTw;hdrinfo.Ch_19_warm_target_fixed_bias_correction_min_temp;hdrinfo.Ch_20_warm_target_fixed_bias_correction_min_temp]);
+                        dT_w_nom=double([hdrinfo.Ch_16_warm_target_fixed_bias_correction_nom_temp; hdrinfo.Ch_17_warm_target_fixed_bias_correction_nom_temp; ch18_dTw; hdrinfo.Ch_19_warm_target_fixed_bias_correction_nom_temp; hdrinfo.Ch_20_warm_target_fixed_bias_correction_nom_temp]);
+                        dT_w_max=double([hdrinfo.Ch_16_warm_target_fixed_bias_correction_max_temp;hdrinfo.Ch_17_warm_target_fixed_bias_correction_max_temp;ch18_dTw;hdrinfo.Ch_19_warm_target_fixed_bias_correction_max_temp;hdrinfo.Ch_20_warm_target_fixed_bias_correction_max_temp]);
                          
+                        
+
+
+%                         
+                        
 %                         %sensitivity study 
 %                         dT_w_min=4*-0.16*ones(5,1);
 %                         dT_w_nom=4*-0.16*ones(5,1);
@@ -650,6 +670,15 @@ calculate_solarAndsatellite_azimuth_angle
                         %u_dT_w=abs(dT_w); %estimate uncertainty of 100% %FIXME: this is zero so far!
                         u_dT_w=bsxfun(@times,ones(size(dT_w)),0.16); %estimate of 0.16K uncertainty in dT_w correction, which is zero so far.
      
+                        % HARMONISED PARAMETERS
+                        if strcmp(sat,'noaa15')
+                              u_dT_w(3,:)=0.41;
+                        elseif strcmp(sat,'noaa16')
+                              u_dT_w(3,:)=0.07;
+                        elseif strcmp(sat,'noaa17')
+                              u_dT_w(3,:)=0.45;
+                        end
+                        
       %%%%%%%%%%%%%                
                       %space view profile
                       % FIXME: take values for profile which was chosen. profile 3
@@ -717,9 +746,25 @@ calculate_solarAndsatellite_azimuth_angle
                       % clparams-file). Therefore using only 1e-3 give 1/W
                       % not 1/mW! Since we use W not mW, I stick to reading
                       % *1e-3 from l1b and using this as 1/W-value.
+                      
                       non_lin_min=double([hdrinfo.Ch_16_nonlinearity_coeff_min_temperature; hdrinfo.Ch_17_nonlinearity_coeff_min_temperature;hdrinfo.Ch_18_nonlinearity_coeff_min_temperature;hdrinfo.Ch_19_nonlinearity_coeff_min_temperature;hdrinfo.Ch_20_nonlinearity_coeff_min_temperature]); 
                       non_lin_nominal=double([hdrinfo.Ch_16_nonlinearity_coeff_nominal_temperature; hdrinfo.Ch_17_nonlinearity_coeff_nominal_temperature;hdrinfo.Ch_18_nonlinearity_coeff_nominal_temperature;hdrinfo.Ch_19_nonlinearity_coeff_nominal_temperature;hdrinfo.Ch_20_nonlinearity_coeff_nominal_temperature]);
                       non_lin_max=double([hdrinfo.Ch_16_nonlinearity_coeff_max_temperature; hdrinfo.Ch_17_nonlinearity_coeff_max_temperature;hdrinfo.Ch_18_nonlinearity_coeff_max_temperature;hdrinfo.Ch_19_nonlinearity_coeff_max_temperature;hdrinfo.Ch_20_nonlinearity_coeff_max_temperature]);
+                    
+                      % HARMONISED PARAMETERS
+                        if strcmp(sat,'noaa15')
+                              ch18_a_1=-126.6;
+                        elseif strcmp(sat,'noaa16')
+                              ch18_a_1=157.0;
+                        elseif strcmp(sat,'noaa17')
+                              ch18_a_1=904.6;
+                        end
+                          %ch18_a_1=904.6;
+                        non_lin_min=double([hdrinfo.Ch_16_nonlinearity_coeff_min_temperature; hdrinfo.Ch_17_nonlinearity_coeff_min_temperature;ch18_a_1;hdrinfo.Ch_19_nonlinearity_coeff_min_temperature;hdrinfo.Ch_20_nonlinearity_coeff_min_temperature]); 
+                        non_lin_nominal=double([hdrinfo.Ch_16_nonlinearity_coeff_nominal_temperature; hdrinfo.Ch_17_nonlinearity_coeff_nominal_temperature;ch18_a_1;hdrinfo.Ch_19_nonlinearity_coeff_nominal_temperature;hdrinfo.Ch_20_nonlinearity_coeff_nominal_temperature]);
+                        non_lin_max=double([hdrinfo.Ch_16_nonlinearity_coeff_max_temperature; hdrinfo.Ch_17_nonlinearity_coeff_max_temperature;ch18_a_1;hdrinfo.Ch_19_nonlinearity_coeff_max_temperature;hdrinfo.Ch_20_nonlinearity_coeff_max_temperature]);
+                      
+
                       
 %                       %sensitivity study
 %                       non_lin_min=4*double([hdrinfo.Ch_16_nonlinearity_coeff_min_temperature; hdrinfo.Ch_17_nonlinearity_coeff_min_temperature; -51.145; -46.927 ; -7.9542]); %hard coded values from N18 Ch3-5
@@ -754,6 +799,17 @@ calculate_solarAndsatellite_azimuth_angle
                             
                             % UNCERTAINTY
                             u_nonlincoeff=abs(nonlincoeff);% estimate of 100% uncertainty
+                            
+                            % HARMONISED PARAMETERS
+                            if strcmp(sat,'noaa15')
+                                  u_nonlincoeff(3,:)=99.51;
+                            elseif strcmp(sat,'noaa16')
+                                  u_nonlincoeff(3,:)=5.93;
+                            elseif strcmp(sat,'noaa17')
+                                  u_nonlincoeff(3,:)=110.87;
+                            end
+                            
+                            
                             
       %%%%%%%%%%%%%%%%
 %                         % quotient of reflectivities per channel

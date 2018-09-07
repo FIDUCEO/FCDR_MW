@@ -131,7 +131,7 @@ if length(scnlin_good_checks_prt{1})>=300
         [sorted,sortedloc]=sort(abs(scnlin_good_checks_prt{1}-scnlin_bad_checks_prt{1}(indexbad)));%check for the next good scanlines adjacent to the bad one, i.e sort the differences; then take the num_closestlines (e.g.=5) closest goodlines
         if sorted(1)<5 % if the good one is closer than 5 scanlines apart, then:
             %prt_mean_intermed(scnlin_bad_checks_prt{1}(indexbad))=median(prt_meanOLD(scnlin_good_checks_prt{1}(sortedloc(1:num_closestlines)))); %prt_mean(badPRTline,channel)=prt_mean(closestgoodPRTlines,channel);
-            prtmean_per_line(scnlin_bad_checks_prt{1}(indexbad))=median(prt_meanOLD(scnlin_good_checks_prt{1}(sortedloc(1:num_closestlines)))); %prt_mean(badPRTline,channel)=prt_mean(closestgoodPRTlines,channel);
+            %prtmean_per_line(scnlin_bad_checks_prt{1}(indexbad))=median(prt_meanOLD(scnlin_good_checks_prt{1}(sortedloc(1:num_closestlines)))); %prt_mean(badPRTline,channel)=prt_mean(closestgoodPRTlines,channel);
             
             %this is also done for missing scanlines! i.e. the PRT and PRT counts are estimated.
             %But since there are no C_E, the calibration is not possible and there are NaNs in btemps which are converted to fillvalue with change-type.
@@ -148,7 +148,7 @@ if length(scnlin_good_checks_prt{1})>=300
             
             %prt_mean_intermed(scnlin_bad_checks_prt{1}(indexbad))=nan;
             prtmean_per_line(scnlin_bad_checks_prt{1}(indexbad))=nan;
-        end
+       end
 
     end
 else
@@ -167,16 +167,11 @@ scnlin_PRT_badline_furtherthan5lines{1}=find(qualflag_PRT_badline_furtherthan5li
             
 %% compute the count mean over the views:
 %construct matrix having 1 at views that should enter the mean over the
-%views. Note that we also put in the lines for the 5-closest case since
-%they got filled with data and should enter the final 7-scnlin rolling
-%average (therefore they need to be view-averaged, too; which they are
-%already since they got filled with the median of the 5closest lines'
-%view-mean values. But they must appear here as usable views otherwise they
-%get overwritten by NAN).
+%views. 
 % set zero to NAN , to generate NAN values
 %  for bad views:
 expand_qualflag_PRT_badline_5closest=repmat(qualflag_PRT_badline_5closest.',[1 num_of_prt_sensors_orig]);
-usedPRTsensors=double(logical(qualflag_PRTsen_good_checks) |logical(expand_qualflag_PRT_badline_5closest));
+usedPRTsensors=double(logical(qualflag_PRTsen_good_checks));% |logical(expand_qualflag_PRT_badline_5closest));
 usedPRTsensors(usedPRTsensors==0)=nan;%usedPRTsensors(qualflag_PRTsen_good_checks==0)=nan;
 
 
@@ -193,9 +188,12 @@ prt_mean_appliedflags= mean(prt_temp_use,2,'omitnan'); %calculate mean over all 
 % 2. rollingaverage(prtmean_per_line)= averaged_prt_mean_intermed
 % 3. averaged_prt_mean_intermed = final_prt_mean
 
-%step 1.
-prtmean_per_line_transp=prtmean_per_line.';
-prt_mean_appliedflags(qualflag_PRT_badline_5closest==1)=prtmean_per_line_transp(qualflag_PRT_badline_5closest==1);
+% %step 1.
+% prtmean_per_line_transp=prtmean_per_line.';
+% prt_mean_appliedflags(qualflag_PRT_badline_5closest==1)=prtmean_per_line_transp(qualflag_PRT_badline_5closest==1);
+
+% don't do step 1; since we DO NOT include the 5-closest case in the
+% 7-scanlin av! (we want to fill them up only AFTER the roll av.)
 
 % for step 2.
 % put the mean into new variables that will enter the rolling average

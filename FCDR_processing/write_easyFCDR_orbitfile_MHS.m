@@ -59,9 +59,11 @@ ymdhms_end=[num2str( vectorenddate(1), '%02i'),num2str( vectorenddate(2), '%02i'
 %%filenamenew=['/scratch/uni/u237/user_data/ihans/FCDR/v0.3/easy/',sat,'/',num2str( vectorstartdate(1), '%02i'),'/',num2str( vectorstartdate(2), '%02i'),'/',num2str( vectorstartdate(3), '%02i'),'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v00.3_fv00.3','.nc'];
 %%filenamenew=['/scratch/uni/u237/user_data/ihans/FCDR/metopb_mhs_forGaiaClim/easy/',sat,'/',num2str( vectorstartdate(1), '%02i'),'/',num2str( vectorstartdate(2), '%02i'),'/',num2str( vectorstartdate(3), '%02i'),'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v00.3_fv00.3','.nc'];
 %filename for FCDR generation
-%filenamenew=['/scratch/uni/u237/users/ihans/FIDUCEO_testdata/',selectsatellite,'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v2.0_fv1.1.4','.nc'];
-filenamenew=['/scratch/uni/u237/user_data/ihans/FCDR/easy/v2_0fv1_1_4/',selectsatellite,'/',num2str( vectorstartdate(1), '%02i'),'/',num2str( vectorstartdate(2), '%02i'),'/',num2str( vectorstartdate(3), '%02i'),'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v2.0_fv1.1.4','.nc'];
-%filenamenew=['/scratch/uni/u237/user_data/ihans/FCDR/easy/harmonisation_test_FCDRv2_0/',selectsatellite,'/',num2str( vectorstartdate(1), '%02i'),'/',num2str( vectorstartdate(2), '%02i'),'/',num2str( vectorstartdate(3), '%02i'),'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v2.0_fv1.1.4','.nc'];%_alphan18_Ha1_HdTw
+%filenamenew=['/scratch/uni/u237/users/ihans/FIDUCEO_testdata/',selectsatellite,'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v3.0_fv1.1.4','.nc'];
+%filenamenew=['/scratch/uni/u237/users/ihans/xchange/',selectsatellite,'/',num2str( vectorstartdate(1), '%02i'),'/',num2str( vectorstartdate(2), '%02i'),'/',num2str( vectorstartdate(3), '%02i'),'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v2.2_fv1.1.5','.nc'];
+filenamenew=['/scratch/uni/u237/users/ihans/xchange/metopb_v2_2/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v2.2_fv1.1.5','.nc'];
+%filenamenew=['/scratch/uni/u237/user_data/ihans/FCDR/easy/v3_0fv1_1_4/',selectsatellite,'/',num2str( vectorstartdate(1), '%02i'),'/',num2str( vectorstartdate(2), '%02i'),'/',num2str( vectorstartdate(3), '%02i'),'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v3.0_fv1.1.4','.nc'];
+%filenamenew=['/scratch/uni/u237/user_data/ihans/FCDR/easy/harmonisation_test_FCDRv2_0/',selectsatellite,'/',num2str( vectorstartdate(1), '%02i'),'/',num2str( vectorstartdate(2), '%02i'),'/',num2str( vectorstartdate(3), '%02i'),'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v2.0_fv1.1.4_Ha1old_HdTw','.nc'];%_alphan18_Ha1_HdTw
 %filenamenew=['/scratch/uni/u237/users/ihans/FIDUCEO_testdata/sensitivity_study/',effect,'/',selectsatellite,'/','FIDUCEO_FCDR_L1C_',upper(sen),'_',upper(sat),'_',ymdhms_start,'_',ymdhms_end,'_EASY_v1.0_fv1.0_',effect,'_',value,'.nc'];
 
  % 
@@ -108,7 +110,13 @@ u_common_btemps(:,:,end-2:end)=nan;
   fillvaluint16=65535;
   fillvaluint8=255;
   %%%%%% data %%%%%%
-
+  
+%   nccreate(filenamenew,'/channel','Dimensions',{'abbrev_len',3,'channel',5},... 
+%           'Datatype','char','Format','netcdf4','DeflateLevel',defl_level)
+%   channel_var=char('Ch1','Ch2','Ch3','Ch4','Ch5').';%['Ch1';'Ch2';'Ch3';'Ch4';'Ch5']; 
+%   ncwrite(filenamenew,'/channel',channel_var)
+  
+  
   nccreate(filenamenew,'/latitude','Dimensions',{'x',90,'y',scanlinedimension},...
           'Datatype','int16','Format','netcdf4','FillValue',fillvalint16,'DeflateLevel',defl_level,'ChunkSize',[chunkpix chunkline])
   nccreate(filenamenew,'/longitude','Dimensions',{'x',90,'y',scanlinedimension},...
@@ -217,10 +225,11 @@ u_common_btemps(:,:,end-2:end)=nan;
   nccreate(filenamenew,'/channel_correlation_matrix_common','Dimensions',{'channel',5,'channel',5},...
           'Datatype','int16','Format','netcdf4','FillValue',fillvalint16,'DeflateLevel',defl_level)
   
-  nccreate(filenamenew,'/error_correlation_scale_cross_element_x','Dimensions',{'channel',5},...
-          'Datatype','uint8','Format','netcdf4','FillValue',fillvaluint8,'DeflateLevel',defl_level)
-  nccreate(filenamenew,'/error_correlation_scale_cross_line_y','Dimensions',{'channel',5},...
-          'Datatype','uint8','Format','netcdf4','FillValue',fillvaluint8,'DeflateLevel',defl_level)
+%   nccreate(filenamenew,'/error_correlation_scale_cross_element_x','Dimensions',{'channel',5},...
+%           'Datatype','uint8','Format','netcdf4','FillValue',fillvaluint8,'DeflateLevel',defl_level)
+%   nccreate(filenamenew,'/error_correlation_scale_cross_line_y','Dimensions',{'channel',5},...
+%           'Datatype','uint8','Format','netcdf4','FillValue',fillvaluint8,'DeflateLevel',defl_level)
+
 %   nccreate(filenamenew,'/error_correlation_scale_cross_element_x_Ch2','Dimensions',{'constant',1},...
 %           'Datatype','uint8','Format','netcdf4','FillValue',fillvaluint8,'DeflateLevel',defl_level)
 %   nccreate(filenamenew,'/error_correlation_scale_cross_line_y_Ch2','Dimensions',{'constant',1},...
@@ -239,6 +248,12 @@ u_common_btemps(:,:,end-2:end)=nan;
 %           'Datatype','uint8','Format','netcdf4','FillValue',fillvaluint8,'DeflateLevel',defl_level)
 %    
      
+    % correlation vectors
+    nccreate(filenamenew,'/cross_line_correlation_coefficients','Dimensions',{'channel',5,'delta_y',7},...
+          'Datatype','uint16','Format','netcdf4','FillValue',fillvaluint16,'DeflateLevel',defl_level)
+    nccreate(filenamenew,'/cross_element_correlation_coefficients','Dimensions',{'channel',5,'delta_x',90},...
+          'Datatype','uint16','Format','netcdf4','FillValue',fillvaluint16,'DeflateLevel',defl_level)
+ 
 
     %%% Spectral response function variables
     % frequencies, dim: numbers of frequencies x channels
@@ -529,11 +544,27 @@ u_common_btemps(:,:,end-2:end)=nan;
   ncwrite(filenamenew,'/channel_correlation_matrix_common',int16(channel_correlation_matrix_common.*invscfac_corr_mat))
   
   
-  error_correlation_scale_cross_element_x=[90 90 90 90 90].';
-  ncwrite(filenamenew,'/error_correlation_scale_cross_element_x',error_correlation_scale_cross_element_x)
-  error_correlation_scale_cross_line_y=[7 7 7 7 7].';
-  ncwrite(filenamenew,'/error_correlation_scale_cross_line_y',error_correlation_scale_cross_line_y)
-  
+%   error_correlation_scale_cross_element_x=[90 90 90 90 90].';
+%   ncwrite(filenamenew,'/error_correlation_scale_cross_element_x',error_correlation_scale_cross_element_x)
+%   error_correlation_scale_cross_line_y=[7 7 7 7 7].';
+%   ncwrite(filenamenew,'/error_correlation_scale_cross_line_y',error_correlation_scale_cross_line_y)
+%   
+  % correlation vectors
+  % cross lines
+  % obtained from Gaussian with sigma=3/sqrt(3), and truncated at delta l >6 (see FIDUCEO D2.2.a)
+    corr_vector_singlechn=[1.0000    0.8465    0.5134    0.2231    0.0695    0.0155    0.0025];
+    corr_vector_lines=repmat(corr_vector_singlechn,[5 1]);
+    invscfac_corr_vec_lines=1e4;
+    scfac_corr_vec_lines=1/invscfac_corr_vec_lines;
+    ncwrite(filenamenew,'/cross_line_correlation_coefficients',uint16(corr_vector_lines.*invscfac_corr_vec_lines))
+
+  % corr vector cross elements: assumed to be 1 everywhere: is true for
+  % structured effects. Not independent (=0) and common (=variable) effects.
+    corr_vector_elem=1.0*ones(5,90);
+    invscfac_corr_vec=1e2;
+    scfac_corr_vec=1/invscfac_corr_vec;
+    ncwrite(filenamenew,'/cross_element_correlation_coefficients',uint16(corr_vector_elem.*invscfac_corr_vec))
+
   
   %% write attributes
  ncwriteatt(filenamenew,'/','Conventions',['CF-1.6']); %'tbd' %setting these conventions to CF-1.6 makes geolocation for Panoply impossible (MUST include _CoordinateAxisType Lat in attributes, then it works). Probably since CF conventions require a certain array for Lat and Lon: lat(lat), lon(lon), not 2dimensional!
@@ -556,7 +587,7 @@ end
 ncwriteatt(filenamenew,'/','satellite',[sat]);
 ncwriteatt(filenamenew,'/','instrument',[sen]);
 %ncwriteatt(filenamenew,'/','satellite_instrument_date',[satsenyear,'/',ymdhms_start(5:6),'/',ymdhms_start(7:8),'/']);
- ncwriteatt(filenamenew,'/','comment',['WARNING: This is an early pre-beta version. ']);
+ ncwriteatt(filenamenew,'/','comment',['WARNING: This is an early pre-beta version with harmonised Channel 3. ']);
  %ncwriteatt(filenamenew,'/','comment',['The AAPP-7-13 geolocation is used.']);
  %ncwriteatt(filenamenew,'/','creation_date',datestr(now));
  %ncwriteatt(filenamenew,'/','original_l1bfilename',cell2mat(that_file(selectorbit)));
@@ -919,17 +950,26 @@ ncwriteatt(filenamenew,'/','instrument',[sen]);
  ncwriteatt(filenamenew,'/channel_correlation_matrix_common','description',['Cross-Channel error correlation matrix for common effects.']);
 
  
- ncwriteatt(filenamenew,'/error_correlation_scale_cross_element_x','long_name',['error_correlation_scale_cross_element_x']);
- ncwriteatt(filenamenew,'/error_correlation_scale_cross_element_x','units',['elements']);
- ncwriteatt(filenamenew,'/error_correlation_scale_cross_element_x','scale_factor',1); 
- ncwriteatt(filenamenew,'/error_correlation_scale_cross_element_x','description',['Error correlation scale across the Fields of View, i.e. element x. WARNING: filled with dummy values!']);
+%  ncwriteatt(filenamenew,'/error_correlation_scale_cross_element_x','long_name',['error_correlation_scale_cross_element_x']);
+%  ncwriteatt(filenamenew,'/error_correlation_scale_cross_element_x','units',['elements']);
+%  ncwriteatt(filenamenew,'/error_correlation_scale_cross_element_x','scale_factor',1); 
+%  ncwriteatt(filenamenew,'/error_correlation_scale_cross_element_x','description',['Error correlation scale across the Fields of View, i.e. element x. WARNING: filled with dummy values!']);
+%  
+%  ncwriteatt(filenamenew,'/error_correlation_scale_cross_line_y','long_name',['error_correlation_scale_cross_line_y']);
+%  ncwriteatt(filenamenew,'/error_correlation_scale_cross_line_y','units',['scanlines']);
+%  ncwriteatt(filenamenew,'/error_correlation_scale_cross_line_y','scale_factor',1); 
+%  ncwriteatt(filenamenew,'/error_correlation_scale_cross_line_y','description',['Error correlation scale across the scan lines, i.e. line y. WARNING: filled with dummy values!']);
+%  
+ ncwriteatt(filenamenew,'/cross_line_correlation_coefficients','long_name',['cross_line_correlation_coefficients']);
+ ncwriteatt(filenamenew,'/cross_line_correlation_coefficients','units',['1']);
+ ncwriteatt(filenamenew,'/cross_line_correlation_coefficients','scale_factor',scfac_corr_vec_lines); 
+ ncwriteatt(filenamenew,'/cross_line_correlation_coefficients','description',['Correlation coefficients per channel for scanline correlation. Note that this is a rough estimation as only the structured effects are taken into account. The correlation for the independent effects is zero by definition and the correlation for the common effects is 1 for all scan lines and orbits.']);
  
- ncwriteatt(filenamenew,'/error_correlation_scale_cross_line_y','long_name',['error_correlation_scale_cross_line_y']);
- ncwriteatt(filenamenew,'/error_correlation_scale_cross_line_y','units',['scanlines']);
- ncwriteatt(filenamenew,'/error_correlation_scale_cross_line_y','scale_factor',1); 
- ncwriteatt(filenamenew,'/error_correlation_scale_cross_line_y','description',['Error correlation scale across the scan lines, i.e. line y. WARNING: filled with dummy values!']);
+ ncwriteatt(filenamenew,'/cross_element_correlation_coefficients','long_name',['cross_element_correlation_coefficients']);
+ ncwriteatt(filenamenew,'/cross_element_correlation_coefficients','units',['1']);
+ ncwriteatt(filenamenew,'/cross_element_correlation_coefficients','scale_factor',scfac_corr_vec); 
+ ncwriteatt(filenamenew,'/cross_element_correlation_coefficients','description',['Correlation coefficients per channel for inter scanline correlation. Note that this is a rough estimation as only the structured effects are taken into account. The correlation for the independent effects is zero by definition and the correlation for the common effects is probably variable within one scan line.']);
  
-
 %  ncwriteatt(filenamenew,'/u_total_Ch1_BT','long_name',['total_uncertainty_of_channel1_toa_brightness_temperature']);
 %  ncwriteatt(filenamenew,'/u_total_Ch1_BT','units',['K']);
 %  ncwriteatt(filenamenew,'/u_total_Ch1_BT','scale_factor',scfac_u); 

@@ -15,7 +15,7 @@ offset_2=crossings_and_gap(3,nEQfile+1);
 
 for ifield=1:numel(f)
     tmp=monthly_data_record.(f{ifield});
-    data.(f{ifield})=tmp(:,crossings_and_gap(1,nEQfile)-offset_1:crossings_and_gap(1,nEQfile+1)+offset_2);
+    data.(f{ifield})=tmp(:,crossings_and_gap(1,nEQfile)-offset_1:crossings_and_gap(1,nEQfile+1)-1+offset_2); %-1
 end
 % save header info (taken from 1st used file)
 filesunique=unique(monthly_data_record.fileID);%list of unique fileIDs
@@ -24,7 +24,7 @@ hdrinfo=monthly_data_header(find(filesunique==monthly_data_record.fileID(crossin
 
 
 % create vector containing the fileID (position in file_list) per line
-fileID_used=monthly_data_record.fileID(crossings_and_gap(1,nEQfile)-offset_1:crossings_and_gap(1,nEQfile+1)+offset_2);
+fileID_used=monthly_data_record.fileID(crossings_and_gap(1,nEQfile)-offset_1:crossings_and_gap(1,nEQfile+1)-1+offset_2);
 
 % Put filenames of used files into header-info
 hdrinfo.dataset_name=file_list(unique(fileID_used));

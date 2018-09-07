@@ -28,11 +28,12 @@ expanded_moonflagOneViewOk=repmat(moonflagOneViewOk,[1 5]).';%bsxfun(@times,perm
 %cleaned_allbadDSV=uint32(qualflag_allbadDSV-expanded_moonflagOneViewOk);
 cleaned_allbadDSV=uint32(qualflag_DSV_badline_furtherthan5lines-expanded_moonflagOneViewOk);
 
-% 2. add the lines where truly all 4 DSV are contaminated
-%unify this difference with the bad-Moon-lines
+% 2. add the lines where truly all 4 DSV are contaminated, AND add the bad lines closer than 5 lines:
+%unify this difference "cleaned_allbadDSV" with the bad-Moon-lines, and the
+%flag for the 5-closest case (cleaned for single moon-ok-view-lines)
 flags_badDSV{1}=cleaned_allbadDSV;
 flags_badDSV{2}=uint32(bsxfun(@times,permute(moonflagAllViewsBad,[2 1]),ones(size(qualflag_allbadDSV)))); %expand moonflagAllViewsBad, and transform to uint32
-truebadDSVlines=(logical(flags_badDSV{1})|logical(flags_badDSV{2}));%unify_qualflags(flags_badDSV);
+truebadDSVlines=(logical(flags_badDSV{1})|logical(flags_badDSV{2})|logical(qualflag_DSV_badline_5closest_TRUE));%set ture bad lines for DSV as: either bad DSV line, or all views bad (moon), or 5-closest case-bad-line %unify_qualflags(flags_badDSV);
 
 % list of truebadDSVlines
 scnlin_DSV_truebadline{1}=find(truebadDSVlines(1,:)==1).';
@@ -83,9 +84,11 @@ usablelines_DSV=~(logical(flags_DSV{1})|logical(flags_DSV{2}));%~unify_qualflags
     
 %% IWCT
 % define lines on which the 7-scanline-average shall be executed
-flags_IWCT{1}=qualflag_IWCT_badline_furtherthan5lines;%qualflag_allbadIWCT;
+% exclude "bad-line further than 5-lines"-case, exclude "bad line 5-closest
+% case", exclude missing scanlines
+flags_IWCT{1}=qualflag_IWCT_badline_furtherthan5lines ;%qualflag_allbadIWCT;
 flags_IWCT{2}=uint32(bsxfun(@times,permute(qualflag_missing_scanline,[2 1]),ones(size(qualflag_allbadIWCT)))); %expand qualflag_missingscanlines, and transform to uint32
-usablelines_IWCT=~(logical(flags_IWCT{1})|logical(flags_IWCT{2}));%~unify_qualflags(flags_IWCT);%take the negation ~ to get the good lines and lines with marginal IWCT views (zero becomes one an vice versa)
+usablelines_IWCT=~(logical(flags_IWCT{1})|logical(flags_IWCT{2})|logical(qualflag_IWCT_badline_5closest_TRUE));%~unify_qualflags(flags_IWCT);%take the negation ~ to get the good lines and lines with marginal IWCT views (zero becomes one an vice versa)
   
 
  % now everything is prepared to proceed with the scanline averaging on the
@@ -94,8 +97,10 @@ usablelines_IWCT=~(logical(flags_IWCT{1})|logical(flags_IWCT{2}));%~unify_qualfl
 
 %% PRT
 % define lines on which the 7-scanline-average shall be executed
+% exclude "bad-line further than 5-lines"-case, exclude "bad line 5-closest
+% case", exclude missing scanlines
 flags_PRT{1}=qualflag_PRT_badline_furtherthan5lines;%qualflag_allbadPRT;
 flags_PRT{2}=qualflag_missing_scanline.';%uint32(bsxfun(@times,permute(qualflag_missing_scanline,[2 1]),ones(size(qualflag_allbadPRT)))); %expand qualflag_missingscanlines, and transform to uint32
-usablelines_PRT=~(logical(flags_PRT{1})|logical(flags_PRT{2}));%~unify_qualflags(flags_PRT);%take the negation ~ to get the good lines and lines with marginal PRT(zero becomes one an vice versa)
+usablelines_PRT=~(logical(flags_PRT{1})|logical(flags_PRT{2})|logical(qualflag_PRT_badline_5closest_TRUE.'));%~unify_qualflags(flags_PRT);%take the negation ~ to get the good lines and lines with marginal PRT(zero becomes one an vice versa)
  
 

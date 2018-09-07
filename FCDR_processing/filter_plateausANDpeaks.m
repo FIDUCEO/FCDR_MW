@@ -1,6 +1,3 @@
-
-
-
 function  [goodline_before_jump,badscanlines]=filter_plateausANDpeaks(timeseries,threshold)
 
 
@@ -120,4 +117,3 @@ end
 
     
     
-   

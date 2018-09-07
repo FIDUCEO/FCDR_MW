@@ -276,27 +276,35 @@ for fov=1:num_fov
         
         % 5. alpha
         % correlation between channels 3-4? (3,4 get same values for MHS (5 is very similar, only other sign); AMSUB gets none...)
-        
+        % full correlation? since reflectivity won't change in this
+        % frequency region?
         if strcmp(sen,'amsub')
-            R{5}= [1 0 0 0 0;
-                0 1 0 0 0;
-                0 0 1 1 1 ;
-                0 0 1 1 1;
-                0 0 1 1 1];
+            R{5}= ones(5,5); 
+            
+%             [1 0 0 0 0;
+%                 0 1 0 0 0;
+%                 0 0 1 1 1 ;
+%                 0 0 1 1 1;
+%                 0 0 1 1 1];
 
        elseif strcmp(sen,'mhs')
-            R{5}=[1 0 0 0 0;
-                0 1 0 0 0;
-                0 0 1 1 1 ;
-                0 0 1 1 1;
-                0 0 1 1 1];
+            R{5}=ones(5,5); 
+            
+%             [1 0 0 0 0;
+%                 0 1 0 0 0;
+%                 0 0 1 1 -1 ;
+%                 0 0 1 1 -1;
+%                 0 0 -1 -1 1];
 
        elseif strcmp(sen,'ssmt2')
-            R{5}=  [1 1 1 0 0;
-                    1 1 1 0 0;
-                    1 1 1 0 0 ;
-                    0 0 0 1 0;
-                    0 0 0 0 1];
+            R{5}= ones(5,5); 
+            
+            
+%             [1 1 1 0 0;
+%                     1 1 1 0 0;
+%                     1 1 1 0 0 ;
+%                     0 0 0 1 0;
+%                     0 0 0 0 1];
         end
        
         % 6. Antenna correction Earth contribution

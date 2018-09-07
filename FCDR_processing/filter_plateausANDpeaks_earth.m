@@ -1,5 +1,3 @@
-
-
 function  [goodline_before_jump,badscanlines]=filter_plateausANDpeaks_earth(timeseries,threshold)
 %    timeseries=earthcounts_ch3(1,:);
 %    threshold=threshold_earth(3);
@@ -124,4 +122,3 @@ end
 
     
     
-   

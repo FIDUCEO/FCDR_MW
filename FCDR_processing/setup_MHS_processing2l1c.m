@@ -590,6 +590,29 @@ end
                         dT_w_nom=double([hdrinfo.Ch_H1_warm_load_correction_factor_nominal_temperature; hdrinfo.Ch_H2_warm_load_correction_factor_nominal_temperature; hdrinfo.Ch_H3_warm_load_correction_factor_nominal_temperature; hdrinfo.Ch_H4_warm_load_correction_factor_nominal_temperature; hdrinfo.Ch_H5_warm_load_correction_factor_nominal_temperature]);
                         dT_w_max=double([hdrinfo.Ch_H1_warm_load_correction_factor_max_temperature;hdrinfo.Ch_H2_warm_load_correction_factor_max_temperature;hdrinfo.Ch_H3_warm_load_correction_factor_max_temperature;hdrinfo.Ch_H4_warm_load_correction_factor_max_temperature;hdrinfo.Ch_H5_warm_load_correction_factor_max_temperature]);
                          
+%                         %HARMONISED PARAMETERS
+%                         
+%                         if strcmp(sat,'noaa18')
+%                           %do nothing. N18 is reference % we estimate 100% uncertainty since we do not know why all channels get the same value...
+%                         else
+%                           
+%                           if strcmp(sat,'noaa19')
+%                               ch3_dT_w=7.76;
+%                           elseif strcmp(sat,'metopa')
+%                               ch3_dT_w=-0.9;
+%                           elseif strcmp(sat,'metopb')
+%                               ch3_dT_w=-1.55;
+%                           end
+%                           %ch3_dT_w=-0.9;
+%                             dT_w_min=double([hdrinfo.Ch_H1_warm_load_correction_factor_min_temperature; hdrinfo.Ch_H2_warm_load_correction_factor_min_temperature;ch3_dT_w;hdrinfo.Ch_H4_warm_load_correction_factor_min_temperature;hdrinfo.Ch_H5_warm_load_correction_factor_min_temperature]);
+%                             dT_w_nom=double([hdrinfo.Ch_H1_warm_load_correction_factor_nominal_temperature; hdrinfo.Ch_H2_warm_load_correction_factor_nominal_temperature; ch3_dT_w; hdrinfo.Ch_H4_warm_load_correction_factor_nominal_temperature; hdrinfo.Ch_H5_warm_load_correction_factor_nominal_temperature]);
+%                             dT_w_max=double([hdrinfo.Ch_H1_warm_load_correction_factor_max_temperature;hdrinfo.Ch_H2_warm_load_correction_factor_max_temperature;ch3_dT_w;hdrinfo.Ch_H4_warm_load_correction_factor_max_temperature;hdrinfo.Ch_H5_warm_load_correction_factor_max_temperature]);
+% 
+%                         end
+                        
+                        
+                        
+                        
                         % calculate interpolation parameters (slope, offset)
                         for channel=1:5
                         mA=(dT_w_min(channel)-dT_w_nom(channel))/(T1-T2);
@@ -617,6 +640,15 @@ end
                         %u_dT_w=abs(dT_w); %estimate uncertainty of 100% %FIXME: this is zero so far!
                         u_dT_w=bsxfun(@times,ones(size(dT_w)),0.16); %estimate of 0.16K uncertainty in dT_w correction, which is zero so far.
      
+                        
+                        % HARMONISED PARAMETERS
+%                         if strcmp(sat,'noaa19')
+%                               u_dT_w(3,:)=0.52;
+%                         elseif strcmp(sat,'metopa')
+%                               u_dT_w(3,:)=0.16;
+%                         elseif strcmp(sat,'metopb')
+%                               u_dT_w(3,:)=0.17;
+%                         end
       %%%%%%%%%%%%%                
                       % cold temp. bias correction
                       % FIXME: take values for profile which was chosen. profile 3
@@ -667,6 +699,25 @@ end
                       non_lin_nominal=double([hdrinfo.LO_A_CH_H1_nonlinearity_coeff_nominal_temperature; hdrinfo.LO_A_CH_H2_nonlinearity_coeff_nominal_temperature;hdrinfo.LO_A_CH_H3_nonlinearity_coeff_nominal_temperature;hdrinfo.LO_A_CH_H4_nonlinearity_coeff_nominal_temperature;hdrinfo.LO_A_CH_H5_nonlinearity_coeff_nominal_temperature])*1000;
                       non_lin_max=double([hdrinfo.LO_A_CH_H1_nonlinearity_coeff_max_temperature; hdrinfo.LO_A_CH_H2_nonlinearity_coeff_max_temperature;hdrinfo.LO_A_CH_H3_nonlinearity_coeff_max_temperature;hdrinfo.LO_A_CH_H4_nonlinearity_coeff_max_temperature;hdrinfo.LO_A_CH_H5_nonlinearity_coeff_max_temperature])*1000;
                       
+%                     %HARMONISED PARAMETERS
+%                       if strcmp(sat,'noaa18')
+%                           %do nothing. N18 is reference 
+%                       else
+%                           
+%                           if strcmp(sat,'noaa19')
+%                               ch3_a_1=2473.15/1000;
+%                           elseif strcmp(sat,'metopa')
+%                               ch3_a_1=-256.04/1000;
+%                           elseif strcmp(sat,'metopb')
+%                               ch3_a_1=-481.92/1000;
+%                           end
+%                           %ch3_a_1=
+%                           non_lin_min=double([hdrinfo.LO_A_CH_H1_nonlinearity_coeff_min_temperature; hdrinfo.LO_A_CH_H2_nonlinearity_coeff_min_temperature;ch3_a_1;hdrinfo.LO_A_CH_H4_nonlinearity_coeff_min_temperature;hdrinfo.LO_A_CH_H5_nonlinearity_coeff_min_temperature])*1000;
+%                           non_lin_nominal=double([hdrinfo.LO_A_CH_H1_nonlinearity_coeff_nominal_temperature; hdrinfo.LO_A_CH_H2_nonlinearity_coeff_nominal_temperature;ch3_a_1;hdrinfo.LO_A_CH_H4_nonlinearity_coeff_nominal_temperature;hdrinfo.LO_A_CH_H5_nonlinearity_coeff_nominal_temperature])*1000;
+%                           non_lin_max=double([hdrinfo.LO_A_CH_H1_nonlinearity_coeff_max_temperature; hdrinfo.LO_A_CH_H2_nonlinearity_coeff_max_temperature;ch3_a_1;hdrinfo.LO_A_CH_H4_nonlinearity_coeff_max_temperature;hdrinfo.LO_A_CH_H5_nonlinearity_coeff_max_temperature])*1000;
+% 
+%                       end
+                      
 % sensitivity study
 %                       non_lin_min=4*double([hdrinfo.LO_A_CH_H1_nonlinearity_coeff_min_temperature; hdrinfo.LO_A_CH_H2_nonlinearity_coeff_min_temperature;hdrinfo.LO_A_CH_H3_nonlinearity_coeff_min_temperature;hdrinfo.LO_A_CH_H4_nonlinearity_coeff_min_temperature;hdrinfo.LO_A_CH_H5_nonlinearity_coeff_min_temperature]);
 %                       non_lin_nominal=4*double([hdrinfo.LO_A_CH_H1_nonlinearity_coeff_nominal_temperature; hdrinfo.LO_A_CH_H2_nonlinearity_coeff_nominal_temperature;hdrinfo.LO_A_CH_H3_nonlinearity_coeff_nominal_temperature;hdrinfo.LO_A_CH_H4_nonlinearity_coeff_nominal_temperature;hdrinfo.LO_A_CH_H5_nonlinearity_coeff_nominal_temperature]);
@@ -699,6 +750,15 @@ end
                             
                             % UNCERTAINTY
                             u_nonlincoeff=abs(nonlincoeff);% estimate of 100% uncertainty
+                            
+%                             %HARMONISED PARAMETERS
+%                             if strcmp(sat,'noaa19')
+%                                   u_nonlincoeff(3,:)=126.48;
+%                             elseif strcmp(sat,'metopa')
+%                                   u_nonlincoeff(3,:)=53.46;
+%                             elseif strcmp(sat,'metopb')
+%                                   u_nonlincoeff(3,:)=45.44;
+%                             end
                             
       %%%%%%%%%%%%%%%%
 %                         % quotient of reflectivities per channel

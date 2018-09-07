@@ -266,31 +266,51 @@ for chn=1:5
     
 end
 
-%NOTE: now, I dont do this anymore: Now, I apply the rolling everage to ANY
-%line that has a non NAN value, i.e. also the 5-closest case. Therefore, I
-%dont need to do anything here, since the rolling average operates on all
-%lines but those that are further away than 5 lines from a good one.
+% the rolling average has been computed for any line now that has an own true
+% measured value. I.e. the average IS NOT computed for the
+% "furtheraway-than5-lines", for the "5-closest case", for
+% "missing-scanlines", for "fully moon contaminated lines"
+
+% store the computed values
 countDSV_av=countDSV_av_intermed;
 countIWCT_av=countIWCT_av_intermed;
-% % now put back in the values for the lines for which NO rolling average
-% % should be applied, i.e. the "5-closest" case and the NANs for the
-% % "further away case" of badlines. Theses values have been saved to
-% % dsv_mean_intermed in the qualitychecksDSV_allchn.m routine
-% % countDSV_av=countDSV_av_intermed;
-% % dsv_mean_intermed_trans=dsv_mean_intermed.';
-% % countDSV_av(dsv_mean_intermed.'~=0)=dsv_mean_intermed_trans(dsv_mean_intermed_trans~=0);
-% % countIWCT_av=countIWCT_av_intermed;
-% % iwct_mean_intermed_trans=iwct_mean_intermed.';
-% % countIWCT_av(iwct_mean_intermed_trans~=0)=iwct_mean_intermed_trans(iwct_mean_intermed_trans~=0);
-
 AllanDev_countDSV_av=AllanDev_countDSV_av_intermed;
 AllanDev_countIWCT_av=AllanDev_countIWCT_av_intermed;
+
 % extra variables containting the mean-allandev WITHOUT rolling average
-AllanDev_countDSV_NOav=AllanDev_DSV_perline;
+AllanDev_countDSV_NOav=AllanDev_DSV_perline; % AllanDev_DSV_perline is from BEFORE the 7-scanlin av.
 AllanDev_countIWCT_NOav=AllanDev_IWCT_perline;
 
+
+
+% fill bad lines that are closer than 5 lines to a good line.
+% use the mean of the closest 5 lines (i.e. their 7-scanlin-av. value) as filler
+    
+    % for DSV
+[DSV_found_channel,DSV_found_line]=find(qualflag_DSV_badline_5closest_TRUE);
+
+for i=1:length(DSV_found_channel)
+    DSV_goodlines_per_bad_line{DSV_found_channel(i)}(i,1:5)=good_linesDSV_closeTobad(DSV_found_channel(i),DSV_found_line(i),:);
+    
+    countDSV_av(DSV_found_channel(i),DSV_found_line(i))= mean(countDSV_av(DSV_found_channel(i),DSV_goodlines_per_bad_line{DSV_found_channel(i)}(i,1:5)));
+    AllanDev_countDSV_av(DSV_found_channel(i),DSV_found_line(i))= mean(AllanDev_countDSV_av(DSV_found_channel(i),DSV_goodlines_per_bad_line{DSV_found_channel(i)}(i,1:5)));
+    
+end
+
+% for IWCT
+[IWCT_found_channel,IWCT_found_line]=find(qualflag_IWCT_badline_5closest_TRUE);
+
+for i=1:length(IWCT_found_channel)
+    IWCT_goodlines_per_bad_line{IWCT_found_channel(i)}(i,1:5)=good_linesIWCT_closeTobad(IWCT_found_channel(i),IWCT_found_line(i),:);
+    
+    countIWCT_av(IWCT_found_channel(i),IWCT_found_line(i))= mean(countIWCT_av(IWCT_found_channel(i),IWCT_goodlines_per_bad_line{IWCT_found_channel(i)}(i,1:5)));
+    AllanDev_countIWCT_av(IWCT_found_channel(i),IWCT_found_line(i))= mean(AllanDev_countIWCT_av(IWCT_found_channel(i),IWCT_goodlines_per_bad_line{IWCT_found_channel(i)}(i,1:5)));
+    
+end
+
+
 % this DSV/IWCTmean has now a scanline-averaged value at all lines, but at the
-% badlines that are furtheraway than 5 lines from a good one (they got
+% badlines that are furtheraway than 5 lines from a good one and the fully moon contaminated case (they got
 % NAN)
 
 
@@ -310,6 +330,8 @@ qualflag_DSV_fewerlines_used=zeros(5,totalnumberofscanlines);
 qualflag_DSV_fewerlines_used(logical(num_usedlinesDSV<7)==1 & logical(num_usedlinesDSV>0)==1)=1;
 qualflag_IWCT_fewerlines_used=zeros(5,totalnumberofscanlines);
 qualflag_IWCT_fewerlines_used(logical(num_usedlinesIWCT<7)==1 & logical(num_usedlinesIWCT>0)==1)=1;
+
+
 
 
 %% PRT
@@ -393,15 +415,33 @@ expanded_usablelines_PRT=repmat(usablelines_PRT_logical,1,totalnumberofscanlines
     
     
     
-    % now put back in the values for the lines for which NO rolling average
-    % should be applied, i.e. the "5-closest" case and the NANs for the
-    % "further away case" of badlines. Theses values have been saved to
-    % prt_mean_intermed in the qualitychecksPRT_allsensors.m routine
-    IWCTtemp_av=IWCTtemp_av_intermed;
-    %IWCTtemp_av(prt_mean_intermed~=0)=prt_mean_intermed;
-    AllanDev_IWCTtemp_av=AllanDev_IWCTtemp_av_intermed;
+% the rolling average has been computed for any line now that has an own true
+% measured value. I.e. the average IS NOT computed for the
+% "furtheraway-than5-lines", for the "5-closest case", for
+% "missing-scanlines"
+
+% store the computed values
+IWCTtemp_av=IWCTtemp_av_intermed;
+AllanDev_IWCTtemp_av=AllanDev_IWCTtemp_av_intermed;
 
     
+    % fill bad lines that are closer than 5 lines to a good line
+    % use the mean of the closest 5 lines (i.e. their 7-scanlin-av. value) as filler    
+
+    % for PRT
+    PRT_found_line=find(qualflag_PRT_badline_5closest_TRUE);
+
+    for i=1:length(PRT_found_line)
+        PRT_goodlines_per_bad_line(i,1:5)=good_linesPRT_closeTobad(PRT_found_line(i),:);
+
+        IWCTtemp_av(PRT_found_line(i))= mean(IWCTtemp_av(PRT_goodlines_per_bad_line(i,1:5)));
+        AllanDev_IWCTtemp_av(PRT_found_line(i))= mean(AllanDev_IWCTtemp_av(PRT_goodlines_per_bad_line(i,1:5)));
+
+    end
+    
+    % this iwctTempmean has now a scanline-averaged value at all lines, but at the
+    % badlines that are furtheraway than 5 lines from a good one (they got
+    % NAN)
     
     %set to NAN the value for no-calib-case 
     AllanDev_IWCTtemp_av(qualflag_PRT_badline_furtherthan5lines==1)=nan;
@@ -411,10 +451,7 @@ expanded_usablelines_PRT=repmat(usablelines_PRT_logical,1,totalnumberofscanlines
     qualflag_PRT_fewerlines_used=zeros(1,totalnumberofscanlines);
     qualflag_PRT_fewerlines_used(logical(num_usedlinesPRT<7)==1 & logical(num_usedlinesPRT>0)==1)=1;
 
-    % this iwctTempmean has now a scanline-averaged value at all lines, but at the
-    % badlines that are closer than 5 lines from a good one (they got the
-    % median estimate) or furtheraway than 5 lines from a good one (they got
-    % NAN)
+   
     
     
    
@@ -426,4 +463,5 @@ expanded_usablelines_PRT=repmat(usablelines_PRT_logical,1,totalnumberofscanlines
     AllanDev_IWCTtemp_av=repmat(AllanDev_IWCTtemp_av_preexpanding.',[1 5]).';
     
     
+
     

@@ -99,6 +99,7 @@ if strcmp(sen,'mhs')
 
 
         %
+        estimate_correlation_cross_channel
 
         % write easyFCDR
         write_easyFCDR_orbitfile_MHS %_debugging
@@ -198,9 +199,10 @@ elseif strcmp(sen,'amsub')
 
 
         %
+        estimate_correlation_cross_channel
 
         % write easyFCDR
-        write_easyFCDR_orbitfile_AMSUB %_debugging
+         write_easyFCDR_orbitfile_AMSUB %_debugging
 
         nEQfile=nEQfile+1; %normal increase of nEQfile by one
      end
@@ -298,6 +300,7 @@ elseif strcmp(sen,'ssmt2')
 
 
         %
+        estimate_correlation_cross_channel
 
         % write easyFCDR
         write_easyFCDR_orbitfile_SSMT2 %_debugging
