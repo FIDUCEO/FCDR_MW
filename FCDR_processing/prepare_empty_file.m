@@ -13,7 +13,8 @@
     u_common_btemps=nan*ones(5,number_of_fovs,scanlinenumbers(end));
     u_RFI_btemps=nan*ones(5,number_of_fovs,scanlinenumbers(end));
     
-    quality_pixel_bitmask=545*ones(number_of_fovs,scanlinenumbers(end)); %545, i.e. Invalid; sensor_error; no_calib_bad_PRT
+    quality_pixel_bitmask=33*ones(number_of_fovs,scanlinenumbers(end)); %33, i.e. Invalid; sensor_error
+    data_quality_bitmask=0*ones(number_of_fovs,scanlinenumbers(end));
 %     quality_pixel_Ch2_bitmask=2*ones(90,scanlinenumbers(end));
 %     quality_pixel_Ch3_bitmask=2*ones(90,scanlinenumbers(end));
 %     quality_pixel_Ch4_bitmask=2*ones(90,scanlinenumbers(end));
