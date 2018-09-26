@@ -329,6 +329,11 @@ u_common_btemps=sqrt(u_btemps_T_IWCT.^2+u_btemps_dT_w.^2+u_btemps_dT_c.^2+u_btem
 
 u_RFI_btemps=sqrt(u_btemps_C_S_RFI.^2+u_btemps_C_E_RFI.^2+u_btemps_C_IWCT_RFI.^2);
 
+u_random_btemps(qualbit_tb_badrange==1)=nan;
+u_nonrandom_btemps(qualbit_tb_badrange==1)=nan;
+u_common_btemps(qualbit_tb_badrange==1)=nan;
+u_RFI_btemps(qualbit_tb_badrange==1)=nan;
+
 % we do not give total value of u
 %u_total_btemps=sqrt(u_btemps_C_S.^2+u_btemps_C_IWCT.^2+u_btemps_C_E.^2+u_btemps_chnfreq.^2+u_btemps_bandcorr_a.^2+u_btemps_bandcorr_b.^2+u_btemps_T_IWCT.^2+u_btemps_T_IWCT_noise.^2+u_btemps_dT_w.^2+u_btemps_T_CMB0.^2+u_btemps_dT_c.^2+u_btemps_nonlincoeff.^2+u_btemps_alpha.^2+u_btemps_Tb_Eprime.^2+u_btemps_Antenna_position_earthview.^2+u_btemps_Antenna_position_spaceview.^2+u_btemps_Antenna_corrcoeff_earthcontribution.^2+u_btemps_Antenna_corrcoeff_spacecontribution.^2+u_btemps_Antenna_corrcoeff_platformcontribution.^2+u_btemps_radiance_of_platform.^2);
 
