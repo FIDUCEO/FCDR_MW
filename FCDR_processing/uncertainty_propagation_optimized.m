@@ -1,14 +1,14 @@
 
-% uncertainty_propagation
+
+
 %
- % Copyright (C) 2017-04-12 Imke Hans
- % This code was developed for the EC project �Fidelity and Uncertainty in   
- %  Climate Data Records from Earth Observations (FIDUCEO)�. 
+ % Copyright (C) 2019-01-04 Imke Hans
+ % This code was developed for the EC project ?Fidelity and Uncertainty in   
+ %  Climate Data Records from Earth Observations (FIDUCEO)?. 
  % Grant Agreement: 638822
  %  <Version> Reviewed and approved by <name, instituton>, <date>
  %
- %
- %  V 0.1   Reviewed and approved by 
+ %  V 4.1   Reviewed and approved by Imke Hans, Univ. Hamburg, 2019-01-04
  %
  % This program is free software; you can redistribute it and/or modify it
  % under the terms of the GNU General Public License as published by the Free
@@ -21,16 +21,22 @@
  % 
  % A copy of the GNU General Public License should have been supplied along
  % with this program; if not, see http://www.gnu.org/licenses/
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+ 
+% uncertainty_propagation
  
 %% info
-% ONLY USE this script via calling function generate_FCDR.m
+% ONLY USE this script via calling function FCDR_generator.m/
+% process_FCDR.m.
 % DO NOT use this script alone. It needs the output from preceeding
-% functions/ scripts generate_FCDR and setup_fullFCDR_uncertproc, measurement_equation.
+% functions.
 
 % Computing the uncertainties in the final brightness temperature due to
 % all different sources of uncertainty ("effects")
-% This script uses the quantities that are set up in the script
-% setup_fullFCDR_uncertproc.m
+% This script uses the quantities that are set up in the scripts
+% setup_XXX_2l1c
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -86,6 +92,9 @@ u_C_S_RFI(2,:)=u_RFI_counts(2,2);
 u_C_S_RFI(3,:)=u_RFI_counts(2,3);
 u_C_S_RFI(4,:)=u_RFI_counts(2,4);
 u_C_S_RFI(5,:)=u_RFI_counts(2,5);
+
+%extra uncertainty in Tb due to inaccurate determination of inital RFI contamination (of reference month in correction scheme)
+u_Tb_RFI_offset=u_RFI_offset;
 
 % Speed of light in a vacuum
 c0 = 2.99792458*10.^8; 
@@ -152,6 +161,7 @@ Tb_Eprime_mat=Tb_Eprime;
   u_C_E_RFI_mat=u_C_E_RFI;
   u_C_IWCT_RFI_mat=bsxfun(@times,u_C_IWCT_RFI,dummy_matrix);
   u_C_S_RFI_mat=bsxfun(@times,u_C_S_RFI,dummy_matrix);
+  u_Tb_RFI_offset_mat=bsxfun(@times,permute(u_Tb_RFI_offset,[2 1 3]),dummy_matrix);
   
     % Channel frequency
     % intermediate steps: 
@@ -281,7 +291,7 @@ dTb_dRE=DinvplanckDrad(invcm2hz(wavenumber_central_mat),R_E_mat);
   u_btemps_C_E_RFI=abs(dTb_dRE.*u_rad_C_E_RFI.*u_C_E_RFI_mat);
   u_btemps_C_IWCT_RFI=dTb_dRE.*u_rad_C_IWCT_RFI.*u_C_IWCT_RFI_mat;
   u_btemps_C_S_RFI=dTb_dRE.*u_rad_C_S_RFI.*u_C_S_RFI_mat;
-  
+  u_btemps_RFI_offset=u_Tb_RFI_offset_mat; %extra uncertainty in Tb due to inaccurate determination of inital RFI contamination (of reference month in correction scheme)
   
   
   
@@ -327,7 +337,7 @@ u_nonrandom_btemps=sqrt(u_btemps_C_S.^2+u_btemps_C_IWCT.^2+u_btemps_Antenna_posi
 
 u_common_btemps=sqrt(u_btemps_T_IWCT.^2+u_btemps_dT_w.^2+u_btemps_dT_c.^2+u_btemps_nonlincoeff.^2+u_btemps_alpha.^2+u_btemps_Antenna_corrcoeff_earthcontribution.^2+u_btemps_Antenna_corrcoeff_spacecontribution.^2+u_btemps_Antenna_corrcoeff_platformcontribution.^2+u_btemps_radiance_of_platform.^2+u_btemps_Antenna_position_earthview_syst.^2+u_btemps_Antenna_position_spaceview_syst.^2);
 
-u_RFI_btemps=sqrt(u_btemps_C_S_RFI.^2+u_btemps_C_E_RFI.^2+u_btemps_C_IWCT_RFI.^2);
+u_RFI_btemps=sqrt(u_btemps_C_S_RFI.^2+u_btemps_C_E_RFI.^2+u_btemps_C_IWCT_RFI.^2+u_btemps_RFI_offset.^2);
 
 u_random_btemps(qualbit_tb_badrange==1)=nan;
 u_nonrandom_btemps(qualbit_tb_badrange==1)=nan;

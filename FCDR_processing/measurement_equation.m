@@ -1,16 +1,11 @@
-
-
-
-% measurement_equation.m
 %
- % Copyright (C) 2017-04-12 Imke Hans
- % This code was developed for the EC project �Fidelity and Uncertainty in   
- %  Climate Data Records from Earth Observations (FIDUCEO)�. 
+ % Copyright (C) 2019-01-04 Imke Hans
+ % This code was developed for the EC project ?Fidelity and Uncertainty in   
+ %  Climate Data Records from Earth Observations (FIDUCEO)?. 
  % Grant Agreement: 638822
  %  <Version> Reviewed and approved by <name, instituton>, <date>
  %
- %
- %  V 0.1   Reviewed and approved by Imke Hans, Univ. Hamburg, 2017-04-20
+ %  V 4.1   Reviewed and approved by Imke Hans, Univ. Hamburg, 2019-01-04
  %
  % This program is free software; you can redistribute it and/or modify it
  % under the terms of the GNU General Public License as published by the Free
@@ -23,11 +18,19 @@
  % 
  % A copy of the GNU General Public License should have been supplied along
  % with this program; if not, see http://www.gnu.org/licenses/
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+% measurement_equation.m
+
  
 %% info
-% ONLY USE this script via calling function generate_FCDR.m
+% ONLY USE this script via calling function process_FCDR.m.
 % DO NOT use this script alone. It needs the output from preceeding
-% functions/ scripts generate_FCDR and setup_fullFCDR_uncertproc.
+% functions/ scripts.
 
 
 % this script evaluates the measurement equation, i.e. it executes the

@@ -3,14 +3,13 @@
 % setup_MHS_processing2l1c.m
 
 %
- % Copyright (C) 2017-04-12 Imke Hans
- % This code was developed for the EC project �Fidelity and Uncertainty in   
- %  Climate Data Records from Earth Observations (FIDUCEO)�. 
+ % Copyright (C) 2019-01-04 Imke Hans
+ % This code was developed for the EC project ?Fidelity and Uncertainty in   
+ %  Climate Data Records from Earth Observations (FIDUCEO)?. 
  % Grant Agreement: 638822
  %  <Version> Reviewed and approved by <name, instituton>, <date>
  %
- %
- %  V 0.1   Reviewed and approved by Imke Hans, Univ. Hamburg, 2017-04-20
+ %  V 4.1   Reviewed and approved by Imke Hans, Univ. Hamburg, 2019-01-04
  %
  % This program is free software; you can redistribute it and/or modify it
  % under the terms of the GNU General Public License as published by the Free
@@ -23,12 +22,14 @@
  % 
  % A copy of the GNU General Public License should have been supplied along
  % with this program; if not, see http://www.gnu.org/licenses/
+
  
 %% info
 %
-% ONLY USE this script via calling function generate_FCDR.m
+% ONLY USE this script via calling function FCDR_generator.m/
+% process_FCDR.m
 % DO NOT use this script alone. It needs the output from preceeding
-% functions generate_FCDR.
+% functions.
 
 % Script for SET UP of fullFCDR processing including uncertatiny
 % propagation.
@@ -336,6 +337,9 @@ end
                                 
                                 earthcounts=permute(earthcounts,[3 1 2]);
                                 
+                                 % apply RFI correction
+                                earthcounts=RFI_correction_LUT(selectyear, chosen_month, earthcounts, sat,sen);
+                               
                                
                                
 %%%%%%%%%%%%%%%%%%%%
@@ -590,28 +594,7 @@ end
                         dT_w_nom=double([hdrinfo.Ch_H1_warm_load_correction_factor_nominal_temperature; hdrinfo.Ch_H2_warm_load_correction_factor_nominal_temperature; hdrinfo.Ch_H3_warm_load_correction_factor_nominal_temperature; hdrinfo.Ch_H4_warm_load_correction_factor_nominal_temperature; hdrinfo.Ch_H5_warm_load_correction_factor_nominal_temperature]);
                         dT_w_max=double([hdrinfo.Ch_H1_warm_load_correction_factor_max_temperature;hdrinfo.Ch_H2_warm_load_correction_factor_max_temperature;hdrinfo.Ch_H3_warm_load_correction_factor_max_temperature;hdrinfo.Ch_H4_warm_load_correction_factor_max_temperature;hdrinfo.Ch_H5_warm_load_correction_factor_max_temperature]);
                          
-%                         %HARMONISED PARAMETERS
-%                         
-%                         if strcmp(sat,'noaa18')
-%                           %do nothing. N18 is reference % we estimate 100% uncertainty since we do not know why all channels get the same value...
-%                         else
-%                           
-%                           if strcmp(sat,'noaa19')
-%                               ch3_dT_w=7.76;
-%                           elseif strcmp(sat,'metopa')
-%                               ch3_dT_w=-0.9;
-%                           elseif strcmp(sat,'metopb')
-%                               ch3_dT_w=-1.55;
-%                           end
-%                           %ch3_dT_w=-0.9;
-%                             dT_w_min=double([hdrinfo.Ch_H1_warm_load_correction_factor_min_temperature; hdrinfo.Ch_H2_warm_load_correction_factor_min_temperature;ch3_dT_w;hdrinfo.Ch_H4_warm_load_correction_factor_min_temperature;hdrinfo.Ch_H5_warm_load_correction_factor_min_temperature]);
-%                             dT_w_nom=double([hdrinfo.Ch_H1_warm_load_correction_factor_nominal_temperature; hdrinfo.Ch_H2_warm_load_correction_factor_nominal_temperature; ch3_dT_w; hdrinfo.Ch_H4_warm_load_correction_factor_nominal_temperature; hdrinfo.Ch_H5_warm_load_correction_factor_nominal_temperature]);
-%                             dT_w_max=double([hdrinfo.Ch_H1_warm_load_correction_factor_max_temperature;hdrinfo.Ch_H2_warm_load_correction_factor_max_temperature;ch3_dT_w;hdrinfo.Ch_H4_warm_load_correction_factor_max_temperature;hdrinfo.Ch_H5_warm_load_correction_factor_max_temperature]);
-% 
-%                         end
-                        
-                        
-                        
+
                         
                         % calculate interpolation parameters (slope, offset)
                         for channel=1:5
@@ -641,14 +624,7 @@ end
                         u_dT_w=bsxfun(@times,ones(size(dT_w)),0.16); %estimate of 0.16K uncertainty in dT_w correction, which is zero so far.
      
                         
-                        % HARMONISED PARAMETERS
-%                         if strcmp(sat,'noaa19')
-%                               u_dT_w(3,:)=0.52;
-%                         elseif strcmp(sat,'metopa')
-%                               u_dT_w(3,:)=0.16;
-%                         elseif strcmp(sat,'metopb')
-%                               u_dT_w(3,:)=0.17;
-%                         end
+                       
       %%%%%%%%%%%%%                
                       % cold temp. bias correction
                       % FIXME: take values for profile which was chosen. profile 3
@@ -659,7 +635,12 @@ end
                       dT_c=double([hdrinfo.Ch_H1_cold_space_temperature_correction_profile0; hdrinfo.Ch_H2_cold_space_temperature_correction_profile0; hdrinfo.Ch_H3_cold_space_temperature_correction_profile0; hdrinfo.Ch_H4_cold_space_temperature_correction_profile0; hdrinfo.Ch_H5_cold_space_temperature_correction_profile0]);
                       % add  this to 2.73K and convert by planck %[0.24 0.24 0.24 0.24 0.24].';
                       
+                      
+                      
+                      
+                      
                       % UNCERTAINTY
+                                            
                       %estimate: from stdev for different
                       %profiles ; per channel
                       if strcmp(sat,'noaa18')
@@ -671,6 +652,9 @@ end
                       elseif strcmp(sat,'metopb')
                           u_dT_c_vec=[0.2658;    0.0356;    0.0640;    0.0640;    0.0300];
                       end
+                      
+                      
+                      
                       u_dT_c=bsxfun(@times,ones(size(countDSV_av)),u_dT_c_vec);%bsxfun(@times,ones(size(countDSV_av)),0.6*ones(size(dT_c)));%0.6*ones(size(dT_c)); %estimate of 0.6K from stdev in these corrections for the different space view profiles over all channels
                       
       %%%%%%%%%%%%%                      
@@ -699,24 +683,7 @@ end
                       non_lin_nominal=double([hdrinfo.LO_A_CH_H1_nonlinearity_coeff_nominal_temperature; hdrinfo.LO_A_CH_H2_nonlinearity_coeff_nominal_temperature;hdrinfo.LO_A_CH_H3_nonlinearity_coeff_nominal_temperature;hdrinfo.LO_A_CH_H4_nonlinearity_coeff_nominal_temperature;hdrinfo.LO_A_CH_H5_nonlinearity_coeff_nominal_temperature])*1000;
                       non_lin_max=double([hdrinfo.LO_A_CH_H1_nonlinearity_coeff_max_temperature; hdrinfo.LO_A_CH_H2_nonlinearity_coeff_max_temperature;hdrinfo.LO_A_CH_H3_nonlinearity_coeff_max_temperature;hdrinfo.LO_A_CH_H4_nonlinearity_coeff_max_temperature;hdrinfo.LO_A_CH_H5_nonlinearity_coeff_max_temperature])*1000;
                       
-%                     %HARMONISED PARAMETERS
-%                       if strcmp(sat,'noaa18')
-%                           %do nothing. N18 is reference 
-%                       else
-%                           
-%                           if strcmp(sat,'noaa19')
-%                               ch3_a_1=2473.15/1000;
-%                           elseif strcmp(sat,'metopa')
-%                               ch3_a_1=-256.04/1000;
-%                           elseif strcmp(sat,'metopb')
-%                               ch3_a_1=-481.92/1000;
-%                           end
-%                           %ch3_a_1=
-%                           non_lin_min=double([hdrinfo.LO_A_CH_H1_nonlinearity_coeff_min_temperature; hdrinfo.LO_A_CH_H2_nonlinearity_coeff_min_temperature;ch3_a_1;hdrinfo.LO_A_CH_H4_nonlinearity_coeff_min_temperature;hdrinfo.LO_A_CH_H5_nonlinearity_coeff_min_temperature])*1000;
-%                           non_lin_nominal=double([hdrinfo.LO_A_CH_H1_nonlinearity_coeff_nominal_temperature; hdrinfo.LO_A_CH_H2_nonlinearity_coeff_nominal_temperature;ch3_a_1;hdrinfo.LO_A_CH_H4_nonlinearity_coeff_nominal_temperature;hdrinfo.LO_A_CH_H5_nonlinearity_coeff_nominal_temperature])*1000;
-%                           non_lin_max=double([hdrinfo.LO_A_CH_H1_nonlinearity_coeff_max_temperature; hdrinfo.LO_A_CH_H2_nonlinearity_coeff_max_temperature;ch3_a_1;hdrinfo.LO_A_CH_H4_nonlinearity_coeff_max_temperature;hdrinfo.LO_A_CH_H5_nonlinearity_coeff_max_temperature])*1000;
-% 
-%                       end
+
                       
 % sensitivity study
 %                       non_lin_min=4*double([hdrinfo.LO_A_CH_H1_nonlinearity_coeff_min_temperature; hdrinfo.LO_A_CH_H2_nonlinearity_coeff_min_temperature;hdrinfo.LO_A_CH_H3_nonlinearity_coeff_min_temperature;hdrinfo.LO_A_CH_H4_nonlinearity_coeff_min_temperature;hdrinfo.LO_A_CH_H5_nonlinearity_coeff_min_temperature]);
@@ -751,14 +718,7 @@ end
                             % UNCERTAINTY
                             u_nonlincoeff=abs(nonlincoeff);% estimate of 100% uncertainty
                             
-%                             %HARMONISED PARAMETERS
-%                             if strcmp(sat,'noaa19')
-%                                   u_nonlincoeff(3,:)=126.48;
-%                             elseif strcmp(sat,'metopa')
-%                                   u_nonlincoeff(3,:)=53.46;
-%                             elseif strcmp(sat,'metopb')
-%                                   u_nonlincoeff(3,:)=45.44;
-%                             end
+
                             
       %%%%%%%%%%%%%%%%
 %                         % quotient of reflectivities per channel
@@ -772,14 +732,14 @@ end
                            
 %                         % from fdf.dat-file
 %                         % alpha= 1-quotient of reflectivities
-%                         alpha=[0.0002 0.0015 -0.0022 -0.0022 0.0021];
+
                           alphaMHSN18=[0.0002 0.0015 -0.0022 -0.0022 0.0021];
                         % UNCERTAINTY
                         
                         u_alpha=abs(alphaMHSN18); % estimate of 100% uncertainty (rel. to values for N18. 
                                                   % No other MHS instrument gets these values. But why not?
                                                   % We represent this fact by 100% uncertainty)
-      
+
       
       %%%%%%%%%%%%%%%%
                            %Antenna_position_earthview
@@ -931,5 +891,13 @@ end
 %%%%%%%%%%%%% END:   READ IN VARIABLES FROM L1B-DATA FILE %%%%%%%%%%%%%%
 
 
+%% NOT YET IN PLACE
+
+%%%%%%%%%%%%%              HARMONISATION                  %%%%%%%%%%%%%%
+
+% apply harmonised parameters to specific calibration parameters.
+
+%apply_harmonised_parameters  % This script applies harmonised parameters.
+                             % See script to change parameter values.
 
 

@@ -3,14 +3,13 @@
 % setup_AMSUB_processing2l1c.m
 
 %
- % Copyright (C) 2017-04-12 Imke Hans
- % This code was developed for the EC project �Fidelity and Uncertainty in   
- %  Climate Data Records from Earth Observations (FIDUCEO)�. 
+ % Copyright (C) 2019-01-04 Imke Hans
+ % This code was developed for the EC project ?Fidelity and Uncertainty in   
+ %  Climate Data Records from Earth Observations (FIDUCEO)?. 
  % Grant Agreement: 638822
  %  <Version> Reviewed and approved by <name, instituton>, <date>
  %
- %
- %  V 0.1   Reviewed and approved by Imke Hans, Univ. Hamburg, 2017-04-20
+ %  V 4.1   Reviewed and approved by Imke Hans, Univ. Hamburg, 2019-01-04
  %
  % This program is free software; you can redistribute it and/or modify it
  % under the terms of the GNU General Public License as published by the Free
@@ -23,12 +22,14 @@
  % 
  % A copy of the GNU General Public License should have been supplied along
  % with this program; if not, see http://www.gnu.org/licenses/
+
  
 %% info
 %
-% ONLY USE this script via calling function generate_FCDR.m
+% ONLY USE this script via calling function FCDR_generator.m/
+% process_FCDR.m
 % DO NOT use this script alone. It needs the output from preceeding
-% functions generate_FCDR.
+% functions.
 
 % Script for SET UP of fullFCDR processing including uncertatiny
 % propagation.
@@ -332,6 +333,8 @@ calculate_solarAndsatellite_azimuth_angle
                                 
                                 earthcounts=permute(earthcounts,[3 1 2]);
                                 
+                                % apply RFI correction
+                                earthcounts=RFI_correction_LUT(selectyear, chosen_month, earthcounts, sat,sen);
                                
                                
 %%%%%%%%%%%%%%%%%%%%
@@ -529,7 +532,7 @@ calculate_solarAndsatellite_azimuth_angle
                             % usable channels. Hence we only use the
                             % channels that are common to these sets:
                             
-                            channelset=intersect(channelset_iwct,channelset_dsv);   
+                            channelset=intersect(channelset_iwct,channelset_dsv)  
                             
                             % note that IWCTtemp_av artificially has the
                             % channel dimension. This is needed for the
@@ -617,22 +620,20 @@ calculate_solarAndsatellite_azimuth_angle
                         dT_w_min=[0;0;0;0;0];%double([hdrinfo.Ch_16_warm_target_fixed_bias_correction_min_temp; hdrinfo.Ch_17_warm_target_fixed_bias_correction_min_temp;hdrinfo.Ch_18_warm_target_fixed_bias_correction_min_temp;hdrinfo.Ch_19_warm_target_fixed_bias_correction_min_temp;hdrinfo.Ch_20_warm_target_fixed_bias_correction_min_temp]);
                         dT_w_nom=[0;0;0;0;0];%double([hdrinfo.Ch_16_warm_target_fixed_bias_correction_nom_temp; hdrinfo.Ch_17_warm_target_fixed_bias_correction_nom_temp; hdrinfo.Ch_18_warm_target_fixed_bias_correction_nom_temp; hdrinfo.Ch_19_warm_target_fixed_bias_correction_nom_temp; hdrinfo.Ch_20_warm_target_fixed_bias_correction_nom_temp]);
                         dT_w_max=[0;0;0;0;0];%double([hdrinfo.Ch_16_warm_target_fixed_bias_correction_max_temp;hdrinfo.Ch_17_warm_target_fixed_bias_correction_max_temp;hdrinfo.Ch_18_warm_target_fixed_bias_correction_max_temp;hdrinfo.Ch_19_warm_target_fixed_bias_correction_max_temp;hdrinfo.Ch_20_warm_target_fixed_bias_correction_max_temp]);
-%                        % HARMONISED PARAMETERS  
 
-                       
-                          
-                          if strcmp(sat,'noaa15')
-                              ch18_dTw=-0.58;
-                          elseif strcmp(sat,'noaa16')
-                              ch18_dTw=-0.08;
-                          elseif strcmp(sat,'noaa17')
-                              ch18_dTw=3.85;
-                          end
-                          %ch18_dTw=3.85;
-                        dT_w_min=double([hdrinfo.Ch_16_warm_target_fixed_bias_correction_min_temp; hdrinfo.Ch_17_warm_target_fixed_bias_correction_min_temp;ch18_dTw;hdrinfo.Ch_19_warm_target_fixed_bias_correction_min_temp;hdrinfo.Ch_20_warm_target_fixed_bias_correction_min_temp]);
-                        dT_w_nom=double([hdrinfo.Ch_16_warm_target_fixed_bias_correction_nom_temp; hdrinfo.Ch_17_warm_target_fixed_bias_correction_nom_temp; ch18_dTw; hdrinfo.Ch_19_warm_target_fixed_bias_correction_nom_temp; hdrinfo.Ch_20_warm_target_fixed_bias_correction_nom_temp]);
-                        dT_w_max=double([hdrinfo.Ch_16_warm_target_fixed_bias_correction_max_temp;hdrinfo.Ch_17_warm_target_fixed_bias_correction_max_temp;ch18_dTw;hdrinfo.Ch_19_warm_target_fixed_bias_correction_max_temp;hdrinfo.Ch_20_warm_target_fixed_bias_correction_max_temp]);
-                         
+%                         % HARMONISED PARAMETERS  
+%                          if strcmp(sat,'noaa15')
+%                               ch18_dTw=-0.58;
+%                           elseif strcmp(sat,'noaa16')
+%                               ch18_dTw=-0.08;
+%                           elseif strcmp(sat,'noaa17')
+%                               ch18_dTw=3.85;
+%                           end
+%                           %ch18_dTw=3.85;
+%                         dT_w_min=double([hdrinfo.Ch_16_warm_target_fixed_bias_correction_min_temp; hdrinfo.Ch_17_warm_target_fixed_bias_correction_min_temp;ch18_dTw;hdrinfo.Ch_19_warm_target_fixed_bias_correction_min_temp;hdrinfo.Ch_20_warm_target_fixed_bias_correction_min_temp]);
+%                         dT_w_nom=double([hdrinfo.Ch_16_warm_target_fixed_bias_correction_nom_temp; hdrinfo.Ch_17_warm_target_fixed_bias_correction_nom_temp; ch18_dTw; hdrinfo.Ch_19_warm_target_fixed_bias_correction_nom_temp; hdrinfo.Ch_20_warm_target_fixed_bias_correction_nom_temp]);
+%                         dT_w_max=double([hdrinfo.Ch_16_warm_target_fixed_bias_correction_max_temp;hdrinfo.Ch_17_warm_target_fixed_bias_correction_max_temp;ch18_dTw;hdrinfo.Ch_19_warm_target_fixed_bias_correction_max_temp;hdrinfo.Ch_20_warm_target_fixed_bias_correction_max_temp]);
+%                          
                         
 
 
@@ -670,14 +671,14 @@ calculate_solarAndsatellite_azimuth_angle
                         %u_dT_w=abs(dT_w); %estimate uncertainty of 100% %FIXME: this is zero so far!
                         u_dT_w=bsxfun(@times,ones(size(dT_w)),0.16); %estimate of 0.16K uncertainty in dT_w correction, which is zero so far.
      
-                        % HARMONISED PARAMETERS
-                        if strcmp(sat,'noaa15')
-                              u_dT_w(3,:)=0.41;
-                        elseif strcmp(sat,'noaa16')
-                              u_dT_w(3,:)=0.07;
-                        elseif strcmp(sat,'noaa17')
-                              u_dT_w(3,:)=0.45;
-                        end
+%                         % HARMONISED PARAMETERS
+%                         if strcmp(sat,'noaa15')
+%                               u_dT_w(3,:)=0.41;
+%                         elseif strcmp(sat,'noaa16')
+%                               u_dT_w(3,:)=0.07;
+%                         elseif strcmp(sat,'noaa17')
+%                               u_dT_w(3,:)=0.45;
+%                         end
                         
       %%%%%%%%%%%%%                
                       %space view profile
@@ -751,19 +752,19 @@ calculate_solarAndsatellite_azimuth_angle
                       non_lin_nominal=double([hdrinfo.Ch_16_nonlinearity_coeff_nominal_temperature; hdrinfo.Ch_17_nonlinearity_coeff_nominal_temperature;hdrinfo.Ch_18_nonlinearity_coeff_nominal_temperature;hdrinfo.Ch_19_nonlinearity_coeff_nominal_temperature;hdrinfo.Ch_20_nonlinearity_coeff_nominal_temperature]);
                       non_lin_max=double([hdrinfo.Ch_16_nonlinearity_coeff_max_temperature; hdrinfo.Ch_17_nonlinearity_coeff_max_temperature;hdrinfo.Ch_18_nonlinearity_coeff_max_temperature;hdrinfo.Ch_19_nonlinearity_coeff_max_temperature;hdrinfo.Ch_20_nonlinearity_coeff_max_temperature]);
                     
-                      % HARMONISED PARAMETERS
-                        if strcmp(sat,'noaa15')
-                              ch18_a_1=-126.6;
-                        elseif strcmp(sat,'noaa16')
-                              ch18_a_1=157.0;
-                        elseif strcmp(sat,'noaa17')
-                              ch18_a_1=904.6;
-                        end
-                          %ch18_a_1=904.6;
-                        non_lin_min=double([hdrinfo.Ch_16_nonlinearity_coeff_min_temperature; hdrinfo.Ch_17_nonlinearity_coeff_min_temperature;ch18_a_1;hdrinfo.Ch_19_nonlinearity_coeff_min_temperature;hdrinfo.Ch_20_nonlinearity_coeff_min_temperature]); 
-                        non_lin_nominal=double([hdrinfo.Ch_16_nonlinearity_coeff_nominal_temperature; hdrinfo.Ch_17_nonlinearity_coeff_nominal_temperature;ch18_a_1;hdrinfo.Ch_19_nonlinearity_coeff_nominal_temperature;hdrinfo.Ch_20_nonlinearity_coeff_nominal_temperature]);
-                        non_lin_max=double([hdrinfo.Ch_16_nonlinearity_coeff_max_temperature; hdrinfo.Ch_17_nonlinearity_coeff_max_temperature;ch18_a_1;hdrinfo.Ch_19_nonlinearity_coeff_max_temperature;hdrinfo.Ch_20_nonlinearity_coeff_max_temperature]);
-                      
+%                       % HARMONISED PARAMETERS
+%                         if strcmp(sat,'noaa15')
+%                               ch18_a_1=-126.6;
+%                         elseif strcmp(sat,'noaa16')
+%                               ch18_a_1=157.0;
+%                         elseif strcmp(sat,'noaa17')
+%                               ch18_a_1=904.6;
+%                         end
+%                           %ch18_a_1=904.6;
+%                         non_lin_min=double([hdrinfo.Ch_16_nonlinearity_coeff_min_temperature; hdrinfo.Ch_17_nonlinearity_coeff_min_temperature;ch18_a_1;hdrinfo.Ch_19_nonlinearity_coeff_min_temperature;hdrinfo.Ch_20_nonlinearity_coeff_min_temperature]); 
+%                         non_lin_nominal=double([hdrinfo.Ch_16_nonlinearity_coeff_nominal_temperature; hdrinfo.Ch_17_nonlinearity_coeff_nominal_temperature;ch18_a_1;hdrinfo.Ch_19_nonlinearity_coeff_nominal_temperature;hdrinfo.Ch_20_nonlinearity_coeff_nominal_temperature]);
+%                         non_lin_max=double([hdrinfo.Ch_16_nonlinearity_coeff_max_temperature; hdrinfo.Ch_17_nonlinearity_coeff_max_temperature;ch18_a_1;hdrinfo.Ch_19_nonlinearity_coeff_max_temperature;hdrinfo.Ch_20_nonlinearity_coeff_max_temperature]);
+%                       
 
                       
 %                       %sensitivity study
@@ -800,14 +801,14 @@ calculate_solarAndsatellite_azimuth_angle
                             % UNCERTAINTY
                             u_nonlincoeff=abs(nonlincoeff);% estimate of 100% uncertainty
                             
-                            % HARMONISED PARAMETERS
-                            if strcmp(sat,'noaa15')
-                                  u_nonlincoeff(3,:)=99.51;
-                            elseif strcmp(sat,'noaa16')
-                                  u_nonlincoeff(3,:)=5.93;
-                            elseif strcmp(sat,'noaa17')
-                                  u_nonlincoeff(3,:)=110.87;
-                            end
+%                             % HARMONISED PARAMETERS
+%                             if strcmp(sat,'noaa15')
+%                                   u_nonlincoeff(3,:)=99.51;
+%                             elseif strcmp(sat,'noaa16')
+%                                   u_nonlincoeff(3,:)=5.93;
+%                             elseif strcmp(sat,'noaa17')
+%                                   u_nonlincoeff(3,:)=110.87;
+%                             end
                             
                             
                             

@@ -1,31 +1,11 @@
 
 
-%
- % Copyright (C) 2016-10-17 Imke Hans
- % This code was developed for the EC project �Fidelity and Uncertainty in   
- %  Climate Data Records from Earth Observations (FIDUCEO)�. 
- % Grant Agreement: 638822
- %  <Version> Reviewed and approved by <name, instituton>, <date>
- %
- %
- %  V 0.1   Reviewed and approved by Imke Hans, Univ. Hamburg, 2017-04-20
- %
- % This program is free software; you can redistribute it and/or modify it
- % under the terms of the GNU General Public License as published by the Free
- % Software Foundation; either version 3 of the License, or (at your option)
- % any later version.
- % This program is distributed in the hope that it will be useful, but WITHOUT
- % ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- % FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- % more details.
- % 
- % A copy of the GNU General Public License should have been supplied along
- % with this program; if not, see http://www.gnu.org/licenses/
+
  %
  % %%% based on MATLAB function specexitance.m 
  %    Created by Jaap de Vries, 8/20/2012
  %     jpdvrs@yahoo.com 
-
+% adapted to FIDUCEO needs by Imke Hans
 
 
 function M = planck(f, T)

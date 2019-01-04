@@ -1,16 +1,15 @@
 
 
-% setup_fullFCDR_uncertproc_MHS.m
+% setup_SSMT2_processing2l1c.m
 
 %
- % Copyright (C) 2017-04-12 Imke Hans
- % This code was developed for the EC project �Fidelity and Uncertainty in   
- %  Climate Data Records from Earth Observations (FIDUCEO)�. 
+ % Copyright (C) 2019-01-04 Imke Hans
+ % This code was developed for the EC project ?Fidelity and Uncertainty in   
+ %  Climate Data Records from Earth Observations (FIDUCEO)?. 
  % Grant Agreement: 638822
  %  <Version> Reviewed and approved by <name, instituton>, <date>
  %
- %
- %  V 0.1   Reviewed and approved by Imke Hans, Univ. Hamburg, 2017-04-20
+ %  V 4.1   Reviewed and approved by Imke Hans, Univ. Hamburg, 2019-01-04
  %
  % This program is free software; you can redistribute it and/or modify it
  % under the terms of the GNU General Public License as published by the Free
@@ -23,12 +22,14 @@
  % 
  % A copy of the GNU General Public License should have been supplied along
  % with this program; if not, see http://www.gnu.org/licenses/
+
  
 %% info
 %
-% ONLY USE this script via calling function generate_FCDR.m
+% ONLY USE this script via calling function FCDR_generator.m/
+% process_FCDR.m
 % DO NOT use this script alone. It needs the output from preceeding
-% functions generate_FCDR.
+% functions.
 
 % Script for SET UP of fullFCDR processing including uncertatiny
 % propagation.
@@ -804,6 +805,7 @@ time_EpochSecond=round((InputDate-UnixOrigin)*86400);
       %%%%%%%%%%%%%%%%
                            %Antenna_corrcoeff_earthview
                            
+                           % old FCDR version:
                            % unlike MHS and AMSUB, SSMT2 instruments have
                            % the antenna correction given in the header.
                            % Therefore, we read the values in here.
@@ -819,6 +821,16 @@ time_EpochSecond=round((InputDate-UnixOrigin)*86400);
                            gE(4,:)=hdrinfo.Ch_4_apc.';
                            gE(5,:)=hdrinfo.Ch_5_apc.';
                            
+                        % new FCDR version: use newly estimated APC. gE is read from the .mat file
+                        % provided by set_coeffs.m script (as for MHS and
+                        % AMSUB)
+                        % gS and gSAT are assumed to be zero here. In fact,
+                        % the gE read from the set-coeffs-file includes
+                        % gE+gPl (i.e. the AAPP assumptio used below), i.e.
+                        % nonzero gPl. But since we cannot separate them
+                        % into gE and gPl, we leave it in gE and
+                        % artificially set the gSAT variable to zero. gS
+                        % will get nonzero as difference 1- gprime.
                            gS=0*gE;
                            gSAT=0*gE;
                            
@@ -868,10 +880,54 @@ time_EpochSecond=round((InputDate-UnixOrigin)*86400);
                                Antenna_corrcoeff_platformcontribution=gSAT;
                                
                                % UNCERTAINTY
-                               u_Antenna_corrcoeff_earthcontribution=0.5*(1-Antenna_corrcoeff_earthcontribution); %estimate uncertainty of 50% of the correction to an efficiency of 1
-                               u_Antenna_corrcoeff_spacecontribution=0.5*(Antenna_corrcoeff_spacecontribution);
-                               u_Antenna_corrcoeff_platformcontribution=0.5*(Antenna_corrcoeff_platformcontribution);
-        %%%%%%%%%%%%%%%% 
+%                                u_Antenna_corrcoeff_earthcontribution=0.5*(1-Antenna_corrcoeff_earthcontribution); %estimate uncertainty of 50% of the correction to an efficiency of 1
+%                                u_Antenna_corrcoeff_spacecontribution=0.5*(Antenna_corrcoeff_spacecontribution);
+%                                u_Antenna_corrcoeff_platformcontribution=0.5*(Antenna_corrcoeff_platformcontribution);
+%         
+                                %Since there is no APC given for SSMT2, we cannot use the estimate from 
+                                %AMSUB/ MHS "50% of correction". Alternative approach: I computed the
+                                %deviation from a parabola fitted to monthly mean data. Then I use the absolute
+                                %value of this deviation as uncertainty estimate (individual estimate for
+                                %each pixel). I did this study for all SSMT2. Results are similar. Hence,
+                                %as rough estimate I use: uncert_APC, it is for 28 views and 5 channels
+                                % Note that this estimate incorporates also
+                                % different effects that are scandependent,
+                                % e.g. an unknown RFI effect
+                                uncert_APC=[0.0022    0.0016    0.0030    0.0075    0.0024
+                                    0.0017    0.0012    0.0019    0.0033    0.0008
+                                    0.0008    0.0004    0.0008    0.0004    0.0007
+                                    0.0000    0.0002    0.0003    0.0019    0.0023
+                                    0.0008    0.0009    0.0012    0.0030    0.0035
+                                    0.0008    0.0011    0.0008    0.0010    0.0030
+                                    0.0002    0.0006    0.0002    0.0009    0.0021
+                                    0.0002    0.0001    0.0002    0.0005    0.0014
+                                    0.0007    0.0004    0.0007    0.0001    0.0010
+                                    0.0011    0.0007    0.0010    0.0007    0.0007
+                                    0.0012    0.0009    0.0008    0.0011    0.0001
+                                    0.0012    0.0011    0.0012    0.0013    0.0002
+                                    0.0013    0.0010    0.0012    0.0014    0.0000
+                                    0.0011    0.0010    0.0008    0.0012    0.0003
+                                    0.0010    0.0010    0.0010    0.0009    0.0007
+                                    0.0007    0.0007    0.0005    0.0005    0.0006
+                                    0.0003    0.0005    0.0003    0.0001    0.0008
+                                    0.0001    0.0001    0.0001    0.0008    0.0008
+                                    0.0007    0.0004    0.0006    0.0014    0.0008
+                                    0.0013    0.0009    0.0012    0.0016    0.0007
+                                    0.0020    0.0017    0.0018    0.0015    0.0004
+                                    0.0027    0.0023    0.0025    0.0008    0.0000
+                                    0.0035    0.0029    0.0031    0.0005    0.0006
+                                    0.0043    0.0037    0.0038    0.0020    0.0014
+                                    0.0040    0.0033    0.0038    0.0020    0.0019
+                                    0.0126    0.0102    0.0115    0.0018    0.0016
+                                    0.0186    0.0119    0.0225    0.0070    0.0046
+                                    0.0304    0.0205    0.0385    0.0140    0.0128].';
+
+                               u_Antenna_corrcoeff_earthcontribution=uncert_APC; %estimate uncertainty.
+                               u_Antenna_corrcoeff_spacecontribution=0*(Antenna_corrcoeff_spacecontribution);
+                               u_Antenna_corrcoeff_platformcontribution=0*(Antenna_corrcoeff_platformcontribution);
+
+
+%%%%%%%%%%%%%%%% 
         
                                 %R_Eprime Earth radiance without polarization
                                 %correction

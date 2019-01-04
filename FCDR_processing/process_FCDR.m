@@ -1,8 +1,31 @@
+%
+ % Copyright (C) 2019-01-04 Imke Hans
+ % This code was developed for the EC project ?Fidelity and Uncertainty in   
+ %  Climate Data Records from Earth Observations (FIDUCEO)?. 
+ % Grant Agreement: 638822
+ %  <Version> Reviewed and approved by <name, instituton>, <date>
+ %
+ %  V 4.1   Reviewed and approved by Imke Hans, Univ. Hamburg, 2019-01-04
+ %
+ % This program is free software; you can redistribute it and/or modify it
+ % under the terms of the GNU General Public License as published by the Free
+ % Software Foundation; either version 3 of the License, or (at your option)
+ % any later version.
+ % This program is distributed in the hope that it will be useful, but WITHOUT
+ % ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ % FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ % more details.
+ % 
+ % A copy of the GNU General Public License should have been supplied along
+ % with this program; if not, see http://www.gnu.org/licenses/
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 % process_FCDR
 
-
+% This script is called by FCDR_generator.m. 
 
 f = fieldnames(monthly_data_record);
 nEQfile=1;
@@ -19,7 +42,7 @@ if strcmp(sen,'mhs')
         clearvars -except  tic cut satsenyear sat sen year selectinstrument selectsatellite selectyear chosen_month... 
         gE gS gSAT alpha count_thriwct...
         count_thrdsv jump_thr threshold_earth jump_thrICTtempmean ...
-        srf_weight_a srf_weight_b srf_frequency_a srf_frequency_b u_RFI_counts ...
+        srf_weight_a srf_weight_b srf_frequency_a srf_frequency_b u_RFI_counts u_RFI_offset ...
         crossings_and_gap nEQfile monthly_data_header monthly_data_record f file_list
     
         %% produce EQ2EQ files with header info and traceability info on
@@ -94,7 +117,7 @@ if strcmp(sen,'mhs')
 % 
 %         end
 
-        % add uncertinay due to RFI to u_common (depends on qualityflags setting)
+        % add uncertainty due to RFI to u_common (depends on qualityflags setting)
         add_RFI_uncertainty
 
 
@@ -119,7 +142,7 @@ elseif strcmp(sen,'amsub')
         clearvars -except  cut tic satsenyear sat sen year selectinstrument selectsatellite selectyear chosen_month... 
         gE gS gSAT alpha count_thriwct...
         count_thrdsv jump_thr threshold_earth jump_thrICTtempmean ...
-        srf_weight_a srf_weight_b srf_frequency_a srf_frequency_b u_RFI_counts ...
+        srf_weight_a srf_weight_b srf_frequency_a srf_frequency_b u_RFI_counts u_RFI_offset ...
         crossings_and_gap nEQfile monthly_data_header monthly_data_record f file_list
     
         %% produce EQ2EQ files with header info and traceability info on
@@ -219,7 +242,7 @@ elseif strcmp(sen,'ssmt2')
         clearvars -except  cut  tic satsenyear sat sen year selectinstrument selectsatellite selectyear chosen_month... 
         gE gS gSAT alpha count_thriwct...
         count_thrdsv jump_thr threshold_earth jump_thrICTtempmean ...
-        srf_weight_a srf_weight_b srf_frequency_a srf_frequency_b u_RFI_counts ...
+        srf_weight_a srf_weight_b srf_frequency_a srf_frequency_b u_RFI_counts u_RFI_offset ...
         crossings_and_gap nEQfile monthly_data_header monthly_data_record f file_list
     
         %% produce EQ2EQ files with header info and traceability info on
