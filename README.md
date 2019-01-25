@@ -8,6 +8,6 @@ The FCDR-generator code makes use of the open source code "atmlab", available th
 The components modified for the functioning of this FCDR processing will be added soon.
 
 The description of the FCDR processing chain can be found in 
-Hans, Imke (2018) Towards a new fundamental climate data record for microwave humidity sounders based on metrological best practice Dissertation, Universitaet Hamburg 
+Hans, Imke (2018) Towards a new fundamental climate data record for microwave humidity sounders based on metrological best practice, Dissertation, Universitaet Hamburg 
 
-FIXME: recent developments
+An overview of the code and its usage is provided in overview.txt in /FCDR_processing.
