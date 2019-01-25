@@ -10,4 +10,4 @@ The components modified for the functioning of this FCDR processing will be adde
 The description of the FCDR processing chain can be found in 
 Hans, Imke (2018) Towards a new fundamental climate data record for microwave humidity sounders based on metrological best practice, Dissertation, Universitaet Hamburg 
 
-An overview of the code and its usage is provided in overview.txt in /FCDR_processing.
+An overview of the code and its usage is provided in overview_FCDR_processing.txt in /FCDR_processing.
