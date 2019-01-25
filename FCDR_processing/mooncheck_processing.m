@@ -119,7 +119,7 @@ end
     
     for numfil=1:length(hdrinfo.dataset_name)
 
-    logfilename = char(strcat('/scratch/uni/u237/user_data/mprange/cl_archive_files/',sat,'/',num2str(year),'/',sen,'cl_',nameoffile_moon{numfil},'.log'));
+    logfilename = char(strcat('/scratch/uni/u237/data/fiduceo-fcdr/aux-data/cl_archive_files/',sat,'/',num2str(year),'/',sen,'cl_',nameoffile_moon{numfil},'.log'));  %/scratch/uni/u237/user_data/mprange/
 
 
     moonfile=fileread(logfilename);
