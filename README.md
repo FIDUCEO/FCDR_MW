@@ -6,7 +6,7 @@ The folder FCDR_processing contains the MATLAB code to process the level1b MW hu
 Note that you will need additional code to execute the processing (namely the collection of the level1b data):
 The FCDR-generator code makes use of the open source code "atmlab", available through http://www.radiativetransfer.org/tools/
 
-Moreover, you need the amsubcl/mhscl subroutine of AAPP to perfom the chekcs on moon-intrusion.
+Moreover, you need the amsubcl/mhscl subroutine of AAPP to perfom the checks on moon-intrusion.
 
 An overview of the code and its usage is provided in overview_FCDR_processing.txt in /FCDR_processing.
 
