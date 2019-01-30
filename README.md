@@ -5,9 +5,10 @@ The folder FCDR_processing contains the MATLAB code to process the level1b MW hu
 
 Note that you will need additional code to execute the processing (namely the collection of the level1b data):
 The FCDR-generator code makes use of the open source code "atmlab", available through http://www.radiativetransfer.org/tools/
-The components modified for the functioning of this FCDR processing will be added soon.
+
+Moreover, you need the amsubcl/mhscl subroutine of AAPP to perfom the chekcs on moon-intrusion.
+
+An overview of the code and its usage is provided in overview_FCDR_processing.txt in /FCDR_processing.
 
 The description of the FCDR processing chain can be found in 
 Hans, Imke (2018) Towards a new fundamental climate data record for microwave humidity sounders based on metrological best practice, Dissertation, Universitaet Hamburg 
-
-An overview of the code and its usage is provided in overview_FCDR_processing.txt in /FCDR_processing.
