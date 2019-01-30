@@ -30,14 +30,13 @@ Important:
 
 The FCDR_generator function uses atmlab functions for collecting available data. The path to the level 1b data is set in atmlab/site-specific/hamburg/datasets_init.m as D.amsub.basedir = [data_base_dir 'amsub'];
 and similar for MHS and SSMT2. 
-2. In order to perform the checks for moon-intrusions in mooncheck_processing.m, auxiliary data files are necessary. They are obtained from the AAPP-subroutine amubcl and mhscl, respectively (see DOC_mhscl_documentation.docx). These files are stored in
-
-/scratch/uni/u237/data/fiduceo-fcdr/aux-data/cl_archive_files satellite/year/
+2. In order to perform the checks for moon-intrusions in mooncheck_processing.m, auxiliary data files are necessary. They are obtained from the AAPP-subroutine amubcl and mhscl, respectively (see end of this documentation for further info). 
 
 They are labelled as e.g.
 mhscl_NSS.MHSX.NN.D05365.S2027.E2216.B0317879.GC.log
 
-To rerun the FCDR code, you will have to change the path to the log-files (newly produced by yourself)  in the mooncheck_processing.m script, in case you cannot access the path given above.
+To rerun the FCDR code, you will have to change the path to the log-files (newly produced by yourself)  in the mooncheck_processing.m script.
+
 Overview of code
 Here I present an overview of the used MATLAB scripts (S) and functions (F) for the FCDR production. Note that also some atmlab functions are used that might not be explicitly listed here (like invcm2hz, or time conversions). This list is rather meant as overview of the dependences and interactions of the newly coded FCDR production.
 
@@ -162,6 +161,8 @@ Do this for every mission/ part of a mission that you want to process. This is a
 Now, the jobs are running and the output NetCDF files will be stored as specified in the write_easyFCDR_orbitfile_XXX-scripts. The batch-jobs will create themselves two files: 1. An error file .err that stores all error messages in case the code crashes. 2. An outputfile  .out printing the display outputs during the processing. These two files will help to track down issues in case of failures.
 
 Processing the whole missions of the eleven humidity sounders using the described procedure can be completed over a week-end. Depending on the chosen number of nodes, it may be quicker or slower. 
+
+
 Appendix
 
 MATLAB startup file
@@ -183,4 +184,10 @@ atmlab('SITE','hamburg');
 I have to rerun the startup explicitly, if I change something in atmlab, and I want the changes to become active in a running matlab-session (if you start matlab, the startup is run automatically).
 
 
+Concerning the AAPP subroutines to perform the moonchecks
+AAPP comes along with tools to help analyze specific parts of the pre-processed level1b MHS or AMSU-B data. The respective subroutines “mhscl” and “amsubcl” can be used to extract calibration and earth location data, which is returned in the form of mhscl.log or amsubcl.log files. These files contain various information about the calibration state of the instrument. This includes information about the distance of the deep space views (DSVs) to the moon in terms of solid angle, if this angle is sufficiently small. This information is used for the production of a lunar contamination flag in the newly created FIDUCEO FCDR of the MHS and AMSU-B instruments. To obtain the log-files containing the information of the solid angle between DSVs and the moon, the mhscl and amsubcl subroutines are called in a unix console in the following way (where mhscl is interchangeable with amsubcl):
+
+mhscl –c  -l  –s NL –d 0 –h 0 –n 0 $l1b_file
+
+Here, $l1b_file stands for the path of a level1b file and various options can be used to modify the output of the subroutine. The exact meanings of these options can be looked up when calling the subroutine without any arguments (e.g. just “mhscl”).  To obtain log-files produced by these subroutines for all level1b files, a bash-script is used to loop over the filepath-lists provided with the level1b data in the form of annual “$sat_mhs_$year.index” files. It is important that in every loop iteration, after the mhscl subroutine has been called, the produced mhscl.log file is renamed according to the level1b file that was processed (e.g. mhscl_$l1b_file.log). This way, the mhscl.log file may be overwritten in the next loop iteration for the next level1b file.
 
