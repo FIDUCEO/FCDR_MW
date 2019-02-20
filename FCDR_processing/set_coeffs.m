@@ -28,6 +28,7 @@
 %  -antenna correction
 %  - spectral response function values
 
+% make sure you set the correct path to the two .mat files (depending on where you keep them)
 % load SRF files from O. Bobryshev:
 load '/scratch/uni/u237/users/ihans/FIDUCEO_testdata/SRF_MHS/b_qrr_all.mat'
 load '/scratch/uni/u237/users/ihans/FIDUCEO_testdata/SRF_MHS/b102_all.mat'
