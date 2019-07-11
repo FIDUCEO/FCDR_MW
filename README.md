@@ -1,6 +1,21 @@
 # FCDR_MW
 Development code for MW FCDR
-
+  
+    This code was developed for the EC project “Fidelity and Uncertainty in
+    Climate Data Records from Earth Observations (FIDUCEO)”.
+    Grant Agreement: 638822
+    
+    This program is free software; you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the Free
+    Software Foundation; either version 3 of the License, or (at your option)
+    any later version.
+    This program is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+    more details.
+    A copy of the GNU General Public License should have been supplied along
+    with this program; if not, see http://www.gnu.org/licenses/
+    
 The folder FCDR_processing contains the MATLAB code to process the level1b MW humidity sounder data to new level 1c FIDUCEO FCDR, including all improvements presented in the Product User Guide v4.1.
 
 Note that you will need additional code to execute the processing (namely the collection of the level1b data):
